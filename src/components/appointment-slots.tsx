@@ -28,7 +28,7 @@ export default function AppointmentSlots() {
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
       {slots.map((slot) => (
         <Dialog key={slot.id}>
-          <DialogTrigger asChild>
+          <DialogTrigger>
             <AppointmentSlot
               slot={slot}
               onSelect={() => {
