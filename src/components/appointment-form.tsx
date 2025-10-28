@@ -6,18 +6,7 @@ import { z } from "zod";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-
-export const formSchema = z.object({
-  age: z
-    .number()
-    .int({ message: "Age must be an integer" })
-    .positive({ message: "Age must be a positive number" })
-    .min(18, { message: "Age must be at least 18" })
-    .max(99, { message: "Age must be 99 or less" }),
-  category: z.enum(["Regular", "Senior", "Pregnant", "PWD"], {
-    message: "Category must be one of Regular, Senior, Pregnant, PWD",
-  }),
-});
+import { formSchema } from "@/services/create-appointment";
 
 export default function AppointmentForm() {
   const form = useForm<z.infer<typeof formSchema>>({
