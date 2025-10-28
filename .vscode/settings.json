@@ -1,0 +1,20 @@
+{
+  "prettier.enable": false,
+  "[javascript][javascriptreact][typescript][typescriptreact]": {
+    "editor.formatOnSave": false,
+    "editor.tabSize": 2,
+    "files.eol": "\n",
+
+    // disable all vscode formatters. eslint will handle formatting (via eslint-plugin-prettier)
+    "editor.defaultFormatter": null,
+
+    // tell the ESLint plugin to run on save
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "always",
+      "source.organizeImports": "explicit"
+    }
+  },
+  "css.customData": [
+    ".vscode/tailwind.json"
+  ],
+}

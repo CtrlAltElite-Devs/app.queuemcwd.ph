@@ -1,0 +1,22 @@
+{
+  "slots": [
+    { "id": "slot-001", "dayId": "2025-01-15", "startTime": "2025-01-15T08:00:00", "endTime": "2025-01-15T08:30:00", "isActive": true, "booked": 8, "maxCapacity": 10 },
+    { "id": "slot-002", "dayId": "2025-01-15", "startTime": "2025-01-15T08:30:00", "endTime": "2025-01-15T09:00:00", "isActive": true, "booked": 10, "maxCapacity": 10 },
+    { "id": "slot-003", "dayId": "2025-01-15", "startTime": "2025-01-15T09:00:00", "endTime": "2025-01-15T09:30:00", "isActive": true, "booked": 5, "maxCapacity": 10 },
+    { "id": "slot-004", "dayId": "2025-01-15", "startTime": "2025-01-15T09:30:00", "endTime": "2025-01-15T10:00:00", "isActive": true, "booked": 7, "maxCapacity": 10 },
+    { "id": "slot-005", "dayId": "2025-01-15", "startTime": "2025-01-15T10:00:00", "endTime": "2025-01-15T10:30:00", "isActive": true, "booked": 10, "maxCapacity": 10 },
+    { "id": "slot-006", "dayId": "2025-01-15", "startTime": "2025-01-15T10:30:00", "endTime": "2025-01-15T11:00:00", "isActive": true, "booked": 3, "maxCapacity": 10 },
+    { "id": "slot-007", "dayId": "2025-01-15", "startTime": "2025-01-15T11:00:00", "endTime": "2025-01-15T11:30:00", "isActive": true, "booked": 6, "maxCapacity": 10 },
+    { "id": "slot-008", "dayId": "2025-01-15", "startTime": "2025-01-15T11:30:00", "endTime": "2025-01-15T12:00:00", "isActive": true, "booked": 9, "maxCapacity": 10 },
+    { "id": "slot-009", "dayId": "2025-01-15", "startTime": "2025-01-15T12:00:00", "endTime": "2025-01-15T12:30:00", "isActive": true, "booked": 4, "maxCapacity": 10 },
+    { "id": "slot-010", "dayId": "2025-01-15", "startTime": "2025-01-15T12:30:00", "endTime": "2025-01-15T13:00:00", "isActive": true, "booked": 8, "maxCapacity": 10 },
+    { "id": "slot-011", "dayId": "2025-01-15", "startTime": "2025-01-15T13:00:00", "endTime": "2025-01-15T13:30:00", "isActive": true, "booked": 2, "maxCapacity": 10 },
+    { "id": "slot-012", "dayId": "2025-01-15", "startTime": "2025-01-15T13:30:00", "endTime": "2025-01-15T14:00:00", "isActive": true, "booked": 10, "maxCapacity": 10 },
+    { "id": "slot-013", "dayId": "2025-01-15", "startTime": "2025-01-15T14:00:00", "endTime": "2025-01-15T14:30:00", "isActive": true, "booked": 7, "maxCapacity": 10 },
+    { "id": "slot-014", "dayId": "2025-01-15", "startTime": "2025-01-15T14:30:00", "endTime": "2025-01-15T15:00:00", "isActive": true, "booked": 5, "maxCapacity": 10 },
+    { "id": "slot-015", "dayId": "2025-01-15", "startTime": "2025-01-15T15:00:00", "endTime": "2025-01-15T15:30:00", "isActive": true, "booked": 9, "maxCapacity": 10 },
+    { "id": "slot-016", "dayId": "2025-01-15", "startTime": "2025-01-15T15:30:00", "endTime": "2025-01-15T16:00:00", "isActive": true, "booked": 6, "maxCapacity": 10 },
+    { "id": "slot-017", "dayId": "2025-01-15", "startTime": "2025-01-15T16:00:00", "endTime": "2025-01-15T16:30:00", "isActive": true, "booked": 10, "maxCapacity": 10 },
+    { "id": "slot-018", "dayId": "2025-01-15", "startTime": "2025-01-15T16:30:00", "endTime": "2025-01-15T17:00:00", "isActive": true, "booked": 1, "maxCapacity": 10 }
+  ]
+}
