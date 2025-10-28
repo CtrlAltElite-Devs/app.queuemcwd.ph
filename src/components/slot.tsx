@@ -27,9 +27,9 @@ export default function AppointmentSlot({
   };
 
   return (
-    <button
+    <div
       onClick={handleClick}
-      disabled={isDisabled}
+      aria-disabled={isDisabled}
       className={cn(
         "rounded-lg border-2 p-4 transition-all duration-200",
         "flex flex-col items-center justify-center gap-2",
@@ -57,6 +57,6 @@ export default function AppointmentSlot({
           </>
         )}
       </div>
-    </button>
+    </div>
   );
 }
