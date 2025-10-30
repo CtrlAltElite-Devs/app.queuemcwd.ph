@@ -1,19 +1,25 @@
 "use client";
 
+import { formSchema } from "@/services/create-appointment";
+import { Slot } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { formSchema } from "@/services/create-appointment";
 
-export default function AppointmentForm() {
+interface AppointmentFormProps {
+  slot: Slot | null
+}
+
+export default function AppointmentForm({slot}: AppointmentFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       age: 0,
       category: "Regular",
+      slotId: slot?.id
     },
   });
 
