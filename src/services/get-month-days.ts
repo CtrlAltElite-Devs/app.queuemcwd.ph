@@ -2,13 +2,11 @@ import { api } from "@/lib/axios";
 import { MonthDay } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
-const getMonthDays = (): Promise<MonthDay[]> =>
-  api.get("/api/v1/month-day").then((res) => res.data);
+const getMonthDays = (month: number): Promise<MonthDay[]> =>
+  api.get(`/api/v1/month-day?month=${month}`).then((res) => res.data);
 
-const QUERY_KEY = ["month-days", new Date().getMonth() + 1];
-
-export const useGetMonthDays = () =>
+export const useGetMonthDays = (month: number) =>
   useQuery({
-    queryKey: QUERY_KEY,
-    queryFn: () => getMonthDays(),
+    queryKey: ["month-days", month],
+    queryFn: () => getMonthDays(month),
   });

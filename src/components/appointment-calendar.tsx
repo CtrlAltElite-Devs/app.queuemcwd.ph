@@ -9,7 +9,7 @@ import {
   createCalendarModifiers,
 } from "@/utils/calendar-modifiers";
 import { startOfDay } from "date-fns";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface AppointmentCalendarProps {
   onDateSelect?: (
@@ -22,21 +22,31 @@ export default function AppointmentCalendar({
   onDateSelect,
 }: AppointmentCalendarProps) {
   const today = startOfDay(new Date());
+  const [currentMonth, setCurrentMonth] = useState<Date>(today);
 
-  const { monthDaysMap, isLoading, error } = useMonthDaysMap();
+  const { monthDaysMap, isLoading, error } = useMonthDaysMap(
+    currentMonth.getMonth() + 1,
+  );
   const { getMonthDayFromDate } = useDateToMonthDay(monthDaysMap);
   const { selectedDate, selectedMonthDay, handleDateSelect } =
     useCalendarSelection(getMonthDayFromDate);
 
   useEffect(() => {
-    if (selectedDate && selectedMonthDay) {
+    if (selectedDate) {
       onDateSelect?.(selectedDate, selectedMonthDay);
     }
-  }, [selectedDate, selectedMonthDay, onDateSelect]);
+  }, [selectedDate, getMonthDayFromDate, onDateSelect, selectedMonthDay]);
 
   const handleSelect = (date: Date | undefined) => {
     handleDateSelect(date);
+    // onDateSelect?.(date, selectedMonthDay);
+    console.log("handleSelect date", date);
   };
+
+  const handleMonthChange = useCallback((date: Date) => {
+    console.log("📅 Month changed to:", date);
+    setCurrentMonth(date);
+  }, []);
 
   const modifiers = createCalendarModifiers(monthDaysMap, today);
 
@@ -65,6 +75,7 @@ export default function AppointmentCalendar({
           onSelect={handleSelect}
           defaultMonth={today}
           numberOfMonths={1}
+          onMonthChange={handleMonthChange}
           showOutsideDays={false}
           className="w-full max-w-xs rounded-lg border p-4 text-base shadow-md sm:max-w-sm md:max-w-md md:text-lg"
           modifiers={modifiers}

@@ -4,7 +4,7 @@ import AppointmentCalendar from "@/components/appointment-calendar";
 import AppointmentSlots from "@/components/appointment-slots";
 import MainLayout from "@/components/layouts/main-layout";
 import { MonthDay } from "@/types";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export default function Home() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
@@ -12,13 +12,16 @@ export default function Home() {
     MonthDay | undefined
   >();
 
-  const handleDateSelect = (
-    date: Date | undefined,
-    monthDay: MonthDay | undefined,
-  ) => {
-    setSelectedDate(date);
-    setSelectedMonthDay(monthDay);
-  };
+  // console.log("selected: date ", selectedDate);
+  // console.log("selected month day ", selectedMonthDay);
+
+  const handleDateSelect = useCallback(
+    (date: Date | undefined, monthDay: MonthDay | undefined) => {
+      setSelectedDate(date);
+      setSelectedMonthDay(monthDay);
+    },
+    [],
+  );
 
   return (
     <MainLayout>

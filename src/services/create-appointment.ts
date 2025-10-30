@@ -1,4 +1,5 @@
 import { api } from "@/lib/axios";
+import { Appointment } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import z from "zod";
 
@@ -15,11 +16,13 @@ export const formSchema = z.object({
 });
 
 export type CreateAppointmentDto = z.infer<typeof formSchema> & {
-  sampleField: string;
+  slotId: string;
 };
 
-const createAppointment = async (dto: CreateAppointmentDto) => {
-  const response = await api.post("/api/appointmentxxxxx", dto);
+const createAppointment = async (
+  dto: CreateAppointmentDto,
+): Promise<Appointment> => {
+  const response = await api.post("/api/v1/appointments", dto);
   return response.data;
 };
 
