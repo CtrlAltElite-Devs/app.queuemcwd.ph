@@ -22,3 +22,20 @@ export type MonthDay = Entity<{
   dayOfWeek: string;
   isWorkingDay: boolean;
 }>;
+
+export enum QueueStatus {
+  PENDING = "pending",
+  ACTIVE = "active",
+  CANCELLED = "cancelled",
+  EXPIRED = "expired",
+  DONE = "done",
+}
+
+export type Appointment = Entity<{
+  appointmentCode: string;
+  age: number;
+  categoryCode: string;
+  dateValidity: Date;
+  queueStatus: QueueStatus;
+  slotId: string;
+}>;

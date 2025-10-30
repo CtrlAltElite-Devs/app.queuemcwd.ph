@@ -24,7 +24,9 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
     monthDay,
   );
 
-  const { monthDaysMap, isLoading: monthDaysLoading } = useMonthDaysMap();
+  const { monthDaysMap, isLoading: monthDaysLoading } = useMonthDaysMap(
+    new Date().getMonth() + 1,
+  );
   const { getMonthDayFromDate } = useDateToMonthDay(monthDaysMap);
 
   useEffect(() => {
