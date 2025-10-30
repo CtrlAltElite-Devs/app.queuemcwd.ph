@@ -31,6 +31,13 @@ export enum QueueStatus {
   DONE = "done",
 }
 
+export enum Category {
+  REGULAR = "Regular",
+  SENIOR = "Senior",
+  PREGNANT = "Pregnant",
+  PWD = "PWD",
+}
+
 export type Appointment = Entity<{
   appointmentCode: string;
   age: number;

@@ -12,9 +12,7 @@ export const formSchema = z.object({
   category: z.enum(["Regular", "Senior", "Pregnant", "PWD"], {
     message: "Category must be one of Regular, Senior, Pregnant, PWD",
   }),
-  slotId: z
-    .string()
-    .nonempty("Slot ID is required"),
+  slotId: z.string().nonempty("Slot ID is required"),
 });
 
 export type CreateAppointmentDto = z.infer<typeof formSchema> & {

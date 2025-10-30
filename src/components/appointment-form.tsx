@@ -1,7 +1,7 @@
 "use client";
 
 import { formSchema } from "@/services/create-appointment";
-import { Slot } from "@/types";
+import { Category, Slot } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -10,21 +10,38 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
 interface AppointmentFormProps {
-  slot: Slot | null
+  slot: Slot | null;
 }
 
-export default function AppointmentForm({slot}: AppointmentFormProps) {
+export default function AppointmentForm({ slot }: AppointmentFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      age: 0,
-      category: "Regular",
-      slotId: slot?.id
+      age: 18,
+      category: Category.REGULAR,
+      slotId: slot?.id,
     },
   });
 
+  const { setValue, getValues } = form;
+
+  // Automatically adjust category when age changes
+  const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = Number(e.target.value);
+    const clamped = Math.max(18, Math.min(99, val));
+    setValue("age", clamped);
+
+    if (clamped >= 60) {
+      setValue("category", Category.SENIOR);
+    } else if (clamped >= 18) {
+      setValue("category", Category.REGULAR);
+    } else {
+      setValue("category", Category.PWD);
+    }
+  };
+
   function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log(data);
+    console.log("Submitted:", data);
   }
 
   return (
@@ -35,9 +52,10 @@ export default function AppointmentForm({slot}: AppointmentFormProps) {
         <Input
           id="age"
           type="number"
-          {...form.register("age", {
-            valueAsNumber: true,
-          })}
+          min={18}
+          max={99}
+          {...form.register("age", { valueAsNumber: true })}
+          onChange={handleAgeChange}
           placeholder="Enter your age"
         />
         {form.formState.errors.age && (
@@ -45,7 +63,9 @@ export default function AppointmentForm({slot}: AppointmentFormProps) {
             {form.formState.errors.age.message}
           </p>
         )}
-        <p className="text-sm text-gray-500">Please enter your current age</p>
+        <p className="text-sm text-gray-500">
+          Please enter your current age (18–100)
+        </p>
       </div>
 
       {/* Category Field */}
@@ -56,10 +76,10 @@ export default function AppointmentForm({slot}: AppointmentFormProps) {
           {...form.register("category")}
           className="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
         >
-          <option value="Regular">Regular</option>
-          <option value="Senior">Senior</option>
-          <option value="Pregnant">Pregnant</option>
-          <option value="PWD">PWD</option>
+          <option value={Category.REGULAR}>Regular</option>
+          <option value={Category.SENIOR}>Senior</option>
+          <option value={Category.PREGNANT}>Pregnant</option>
+          <option value={Category.PWD}>PWD</option>
         </select>
         {form.formState.errors.category && (
           <p className="text-sm text-red-500">
@@ -67,7 +87,7 @@ export default function AppointmentForm({slot}: AppointmentFormProps) {
           </p>
         )}
         <p className="text-sm text-gray-500">
-          Select your appointment category
+          Category automatically adjusts based on age
         </p>
       </div>
 
