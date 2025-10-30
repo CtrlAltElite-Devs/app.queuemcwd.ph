@@ -73,7 +73,7 @@ export default function AppointmentCalendar({
           mode="single"
           selected={selectedDate}
           onSelect={handleSelect}
-          defaultMonth={today}
+          defaultMonth={currentMonth}
           numberOfMonths={1}
           onMonthChange={handleMonthChange}
           showOutsideDays={false}
