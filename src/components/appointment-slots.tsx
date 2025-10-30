@@ -1,7 +1,7 @@
 "use client";
 
-import { loadSlots } from "@/lib/slot-utils";
 import { Slot } from "@/types";
+import { loadSlots } from "@/utils/slot-utils";
 import { useEffect, useState } from "react";
 import AppointmentForm from "./appointment-form";
 import AppointmentSlot from "./slot";

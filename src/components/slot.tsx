@@ -1,8 +1,8 @@
 "use client";
 
-import { formatSlotTime } from "@/lib/slot-utils";
 import { cn } from "@/lib/utils";
 import { Slot } from "@/types";
+import { formatSlotTime } from "@/utils/slot-utils";
 import { CheckCircle2, Users } from "lucide-react";
 
 interface AppointmentSlotProps {
