@@ -2,9 +2,11 @@
 
 import { useDateToMonthDay, useMonthDaysMap } from "@/hooks/use-month-days";
 import { useGetAppointmentSlots } from "@/services/get-appointment-slots";
-import { MonthDay, Slot } from "@/types";
+import { Appointment, MonthDay, Slot } from "@/types";
+import { useQueryClient } from "@tanstack/react-query";
 import { startOfDay } from "date-fns";
 import { useEffect, useState } from "react";
+import AppointmentConfirmation from "./appointment-confirmation";
 import AppointmentForm from "./appointment-form";
 import AppointmentSlot from "./slot";
 import {
@@ -29,6 +31,10 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
   );
   const { getMonthDayFromDate } = useDateToMonthDay(monthDaysMap);
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [createdAppointment, setCreatedAppointment] =
+    useState<Appointment | null>(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!monthDay && !monthDaysLoading && monthDaysMap.size > 0) {
@@ -94,6 +100,22 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
     );
   }
 
+  const onAppointmentCreated = (appointment: Appointment) => {
+    queryClient.invalidateQueries({ queryKey: ["appointment-slots", dayId] });
+    setCreatedAppointment(appointment);
+    setShowConfirmation(true);
+  };
+
+  if (createdAppointment && selectedSlot && showConfirmation) {
+    return (
+      <AppointmentConfirmation
+        appointment={createdAppointment}
+        slot={selectedSlot}
+        onClose={() => setShowConfirmation(false)}
+      />
+    );
+  }
+
   return (
     <div className="space-y-4">
       {/* Temporary rani na indicator  */}
@@ -107,14 +129,20 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
             <DialogTrigger>
               <AppointmentSlot
                 slot={slot}
-                onSelect={() => setSelectedSlot(slot)}
+                onSelect={() => {
+                  console.log("giselect ko", slot.id);
+                  setSelectedSlot(slot);
+                }}
               />
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Enter your details</DialogTitle>
               </DialogHeader>
-              <AppointmentForm slot={selectedSlot} />
+              <AppointmentForm
+                selectedSlot={selectedSlot}
+                onAppointmentCreated={onAppointmentCreated}
+              />
             </DialogContent>
           </Dialog>
         ))}
