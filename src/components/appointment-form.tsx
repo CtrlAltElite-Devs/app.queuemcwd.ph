@@ -36,8 +36,7 @@ export default function AppointmentForm({
 
   // Automatically update category when age changes
   useEffect(() => {
-    if (typeof age !== "number" || isNaN(age) || age < 18) {
-      setValue("age", 18);
+    if (typeof age !== "number" || isNaN(age)) {
       setValue("category", Category.REGULAR);
       return;
     }
@@ -45,6 +44,17 @@ export default function AppointmentForm({
     if (age >= 60) setValue("category", Category.SENIOR);
     else setValue("category", Category.REGULAR);
   }, [age, setValue]);
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedCategory = e.target.value as Category;
+    setValue("category", selectedCategory);
+
+    if (selectedCategory === Category.SENIOR && age < 60) {
+      setValue("age", 60);
+    } else if (selectedCategory === Category.REGULAR && age >= 60) {
+      setValue("age", 59);
+    }
+  };
 
   const { mutate: createAppointment } = useCreateAppointment();
 
@@ -85,10 +95,27 @@ export default function AppointmentForm({
               if (isNaN(value) || value < 18) value = 18;
               if (value > 99) value = 99;
               e.target.value = String(value);
+              form.setValue("age", value);
             },
           })}
+          onKeyDown={(e) => {
+            if (["e", "E", "+", "-", ".", ","].includes(e.key)) {
+              e.preventDefault();
+            }
+          }}
+          onInput={(e) => {
+            const input = e.target as HTMLInputElement;
+            if (Number(input.value) > 99) {
+              input.value = "99";
+              form.setValue("age", 99);
+            }
+            if (input.value.length > 2) {
+              input.value = input.value.slice(0, 2);
+            }
+          }}
           placeholder="Enter your age"
         />
+
         {form.formState.errors.age && (
           <p className="text-sm text-red-500">
             {form.formState.errors.age.message}
@@ -102,7 +129,19 @@ export default function AppointmentForm({
         <Label htmlFor="category">Category *</Label>
         <select
           id="category"
-          {...form.register("category")}
+          {...form.register("category", {
+            onChange: (e) => {
+              const selectedCategory = e.target.value as Category;
+
+              form.setValue("category", selectedCategory);
+
+              if (selectedCategory === Category.SENIOR && age < 60) {
+                form.setValue("age", 60);
+              } else if (selectedCategory === Category.REGULAR && age >= 60) {
+                form.setValue("age", 18);
+              }
+            },
+          })}
           className="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
         >
           <option value={Category.REGULAR}>Regular</option>
@@ -110,6 +149,7 @@ export default function AppointmentForm({
           <option value={Category.PREGNANT}>Pregnant</option>
           <option value={Category.PWD}>PWD</option>
         </select>
+
         {form.formState.errors.category && (
           <p className="text-sm text-red-500">
             {form.formState.errors.category.message}

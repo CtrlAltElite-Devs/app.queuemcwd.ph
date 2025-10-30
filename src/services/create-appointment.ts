@@ -13,7 +13,7 @@ export const formSchema = z.object({
   // category: z.enum(["Regular", "Senior", "Pregnant", "Pwd"], {
   //   message: "Category must be one of Regular, Senior, Pregnant, PWD",
   // }),
-  category: z.string().nonempty("Category is required"), // atay temporary sani
+  category: z.string().nonempty("Category is required"),
   slotId: z.string().nonempty("Slot ID is required"),
 });
 
