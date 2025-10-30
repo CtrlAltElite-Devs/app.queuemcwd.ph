@@ -3,7 +3,8 @@
 import { formSchema } from "@/services/create-appointment";
 import { Category, Slot } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -23,22 +24,20 @@ export default function AppointmentForm({ slot }: AppointmentFormProps) {
     },
   });
 
-  const { setValue, getValues } = form;
+  const { control, setValue } = form;
+  const age = useWatch({ control, name: "age" });
 
-  // Automatically adjust category when age changes
-  const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = Number(e.target.value);
-    const clamped = Math.max(18, Math.min(99, val));
-    setValue("age", clamped);
-
-    if (clamped >= 60) {
-      setValue("category", Category.SENIOR);
-    } else if (clamped >= 18) {
+  // Automatically update category when age changes
+  useEffect(() => {
+    if (typeof age !== "number" || isNaN(age) || age < 18) {
+      setValue("age", 18);
       setValue("category", Category.REGULAR);
-    } else {
-      setValue("category", Category.PWD);
+      return;
     }
-  };
+
+    if (age >= 60) setValue("category", Category.SENIOR);
+    else setValue("category", Category.REGULAR);
+  }, [age, setValue]);
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     console.log("Submitted:", data);
@@ -54,8 +53,15 @@ export default function AppointmentForm({ slot }: AppointmentFormProps) {
           type="number"
           min={18}
           max={99}
-          {...form.register("age", { valueAsNumber: true })}
-          onChange={handleAgeChange}
+          {...form.register("age", {
+            valueAsNumber: true,
+            onBlur: (e) => {
+              let value = Number(e.target.value);
+              if (isNaN(value) || value < 18) value = 18;
+              if (value > 99) value = 99;
+              e.target.value = String(value);
+            },
+          })}
           placeholder="Enter your age"
         />
         {form.formState.errors.age && (
@@ -63,9 +69,7 @@ export default function AppointmentForm({ slot }: AppointmentFormProps) {
             {form.formState.errors.age.message}
           </p>
         )}
-        <p className="text-sm text-gray-500">
-          Please enter your current age (18–100)
-        </p>
+        <p className="text-sm text-gray-500">Please enter your current age</p>
       </div>
 
       {/* Category Field */}
