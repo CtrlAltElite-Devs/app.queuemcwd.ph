@@ -61,13 +61,41 @@ export const createCalendarModifiers = (
 
 export const calendarModifiersStyles = {
   disabled: {
-    opacity: 0.3,
+    opacity: 0.25,
     pointerEvents: "none" as const,
+    color: "#9ca3af", // Tailwind gray-400 text
+    backgroundColor: "transparent",
+    borderRadius: "0.375rem", // smooth corners
   },
   working: {
-    backgroundColor: "rgba(34, 197, 94, 0.1)",
+    backgroundColor: "rgba(34, 197, 94, 0.15)",
+    fontWeight: 500,
+    borderRadius: "0.5rem",
+    transition: "all 0.2s ease-in-out",
   },
   nonWorking: {
-    backgroundColor: "rgba(239, 68, 68, 0.1)",
+    backgroundColor: "rgba(239, 68, 68, 0.15)", // slightly stronger red
+    color: "#b91c1c", // Tailwind red-700 text
+    fontWeight: 500,
+    borderRadius: "0.5rem",
+    transition: "all 0.2s ease-in-out",
+  },
+  selected: {
+    backgroundColor: "rgba(59, 130, 246, 0.3)", // Tailwind blue-500 with transparency
+    color: "#1d4ed8", // Tailwind blue-700 text
+    fontWeight: 600,
+    borderRadius: "0.5rem",
+    boxShadow: "0 0 0 2px rgba(59, 130, 246, 0.5)",
+  },
+  today: {
+    border: "2px solid #3b82f6", // Tailwind blue-500
+    borderRadius: "0.5rem",
+    fontWeight: 600,
+    color: "#1e40af", // Tailwind blue-800
+  },
+  hover: {
+    backgroundColor: "rgba(59, 130, 246, 0.1)",
+    cursor: "pointer",
+    transition: "all 0.2s ease-in-out",
   },
 };
