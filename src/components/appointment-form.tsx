@@ -1,7 +1,10 @@
 "use client";
 
-import { formSchema } from "@/services/create-appointment";
-import { Category, Slot } from "@/types";
+import {
+  formSchema,
+  useCreateAppointment,
+} from "@/services/create-appointment";
+import { Appointment, Category, Slot } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
@@ -11,16 +14,20 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
 interface AppointmentFormProps {
-  slot: Slot | null;
+  selectedSlot: Slot | null;
+  onAppointmentCreated: (appointment: Appointment) => void;
 }
 
-export default function AppointmentForm({ slot }: AppointmentFormProps) {
+export default function AppointmentForm({
+  selectedSlot,
+  onAppointmentCreated,
+}: AppointmentFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      age: 18,
-      category: Category.REGULAR,
-      slotId: slot?.id,
+      age: 0,
+      category: "Regular",
+      slotId: selectedSlot?.id,
     },
   });
 
@@ -39,12 +46,30 @@ export default function AppointmentForm({ slot }: AppointmentFormProps) {
     else setValue("category", Category.REGULAR);
   }, [age, setValue]);
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log("Submitted:", data);
-  }
+  const { mutate: createAppointment } = useCreateAppointment();
+
+  const handleFormSubmit = (data: z.infer<typeof formSchema>) => {
+    if (!selectedSlot) return;
+
+    createAppointment(
+      {
+        ...data,
+        category: data.category.toLowerCase(),
+        slotId: selectedSlot.id,
+      },
+      {
+        onSuccess: (appointment) => {
+          onAppointmentCreated(appointment);
+        },
+        onError: (error) => {
+          console.error("Failed to create appointment:", error);
+        },
+      },
+    );
+  };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
       {/* Age Field */}
       <div className="space-y-2">
         <Label htmlFor="age">Age *</Label>
