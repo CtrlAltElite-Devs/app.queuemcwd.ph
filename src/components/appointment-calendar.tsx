@@ -3,16 +3,18 @@
 import { Calendar } from "@/components/ui/calendar";
 import { useCalendarSelection } from "@/hooks/use-calendar-selection";
 import { useDateToMonthDay, useMonthDaysMap } from "@/hooks/use-month-days";
+import { MonthDay } from "@/types";
 import {
   calendarModifiersStyles,
   createCalendarModifiers,
 } from "@/utils/calendar-modifiers";
 import { startOfDay } from "date-fns";
+import { useEffect } from "react";
 
 interface AppointmentCalendarProps {
   onDateSelect?: (
     date: Date | undefined,
-    monthDay: unknown | undefined,
+    monthDay: MonthDay | undefined,
   ) => void;
 }
 
@@ -26,9 +28,14 @@ export default function AppointmentCalendar({
   const { selectedDate, selectedMonthDay, handleDateSelect } =
     useCalendarSelection(getMonthDayFromDate);
 
+  useEffect(() => {
+    if (selectedDate && selectedMonthDay) {
+      onDateSelect?.(selectedDate, selectedMonthDay);
+    }
+  }, [selectedDate, selectedMonthDay, onDateSelect]);
+
   const handleSelect = (date: Date | undefined) => {
     handleDateSelect(date);
-    onDateSelect?.(date, selectedMonthDay);
   };
 
   const modifiers = createCalendarModifiers(monthDaysMap, today);
