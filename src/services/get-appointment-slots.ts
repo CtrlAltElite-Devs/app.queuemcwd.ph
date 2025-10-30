@@ -1,11 +1,12 @@
 import { api } from "@/lib/axios";
+import { Slot } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
-const getAppointmentSlots = (): Promise<unknown> =>
-  api.get("/api/xxxx").then((res) => res.data);
+const getAppointmentSlots = (monthDayId: string): Promise<Slot[]> =>
+  api.get(`/api/v1/slots/${monthDayId}`).then((res) => res.data);
 
-export const useGetAppointmentSlots = () =>
+export const useGetAppointmentSlots = (monthDayId: string) =>
   useQuery({
-    queryKey: ["appointment-slots"],
-    queryFn: () => getAppointmentSlots(),
+    queryKey: ["appointment-slots", monthDayId],
+    queryFn: () => getAppointmentSlots(monthDayId),
   });
