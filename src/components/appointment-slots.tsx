@@ -2,7 +2,7 @@
 
 import { useDateToMonthDay, useMonthDaysMap } from "@/hooks/use-month-days";
 import { useGetAppointmentSlots } from "@/services/get-appointment-slots";
-import { MonthDay } from "@/types";
+import { MonthDay, Slot } from "@/types";
 import { startOfDay } from "date-fns";
 import { useEffect, useState } from "react";
 import AppointmentForm from "./appointment-form";
@@ -28,6 +28,7 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
     new Date().getMonth() + 1,
   );
   const { getMonthDayFromDate } = useDateToMonthDay(monthDaysMap);
+  const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
 
   useEffect(() => {
     if (!monthDay && !monthDaysLoading && monthDaysMap.size > 0) {
@@ -107,7 +108,8 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
               <AppointmentSlot
                 slot={slot}
                 onSelect={() => {
-                  console.log("hello", slot.id);
+                  console.log("giselect ko", slot.id);
+                  setSelectedSlot(slot)
                 }}
               />
             </DialogTrigger>
@@ -115,7 +117,7 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
               <DialogHeader>
                 <DialogTitle>Enter your details</DialogTitle>
               </DialogHeader>
-              <AppointmentForm />
+              <AppointmentForm slot={selectedSlot}/>
             </DialogContent>
           </Dialog>
         ))}
