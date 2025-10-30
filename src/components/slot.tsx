@@ -20,10 +20,12 @@ export default function AppointmentSlot({
   const isFull = available === 0;
   const isDisabled = !slot.isActive || isFull;
 
-  const handleClick = () => {
-    if (!isDisabled) {
-      onSelect(slot.id);
+  const handleClick = (e: React.MouseEvent) => {
+    if (isDisabled) {
+      e.stopPropagation();
+      return;
     }
+    onSelect(slot.id);
   };
 
   return (
@@ -32,7 +34,7 @@ export default function AppointmentSlot({
       aria-disabled={isDisabled}
       className={cn(
         "rounded-lg border-2 p-4 transition-all duration-200",
-        "flex flex-col items-center justify-center gap-2",
+        "flex cursor-pointer flex-col items-center justify-center gap-2",
         isDisabled
           ? "bg-muted border-border text-muted-foreground cursor-not-allowed opacity-50"
           : isSelected
