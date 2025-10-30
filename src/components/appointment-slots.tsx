@@ -129,10 +129,7 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
             <DialogTrigger>
               <AppointmentSlot
                 slot={slot}
-                onSelect={() => {
-                  console.log("giselect ko", slot.id);
-                  setSelectedSlot(slot);
-                }}
+                onSelect={() => setSelectedSlot(slot)}
               />
             </DialogTrigger>
             <DialogContent>
