@@ -10,16 +10,10 @@ export const formSchema = z.object({
     .positive({ message: "Age must be a positive number" })
     .min(18, { message: "Age must be at least 18" })
     .max(99, { message: "Age must be 99 or less" }),
-<<<<<<< HEAD
-  category: z.enum(["Regular", "Senior", "Pregnant", "PWD"], {
-    message: "Category must be one of Regular, Senior, Pregnant, PWD",
-  }),
-=======
   // category: z.enum(["Regular", "Senior", "Pregnant", "Pwd"], {
   //   message: "Category must be one of Regular, Senior, Pregnant, PWD",
   // }),
   category: z.string().nonempty("Category is required"), // atay temporary sani
->>>>>>> 678b81b (feat: add appointment confirmation component and integrate QR code display)
   slotId: z.string().nonempty("Slot ID is required"),
 });
 
