@@ -82,7 +82,9 @@ export default function AppointmentForm({
     <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
       {/* Age Field */}
       <div className="space-y-2">
-        <Label htmlFor="age">Age *</Label>
+        <Label htmlFor="age">
+          Age <span className="text-red-500">*</span>
+        </Label>
         <Input
           id="age"
           type="number"
@@ -126,7 +128,9 @@ export default function AppointmentForm({
 
       {/* Category Field */}
       <div className="space-y-2">
-        <Label htmlFor="category">Category *</Label>
+        <Label htmlFor="category">
+          Category <span className="text-red-500">*</span>
+        </Label>
         <select
           id="category"
           {...form.register("category", {

@@ -33,29 +33,30 @@ export default function AppointmentSlot({
       onClick={handleClick}
       aria-disabled={isDisabled}
       className={cn(
-        "rounded-lg border-2 p-4 transition-all duration-200",
-        "flex cursor-pointer flex-col items-center justify-center gap-2",
+        "rounded-2xl border p-4 transition-all duration-200",
+        "flex min-h-[4rem] min-w-[6rem] flex-col items-center justify-center gap-2",
+        "text-sm md:text-base",
         isDisabled
-          ? "bg-muted border-border text-muted-foreground cursor-not-allowed opacity-50"
+          ? "cursor-not-allowed border-gray-300 bg-gray-100 text-gray-400 opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-500"
           : isSelected
             ? "bg-primary border-primary text-primary-foreground scale-105 shadow-lg"
-            : "bg-card border-border text-foreground hover:border-primary hover:scale-102 hover:shadow-md",
+            : "hover:border-primary border-gray-300 bg-white text-gray-900 hover:scale-102 hover:shadow-md dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100",
       )}
       aria-label={`${slot.startTime} - ${slot.endTime}, ${available} slots available`}
     >
-      <div className="text-sm font-semibold">
+      <div className="font-semibold">
         {formatSlotTime(slot.startTime)} - {formatSlotTime(slot.endTime)}
       </div>
-      <div className="flex items-center justify-center gap-1 text-xs">
+      <div className="flex items-center justify-center gap-1 text-xs md:text-sm">
         {isFull ? (
           <>
-            <CheckCircle2 className="h-3 w-3" />
+            <CheckCircle2 className="h-4 w-4 text-red-500" />
             <span>Full</span>
           </>
         ) : (
           <>
-            <Users className="h-3 w-3" />
-            <span>{available} available</span>
+            <Users className="h-4 w-4 text-green-500 opacity-50" />
+            <span className="opacity-80">{available} available</span>
           </>
         )}
       </div>

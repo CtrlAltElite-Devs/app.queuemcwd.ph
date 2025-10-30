@@ -1,10 +1,11 @@
 "use client";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { useDateToMonthDay, useMonthDaysMap } from "@/hooks/use-month-days";
 import { useGetAppointmentSlots } from "@/services/get-appointment-slots";
 import { Appointment, MonthDay, Slot } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
-import { startOfDay } from "date-fns";
+import { format, startOfDay } from "date-fns";
 import { useEffect, useState } from "react";
 import AppointmentConfirmation from "./appointment-confirmation";
 import AppointmentForm from "./appointment-form";
@@ -64,19 +65,23 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
     error,
   } = useGetAppointmentSlots(dayId);
 
-  // Show loading state while determining the current day
-  if (!currentMonthDay || monthDaysLoading) {
-    return (
-      <div className="flex h-32 items-center justify-center">
-        <div className="text-lg">Loading available slots...</div>
-      </div>
-    );
-  }
+  if (!currentMonthDay || monthDaysLoading || slotsLoading) {
+    const placeholderCount = 8; // 2 rows × 4 columns
 
-  if (slotsLoading) {
     return (
-      <div className="flex h-32 items-center justify-center">
-        <div className="text-lg">Loading available slots...</div>
+      <div className="space-y-4">
+        {/* Header skeleton */}
+        <Skeleton className="h-6 w-1/3 rounded-md bg-gray-200" />
+
+        {/* Grid skeleton */}
+        <div className="grid min-h-[12rem] animate-pulse grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: placeholderCount }).map((_, i) => (
+            <Skeleton
+              key={i}
+              className="h-24 w-48 rounded-md bg-gray-200 md:h-28"
+            />
+          ))}
+        </div>
       </div>
     );
   }
@@ -119,9 +124,18 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
   return (
     <div className="space-y-4">
       {/* Temporary rani na indicator  */}
-      <h2 className="text-xl font-semibold">
-        Available Slots for {currentMonthDay.month}/{currentMonthDay.day}/
-        {currentMonthDay.year}
+      <h2 className="text-xl font-semibold text-gray-700">
+        Available Slots for{" "}
+        {currentMonthDay
+          ? format(
+              new Date(
+                currentMonthDay.year,
+                currentMonthDay.month - 1,
+                currentMonthDay.day,
+              ),
+              "MMMM d, yyyy",
+            )
+          : ""}
       </h2>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {slots.map((slot) => (
