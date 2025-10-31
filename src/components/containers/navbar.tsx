@@ -12,9 +12,11 @@ export default function NavBar({
   href = "/",
 }: NavBarProps) {
   return (
-    <Component className="bg-primary w-full px-6 py-4 shadow-sm">
-      <h1 className="text-center text-lg font-semibold text-white sm:text-left sm:text-xl md:text-2xl">
-        {/* Metropolitan Cebu Water District */}
+    <Component className="bg-primary flex w-full items-center px-4 py-4 shadow-sm">
+      <h1
+        className="text-base font-semibold text-white sm:text-lg md:text-xl lg:text-2xl"
+        style={{ lineHeight: "1.2" }}
+      >
         {title}
       </h1>
     </Component>
