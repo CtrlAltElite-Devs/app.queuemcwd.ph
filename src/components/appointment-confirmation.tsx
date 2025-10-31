@@ -1,8 +1,10 @@
 "use client";
 
 import { Appointment, Slot } from "@/types";
-import { X } from "lucide-react";
+import * as htmlToImage from "html-to-image";
+import { Download, X } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
+import { useRef } from "react";
 
 interface AppointmentConfirmationProps {
   appointment: Appointment;
@@ -15,6 +17,22 @@ export default function AppointmentConfirmation({
   slot,
   onClose,
 }: AppointmentConfirmationProps) {
+  const receiptRef = useRef<HTMLDivElement>(null);
+
+  const downloadReceipt = async () => {
+    if (receiptRef.current) {
+      try {
+        const dataUrl = await htmlToImage.toPng(receiptRef.current);
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = `appointment-${appointment.appointmentCode}.png`;
+        link.click();
+      } catch (err) {
+        console.error("Failed to download receipt:", err);
+      }
+    }
+  };
+
   const getCategoryDisplay = (categoryCode: string) => {
     const categories: { [key: string]: string } = {
       Regular: "Regular",
@@ -25,35 +43,32 @@ export default function AppointmentConfirmation({
     return categories[categoryCode] || categoryCode;
   };
 
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("en-US", {
+  const formatDate = (date: Date) =>
+    new Date(date).toLocaleDateString("en-US", {
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric",
     });
-  };
 
   const formatTimeSpan = (startTime: Date, endTime: Date) => {
     const start = new Date(startTime);
     const end = new Date(endTime);
-
-    const formatTime = (date: Date) => {
-      return date
-        .toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        })
-        .toUpperCase();
-    };
-
-    return `${formatTime(start)} TO ${formatTime(end)}`;
+    const fmt = (d: Date) =>
+      d.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+    return `${fmt(start)} TO ${fmt(end)}`;
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="relative mx-4 max-w-sm rounded-lg border border-gray-200 bg-white shadow-lg">
+      <div
+        className="relative mx-4 max-w-sm rounded-lg border border-gray-200 bg-white shadow-lg"
+        ref={receiptRef}
+      >
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -62,6 +77,7 @@ export default function AppointmentConfirmation({
           <X className="h-4 w-4" />
         </button>
 
+        {/* Header */}
         <div className="rounded-t-lg bg-blue-600 p-4 text-white">
           <h1 className="text-center text-xl font-bold">
             Appointment Confirmed
@@ -71,6 +87,7 @@ export default function AppointmentConfirmation({
           </p>
         </div>
 
+        {/* Content */}
         <div className="space-y-4 p-4">
           <div className="flex items-start gap-4">
             <div className="flex-shrink-0">
@@ -140,10 +157,18 @@ export default function AppointmentConfirmation({
           </div>
         </div>
 
-        <div className="rounded-b-lg border-t border-gray-200 bg-gray-100 px-4 py-3">
+        {/* Footer */}
+        <div className="flex items-center justify-between rounded-b-lg border-t border-gray-200 bg-gray-100 px-4 py-3">
           <p className="text-center text-xs text-gray-600">
             Contact support if you have questions
           </p>
+          <button
+            onClick={downloadReceipt}
+            className="ml-auto flex items-center gap-1 rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
+          >
+            <Download className="h-3 w-3" />
+            Download
+          </button>
         </div>
       </div>
     </div>

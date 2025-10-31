@@ -9,7 +9,7 @@ import {
   calendarModifiersStyles,
   createCalendarModifiers,
 } from "@/utils/calendar-modifiers";
-import { format, startOfDay } from "date-fns";
+import { startOfDay } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 
 interface AppointmentCalendarProps {
@@ -85,14 +85,6 @@ export default function AppointmentCalendar({
     );
   }
 
-  function CustomCaption({ date }: { date: Date }) {
-    return (
-      <div className="flex items-center justify-center py-2 text-lg font-semibold text-gray-800">
-        {format(date, "MMMM yyyy")} {/* e.g., "October 2025" */}
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
       <div className="transition-transform duration-200">
@@ -104,7 +96,7 @@ export default function AppointmentCalendar({
           numberOfMonths={1}
           onMonthChange={handleMonthChange}
           showOutsideDays={false}
-          className="w-full max-w-md gap-x-1 gap-y-2 rounded-3xl border p-4 text-lg shadow-xl [--cell-size:2.75rem] sm:gap-x-2 md:gap-x-3 md:text-xl md:[--cell-size:3rem]"
+          className="w-full max-w-md gap-x-1 gap-y-2 rounded-3xl border p-4 text-lg shadow-lg [--cell-size:2.75rem] sm:gap-x-2 md:gap-x-3 md:text-xl md:[--cell-size:3rem]"
           modifiers={modifiers}
           modifiersStyles={calendarModifiersStyles}
         />
