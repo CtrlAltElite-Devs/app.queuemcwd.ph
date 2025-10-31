@@ -69,7 +69,7 @@ export default function AppointmentCalendar({
           {Array.from({ length: 42 }).map((_, i) => (
             <Skeleton
               key={i}
-              className="h-[2.75rem] w-[2.75rem] rounded-md bg-gray-200 sm:h-[3rem] sm:w-[3rem] md:h-[3.25rem] md:w-[3.25rem]"
+              className="h-[2.75rem] w-[2.75rem] rounded-md bg-gray-200 sm:h-[3rem] sm:w-[3rem] md:h-[3.25rem] md:w-[3.25rem] lg:mx-2"
             />
           ))}
         </div>
