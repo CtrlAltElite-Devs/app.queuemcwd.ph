@@ -3,7 +3,12 @@ import { MonthDay } from "@/types";
 import { useMemo } from "react";
 
 export const useMonthDaysMap = (monthNumber: number) => {
-  const { data: monthDays, isLoading, error } = useGetMonthDays(monthNumber);
+  const {
+    data: monthDays,
+    isLoading,
+    error,
+    refetch,
+  } = useGetMonthDays(monthNumber);
 
   const monthDaysMap = useMemo(() => {
     if (!monthDays) return new Map<string, MonthDay>();
@@ -30,7 +35,7 @@ export const useMonthDaysMap = (monthNumber: number) => {
     );
   }, [monthDays]);
 
-  return { monthDaysMap, isLoading, error, rawData: monthDays };
+  return { monthDaysMap, isLoading, error, rawData: monthDays, refetch };
 };
 
 export const useDateToMonthDay = (monthDaysMap: Map<string, MonthDay>) => {

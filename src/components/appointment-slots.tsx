@@ -7,6 +7,7 @@ import { Appointment, MonthDay, Slot } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { format, startOfDay } from "date-fns";
 import { useEffect, useState } from "react";
+import { MdEventAvailable } from "react-icons/md";
 import AppointmentConfirmation from "./appointment-confirmation";
 import AppointmentForm from "./appointment-form";
 import SlotsGridSkeleton from "./skeletons/slots-grid-skeleton";
@@ -21,6 +22,7 @@ import {
 
 interface AppointmentSlotsProps {
   monthDay?: MonthDay;
+  branch?: string;
 }
 
 export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
@@ -116,19 +118,22 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
   return (
     <div className="space-y-4">
       {/* Temporary rani na indicator  */}
-      <h2 className="text-xl font-semibold text-gray-700">
-        Available Slots for{" "}
-        {currentMonthDay
-          ? format(
-              new Date(
-                currentMonthDay.year,
-                currentMonthDay.month - 1,
-                currentMonthDay.day,
-              ),
-              "MMMM d, yyyy",
-            )
-          : ""}
-      </h2>
+      <div className="flex items-center gap-3">
+        <MdEventAvailable size={20} />
+        <h2 className="text-md font-semibold text-gray-700">
+          Available Slots for{" "}
+          {currentMonthDay
+            ? format(
+                new Date(
+                  currentMonthDay.year,
+                  currentMonthDay.month - 1,
+                  currentMonthDay.day,
+                ),
+                "MMMM d, yyyy",
+              )
+            : ""}
+        </h2>
+      </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {slots.map((slot) => (
           <Dialog key={slot.id}>

@@ -25,7 +25,7 @@ export default function AppointmentCalendar({
   const today = startOfDay(new Date());
   const [currentMonth, setCurrentMonth] = useState<Date>(today);
 
-  const { monthDaysMap, isLoading, error } = useMonthDaysMap(
+  const { monthDaysMap, isLoading, error, refetch } = useMonthDaysMap(
     currentMonth.getMonth() + 1,
   );
   const { getMonthDayFromDate } = useDateToMonthDay(monthDaysMap);
@@ -79,8 +79,14 @@ export default function AppointmentCalendar({
 
   if (error) {
     return (
-      <div className="flex h-64 items-center justify-center">
+      <div className="flex h-32 flex-col items-center justify-center space-y-2">
         <div className="text-lg text-red-600">Error loading calendar data</div>
+        <button
+          onClick={() => refetch()}
+          className="rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
