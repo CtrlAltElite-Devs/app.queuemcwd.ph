@@ -17,9 +17,7 @@ export default function BranchSelection({
     <div className="space-y-3">
       <div className="flex items-center gap-3">
         <PiBuildingOffice size={20} />
-        <h3 className="text-/** * name */ public name() { } font-semibold text-gray-700">
-          Select Branch
-        </h3>
+        <h3 className="text-md font-semibold text-gray-700">Select Branch</h3>
       </div>
       <div className="flex gap-4">
         {branches.map((branch) => (
