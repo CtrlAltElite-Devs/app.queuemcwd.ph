@@ -9,6 +9,7 @@ import { format, startOfDay } from "date-fns";
 import { useEffect, useState } from "react";
 import AppointmentConfirmation from "./appointment-confirmation";
 import AppointmentForm from "./appointment-form";
+import SlotsGridSkeleton from "./skeletons/slots-grid-skeleton";
 import AppointmentSlot from "./slot";
 import {
   Dialog,
@@ -72,16 +73,7 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
       <div className="space-y-4">
         {/* Header skeleton */}
         <Skeleton className="h-6 w-1/3 rounded-md bg-gray-200" />
-
-        {/* Grid skeleton */}
-        <div className="grid min-h-[12rem] animate-pulse grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: placeholderCount }).map((_, i) => (
-            <Skeleton
-              key={i}
-              className="h-24 w-48 rounded-md bg-gray-200 md:h-28"
-            />
-          ))}
-        </div>
+        <SlotsGridSkeleton placeholderCount={placeholderCount} />
       </div>
     );
   }
