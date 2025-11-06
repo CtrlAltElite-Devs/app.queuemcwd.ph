@@ -10,7 +10,7 @@ import { format, startOfDay } from "date-fns";
 import { useEffect, useState } from "react";
 import { MdEventAvailable } from "react-icons/md";
 import AppointmentConfirmation from "./appointment-confirmation";
-import AppointmentForm from "./appointment-form";
+import AppointmentForm from "./forms/appointment-form";
 import SlotsGridSkeleton from "./skeletons/slots-grid-skeleton";
 import AppointmentSlot from "./slot";
 import {
