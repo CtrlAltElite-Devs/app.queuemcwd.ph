@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"; // optional helper for merging Tailwind classes
+import { cn } from "@/lib/utils";
 import { Control, Controller, FieldError } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
