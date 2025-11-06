@@ -3,6 +3,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDateToMonthDay, useMonthDaysMap } from "@/hooks/use-month-days";
 import { useGetAppointmentSlots } from "@/services/get-appointment-slots";
+import { useBranchStore } from "@/stores/branch-store";
 import { Appointment, MonthDay, Slot } from "@/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { format, startOfDay } from "date-fns";
@@ -25,6 +26,7 @@ interface AppointmentSlotsProps {
 }
 
 export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
+  const { selectedBranch } = useBranchStore();
   const [currentMonthDay, setCurrentMonthDay] = useState<MonthDay | undefined>(
     monthDay,
   );
@@ -65,7 +67,7 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
     data: slots = [],
     isLoading: slotsLoading,
     error,
-  } = useGetAppointmentSlots(dayId);
+  } = useGetAppointmentSlots(dayId, selectedBranch?.id);
 
   if (!currentMonthDay || monthDaysLoading || slotsLoading) {
     const placeholderCount = 8; // 2 rows × 4 columns
