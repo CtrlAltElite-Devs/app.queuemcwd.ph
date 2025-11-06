@@ -13,6 +13,7 @@ export type Slot = Entity<{
   isActive: boolean;
   booked: number;
   maxCapacity: number;
+  branchId: string;
 }>;
 
 export type MonthDay = Entity<{
@@ -45,4 +46,10 @@ export type Appointment = Entity<{
   dateValidity: Date;
   queueStatus: QueueStatus;
   slotId: string;
+}>;
+
+export type Branch = Entity<{
+  name: string;
+  branchCode: string;
+  address: string;
 }>;

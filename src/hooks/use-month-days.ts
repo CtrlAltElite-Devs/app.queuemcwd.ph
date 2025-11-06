@@ -1,19 +1,21 @@
 import { useGetMonthDays } from "@/services/get-month-days";
+import { useBranchStore } from "@/stores/branch-store";
 import { MonthDay } from "@/types";
 import { useMemo } from "react";
 
 export const useMonthDaysMap = (monthNumber: number) => {
+  const { selectedBranch } = useBranchStore();
+  const currentYear = new Date().getFullYear();
+
   const {
     data: monthDays,
     isLoading,
     error,
     refetch,
-  } = useGetMonthDays(monthNumber);
+  } = useGetMonthDays(monthNumber, selectedBranch?.id, currentYear);
 
   const monthDaysMap = useMemo(() => {
     if (!monthDays) return new Map<string, MonthDay>();
-
-    const currentYear = new Date().getFullYear();
 
     return new Map(
       monthDays.map((day) => {
