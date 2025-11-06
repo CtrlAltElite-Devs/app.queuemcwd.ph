@@ -1,20 +1,17 @@
+import { services } from "@/constants";
 import { api } from "@/lib/axios";
 import { Appointment } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import z from "zod";
 
 export const formSchema = z.object({
-  age: z
-    .number()
-    .int({ message: "Age must be an integer" })
-    .positive({ message: "Age must be a positive number" })
-    .min(18, { message: "Age must be at least 18" })
-    .max(99, { message: "Age must be 99 or less" }),
-  // category: z.enum(["Regular", "Senior", "Pregnant", "Pwd"], {
-  //   message: "Category must be one of Regular, Senior, Pregnant, PWD",
-  // }),
-  category: z.string().nonempty("Category is required"),
-  slotId: z.string().nonempty("Slot ID is required"),
+  accountCode: z.string().min(1, { message: "Account code is required" }),
+  contactPerson: z.string().min(1, { message: "Contact person is required" }),
+  contact: z
+    .string()
+    .min(1, { message: "Contact number is required" })
+    .regex(/^[0-9+\-\s()]+$/, { message: "Invalid contact number format" }),
+  service: z.enum(services),
 });
 
 export type CreateAppointmentDto = z.infer<typeof formSchema>;
