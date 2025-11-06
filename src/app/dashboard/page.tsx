@@ -8,7 +8,7 @@ import { MonthDay } from "@/types";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-export default function Home() {
+export default function Dashboard() {
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const { selectedBranch } = useBranchStore();
