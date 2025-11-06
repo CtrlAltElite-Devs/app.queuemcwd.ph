@@ -1,1 +1,1 @@
-export const branches = ["Main Office", "SM Consolation Office"];
+export const branches = ["Main Office", "SM Consolacion Office"];

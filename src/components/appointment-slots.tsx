@@ -22,7 +22,6 @@ import {
 
 interface AppointmentSlotsProps {
   monthDay?: MonthDay;
-  branch?: string;
 }
 
 export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
