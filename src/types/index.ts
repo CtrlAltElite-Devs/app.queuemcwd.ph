@@ -1,7 +1,9 @@
+import { IconType } from "react-icons/lib";
+
 export type BaseEntity = {
   id: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export type Entity<T> = BaseEntity & T;
@@ -46,3 +48,9 @@ export type Branch = Entity<{
   branchCode: string;
   address: string;
 }>;
+
+export type Navigation = {
+  icon: IconType;
+  url: string;
+  name: string;
+};

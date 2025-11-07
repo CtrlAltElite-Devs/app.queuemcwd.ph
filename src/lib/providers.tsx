@@ -1,6 +1,7 @@
 "use client";
 
 import { ThemeProvider } from "@/components/theme-provider";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
@@ -16,7 +17,7 @@ export default function AppProvider({ children }: { children: ReactNode }) {
         enableSystem
         disableTransitionOnChange
       >
-        {children}
+        <SidebarProvider>{children}</SidebarProvider>
       </ThemeProvider>
       <Toaster />
     </QueryClientProvider>
