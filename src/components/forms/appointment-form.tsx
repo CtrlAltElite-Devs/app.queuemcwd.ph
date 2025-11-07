@@ -1,7 +1,8 @@
 "use client";
 
-import { formDefaultValues, services } from "@/constants";
+import { Category, Service } from "@/constants";
 import {
+  formDefaultValues,
   formSchema,
   useCreateAppointment,
 } from "@/services/create-appointment";
@@ -10,8 +11,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../ui/button";
-import { Label } from "../ui/label";
 import McwdInput from "./mcwd-input";
+import McwdSelect from "./mcwd-select";
 
 interface AppointmentFormProps {
   selectedSlot: Slot | null;
@@ -28,79 +29,75 @@ export default function AppointmentForm({
   });
 
   const { control } = form;
-
   const { mutate: createAppointment } = useCreateAppointment();
 
   const handleFormSubmit = (data: z.infer<typeof formSchema>) => {
     if (!selectedSlot) return;
 
-    // createAppointment(
-    //   {
-    //     ...data,
-    //     category: data.category.toLowerCase(),
-    //     slotId: selectedSlot.id,
-    //   },
-    //   {
-    //     onSuccess: (appointment) => {
-    //       onAppointmentCreated(appointment);
-    //     },
-    //     onError: (error) => {
-    //       console.error("Failed to create appointment:", error);
-    //     },
-    //   },
-    // );
+    createAppointment(
+      { ...data, slotId: selectedSlot.id },
+      {
+        onSuccess: (appointment) => {
+          onAppointmentCreated(appointment);
+        },
+        onError: (error) => {
+          console.error("Failed to create appointment:", error);
+        },
+      },
+    );
   };
 
   return (
     <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
+      {/* Account Code */}
       <McwdInput
         name="accountCode"
         label="Account Code"
         placeholder="Enter your account code"
         control={control}
       />
+
+      {/* Contact Person */}
       <McwdInput
         name="contactPerson"
         label="Contact Person"
         placeholder="Enter contact person name"
         control={control}
       />
+
+      {/* Contact Number */}
       <McwdInput
         name="contact"
-        label="Contact"
-        placeholder="Enter contact number or email"
+        label="Contact Number"
+        placeholder="Enter contact number"
         control={control}
       />
 
-      {/* Services Person Field */}
-      <div className="space-y-2">
-        <Label htmlFor="category">
-          Services <span className="text-red-500">*</span>
-        </Label>
-        <select
-          id="service"
-          {...form.register("service", {
-            onChange: (e) => {
-              const selectedService = e.target.value;
-              form.setValue("service", selectedService);
-            },
-          })}
-          className="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-        >
-          {services.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
+      {/* Category Dropdown */}
+      <McwdSelect
+        name="category"
+        label="Category"
+        placeholder="Select category"
+        control={control}
+        options={Object.values(Category).map((cat) => ({
+          label: cat,
+          value: cat,
+        }))}
+      />
 
-        {form.formState.errors.service && (
-          <p className="text-sm text-red-500">
-            {form.formState.errors.service.message}
-          </p>
-        )}
-      </div>
+      {/* Appointment Type Dropdown */}
+      <McwdSelect
+        name="appointmentType"
+        label="Service Type"
+        placeholder="Select service type"
+        control={control}
+        options={Object.values(Service).map((srv) => ({
+          label: srv,
+          value: srv,
+        }))}
+      />
 
+      {/* Submit Button */}
       <Button type="submit" className="w-full">
         Submit Appointment
       </Button>

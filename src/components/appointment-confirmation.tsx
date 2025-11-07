@@ -128,12 +128,6 @@ export default function AppointmentConfirmation({
                     {getCategoryDisplay(appointment.categoryCode)}
                   </p>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-600">Age</p>
-                  <p className="font-semibold text-gray-900">
-                    {appointment.age}
-                  </p>
-                </div>
               </div>
             </div>
           </div>
