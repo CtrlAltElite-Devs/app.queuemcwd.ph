@@ -9,6 +9,7 @@ import {
   calendarModifiersStyles,
   createCalendarModifiers,
 } from "@/utils/calendar-modifiers";
+import { getNextWorkingDay } from "@/utils/next-working-day";
 import { startOfDay } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 
@@ -33,6 +34,13 @@ export default function AppointmentCalendar({
     useCalendarSelection(getMonthDayFromDate);
 
   useEffect(() => {
+    if (monthDaysMap.size === 0) return;
+
+    const nextWorking = getNextWorkingDay(monthDaysMap);
+    handleDateSelect(nextWorking);
+  }, [monthDaysMap]);
+
+  useEffect(() => {
     if (selectedDate) {
       onDateSelect?.(selectedDate, selectedMonthDay);
     }
@@ -41,7 +49,6 @@ export default function AppointmentCalendar({
   const handleSelect = (date: Date | undefined) => {
     handleDateSelect(date);
     // onDateSelect?.(date, selectedMonthDay);
-    console.log("handleSelect date", date);
   };
 
   const handleMonthChange = useCallback((date: Date) => {

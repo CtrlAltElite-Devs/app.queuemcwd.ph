@@ -1,5 +1,6 @@
 "use client";
 
+import { Service } from "@/constants";
 import { Appointment, Slot } from "@/types";
 import * as htmlToImage from "html-to-image";
 import { Download, X } from "lucide-react";
@@ -32,6 +33,11 @@ export default function AppointmentConfirmation({
       }
     }
   };
+
+  const serviceValues = Object.values(Service);
+
+  const getServiceDisplay = (appointmentType: number) =>
+    serviceValues[appointmentType] || "Unknown Service";
 
   const getCategoryDisplay = (categoryCode: string) => {
     const categories: { [key: string]: string } = {
@@ -66,7 +72,7 @@ export default function AppointmentConfirmation({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div
-        className="relative mx-4 max-w-sm rounded-lg border border-gray-200 bg-white shadow-lg"
+        className="relative mx-4 max-w-lg rounded-lg border border-gray-200 bg-white shadow-lg"
         ref={receiptRef}
       >
         {/* Close Button */}
@@ -126,6 +132,13 @@ export default function AppointmentConfirmation({
                   <p className="text-xs text-gray-600">Category</p>
                   <p className="font-semibold text-gray-900">
                     {getCategoryDisplay(appointment.categoryCode)}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-gray-600">Purpose</p>
+                  <p className="font-semibold text-gray-900">
+                    {getServiceDisplay(appointment.appointmentType)}
                   </p>
                 </div>
               </div>

@@ -5,8 +5,9 @@ import { useDateToMonthDay, useMonthDaysMap } from "@/hooks/use-month-days";
 import { useGetAppointmentSlots } from "@/services/get-appointment-slots";
 import { useBranchStore } from "@/stores/branch-store";
 import { Appointment, MonthDay, Slot } from "@/types";
+import { getNextWorkingDay } from "@/utils/next-working-day";
 import { useQueryClient } from "@tanstack/react-query";
-import { format, startOfDay } from "date-fns";
+import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { MdEventAvailable } from "react-icons/md";
 import AppointmentConfirmation from "./appointment-confirmation";
@@ -43,8 +44,8 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
 
   useEffect(() => {
     if (!monthDay && !monthDaysLoading && monthDaysMap.size > 0) {
-      const today = startOfDay(new Date());
-      const todayMonthDay = getMonthDayFromDate(today);
+      const nextWorking = getNextWorkingDay(monthDaysMap);
+      const todayMonthDay = getMonthDayFromDate(nextWorking);
 
       if (currentMonthDay?.id !== todayMonthDay?.id) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -121,7 +122,7 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
       {/* Temporary rani na indicator  */}
       <div className="flex items-center gap-3">
         <MdEventAvailable size={20} />
-        <h2 className="text-md font-semibold text-gray-700">
+        <h2 className="text-md dark:text-primary-foreground font-semibold">
           Available Slots for{" "}
           {currentMonthDay
             ? format(
@@ -135,7 +136,7 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
             : ""}
         </h2>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {slots.map((slot) => (
           <Dialog key={slot.id}>
             <DialogTrigger>

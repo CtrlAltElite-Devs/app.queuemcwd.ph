@@ -46,6 +46,7 @@ export type Appointment = Entity<{
   dateValidity: Date;
   queueStatus: QueueStatus;
   slotId: string;
+  appointmentType: number;
 }>;
 
 export type Branch = Entity<{

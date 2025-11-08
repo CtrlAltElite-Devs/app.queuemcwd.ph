@@ -32,7 +32,7 @@ export default function Dashboard() {
     <MainLayout>
       <div className="flex w-full max-w-6xl flex-col gap-6 px-4 md:flex-row">
         {/* Calendar Section */}
-        <div className="flex-1">
+        <div className="mx-auto flex-1">
           <AppointmentCalendar onDateSelect={handleDateSelect} />
         </div>
 

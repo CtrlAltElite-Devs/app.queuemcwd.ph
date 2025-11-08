@@ -26,7 +26,7 @@ export default function SelectBranchPage() {
 
   return (
     <MainLayout>
-      <Card className="w-full max-w-md shadow-md">
+      <Card className="w-full max-w-sm shadow-md">
         <CardHeader>
           <CardTitle className="text-center text-xl">Select a Branch</CardTitle>
         </CardHeader>
