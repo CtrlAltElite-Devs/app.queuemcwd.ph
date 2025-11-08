@@ -1,7 +1,6 @@
 "use client";
 
 import { ChevronsUpDown } from "lucide-react";
-import * as React from "react";
 
 import {
   DropdownMenu,
@@ -17,23 +16,29 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useBranchStore } from "@/stores/branch-store";
+import { Branch } from "@/types";
+import { useEffect, useState } from "react";
 
-export function TeamSwitcher({
-  teams,
-}: {
-  teams: {
-    name: string;
-    logo?: React.ElementType;
-    plan?: string;
-  }[];
-}) {
+type BranchExtended = Branch & {
+  logo?: React.ElementType;
+  plan?: string;
+};
+
+export function TeamSwitcher({ branches }: { branches: BranchExtended[] }) {
   const { isMobile } = useSidebar();
-  const [activeTeam, setActiveTeam] = React.useState(teams[0]);
+  const { setBranch, selectedBranch } = useBranchStore();
+  const [activeTeam, setActiveTeam] = useState<BranchExtended | undefined>(
+    selectedBranch,
+  );
+
+  useEffect(() => {
+    if (activeTeam) setBranch(activeTeam);
+  }, [activeTeam]);
 
   if (!activeTeam) {
     return null;
   }
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -62,7 +67,7 @@ export function TeamSwitcher({
             <DropdownMenuLabel className="text-muted-foreground text-xs">
               Branches
             </DropdownMenuLabel>
-            {teams.map((team, index) => (
+            {branches.map((team, index) => (
               <DropdownMenuItem
                 key={team.name}
                 onClick={() => setActiveTeam(team)}

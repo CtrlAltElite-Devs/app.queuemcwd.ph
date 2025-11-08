@@ -14,6 +14,8 @@ export const useMonthDaysMap = (monthNumber: number) => {
     refetch,
   } = useGetMonthDays(monthNumber, selectedBranch?.id, currentYear);
 
+  // console.log("month days data", monthDays);
+
   const monthDaysMap = useMemo(() => {
     if (!monthDays) return new Map<string, MonthDay>();
 

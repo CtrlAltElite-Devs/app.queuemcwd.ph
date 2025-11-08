@@ -3,15 +3,15 @@
 import { Branch, Navigation } from "@/types";
 
 import { usePathname } from "next/navigation";
-import { NavMain } from "./nav-main";
-import { TeamSwitcher } from "./team-switcher";
+import { NavMain } from "../nav-main";
+import { TeamSwitcher } from "../team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "./ui/sidebar";
+} from "./sidebar";
 
 interface AdminSidebarProp {
   branches: Branch[];
@@ -34,7 +34,7 @@ export default function AdminSidebar({
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={branches} />
+        <TeamSwitcher branches={branches} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={enhancedNavigations} />
