@@ -54,3 +54,13 @@ export type Navigation = {
   url: string;
   name: string;
 };
+
+export type Account = {
+  email: string;
+  password: string;
+};
+
+export type Admin = Account & {
+  role: string;
+  branchId: string;
+};
