@@ -35,7 +35,7 @@ export default function AppointmentSlot({
       className={cn(
         "rounded-2xl border p-4 transition-all duration-200",
         "flex min-h-[4rem] min-w-[6rem] flex-col items-center justify-center gap-2",
-        "text-sm md:text-base",
+        "text-sm lg:text-base",
         isDisabled
           ? "cursor-not-allowed border-gray-300 bg-gray-100 text-gray-400 opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-500"
           : isSelected

@@ -1,4 +1,5 @@
 import { useBranchStore } from "@/stores/branch-store";
+import { Building } from "lucide-react";
 import { useRouter } from "next/navigation";
 import NavBar from "./containers/navbar";
 import { Button } from "./ui/button";
@@ -14,20 +15,38 @@ export default function WithNavbar() {
     router.push("/select-branch");
   };
 
+  const hasBranch = !!selectedBranch;
+
   return (
     <div className="sticky top-0 z-50">
       <NavBar title={title} />
-      <div className="absolute top-1/2 right-4 flex -translate-y-1/2 transform items-center gap-2">
-        {selectedBranch && (
-          <Button
-            className="cursor-pointer"
-            variant={"outline"}
-            onClick={handleChangeBranch}
-          >
-            Change Branch
-          </Button>
+
+      <div className="absolute top-1/2 right-4 flex -translate-y-1/2 transform items-center">
+        {!hasBranch && <ModeToggle />}
+
+        {/* Branch selected */}
+        {hasBranch && (
+          <div className="flex items-center gap-2">
+            {/* Desktop: text button */}
+            <Button
+              variant="outline"
+              onClick={handleChangeBranch}
+              className="hidden h-9 sm:flex"
+            >
+              Change Branch
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={handleChangeBranch}
+              className="flex h-9 w-9 items-center justify-center sm:hidden"
+            >
+              <Building className="h-5 w-5" />
+            </Button>
+
+            <ModeToggle />
+          </div>
         )}
-        <ModeToggle />
       </div>
     </div>
   );
