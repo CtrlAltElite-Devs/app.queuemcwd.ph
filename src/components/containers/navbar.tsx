@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { ElementType } from "react";
-import logo from "../../../public/images/mcwd_logo.png";
 
 interface NavBarProps {
   title: string;
@@ -15,7 +14,12 @@ export default function NavBar({
 }: NavBarProps) {
   return (
     <Component className="bg-primary flex w-full items-center gap-2 px-4 py-4 shadow-sm">
-      <Image src={logo} alt="official_logo" width={25} height={25} />
+      <Image
+        src="/images/mcwd_logo.png"
+        alt="official_logo"
+        width={25}
+        height={25}
+      />
       <h1
         className="text-base font-semibold text-white sm:text-base md:text-lg lg:text-xl"
         style={{ lineHeight: "1.2" }}
