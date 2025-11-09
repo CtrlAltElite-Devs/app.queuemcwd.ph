@@ -28,6 +28,7 @@ export default function AppointmentSlotFields({
     isValid,
     pendingAddedSlots,
     addPendingSlot,
+    addSlotToApi,
   } = useSlotManager(monthDayId, branchId);
 
   useEffect(() => {
@@ -66,6 +67,7 @@ export default function AppointmentSlotFields({
           allSlots={localSlots || []}
           pendingAddedSlots={pendingAddedSlots}
           pending
+          onAddSlot={addSlotToApi}
         />
       ))}
       <Button onClick={() => addPendingSlot()}>Add Slot</Button>

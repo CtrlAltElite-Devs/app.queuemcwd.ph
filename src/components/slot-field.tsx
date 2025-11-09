@@ -1,7 +1,9 @@
 import { Slot } from "@/types";
 import { calculateDuration, formatTimeForInput } from "@/utils/slot-utils";
+import { Check } from "lucide-react";
 import { useState } from "react";
 import { FaTrashCan } from "react-icons/fa6";
+import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
@@ -13,6 +15,7 @@ interface SlotFieldProps {
   allSlots: Slot[];
   pendingAddedSlots?: Slot[];
   pending?: boolean;
+  onAddSlot?: (slot: Slot) => void;
 }
 
 export default function SlotField({
@@ -23,8 +26,10 @@ export default function SlotField({
   allSlots,
   pending,
   pendingAddedSlots,
+  onAddSlot,
 }: SlotFieldProps) {
   const [errors, setErrors] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateSlot = (slotToValidate: Slot): string[] => {
     const newErrors: string[] = [];
@@ -106,18 +111,31 @@ export default function SlotField({
 
   return (
     <div
-      className={`space-y-3 rounded-lg border p-4 ${errors.length > 0 ? "border-red-300 bg-red-50" : "border-gray-200"}`}
+      className={`space-y-3 rounded-lg border p-4 transition-all ${
+        pending
+          ? "border-amber-300 bg-amber-50"
+          : errors.length > 0
+            ? "border-red-300 bg-red-50"
+            : "border-gray-200 bg-white hover:border-gray-300"
+      }`}
     >
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium text-gray-700">
-          {!pending ? `Slot ${index + 1}` : "New"}
-        </h4>
+        <div className="flex items-center gap-2">
+          <h4 className="text-sm font-medium text-gray-700">
+            {!pending ? `Slot ${index + 1}` : "New Slot"}
+          </h4>
+          {pending && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-200 px-3 py-1 text-xs font-semibold text-amber-800">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-amber-600" />
+              Pending
+            </span>
+          )}
+        </div>
         {errors.length > 0 && (
           <span className="text-xs font-medium text-red-600">
             {errors.length} issue{errors.length > 1 ? "s" : ""}
           </span>
         )}
-        {pending && <small>Pending</small>}
       </div>
 
       <div className="grid grid-cols-5 items-center gap-4">
@@ -216,6 +234,26 @@ export default function SlotField({
               {error}
             </div>
           ))}
+        </div>
+      )}
+
+      {pending && (
+        <div className="flex gap-2 border-t border-amber-200 pt-2">
+          <Button
+            onClick={async () => {
+              setIsSubmitting(true);
+              try {
+                await onAddSlot?.(slot);
+              } finally {
+                setIsSubmitting(false);
+              }
+            }}
+            disabled={errors.length > 0 || isSubmitting}
+            className="flex flex-1 items-center gap-2 bg-amber-600 text-white hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Check className="h-4 w-4" />
+            {isSubmitting ? "Adding..." : "Add Slot"}
+          </Button>
         </div>
       )}
     </div>

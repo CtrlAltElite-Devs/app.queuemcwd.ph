@@ -5,8 +5,8 @@ import { useMutation } from "@tanstack/react-query";
 export type CreateSlotDto = {
   monthDayId: string;
   limit: number;
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
 };
 
 const createSlot = async (dto: CreateSlotDto): Promise<Slot> => {
