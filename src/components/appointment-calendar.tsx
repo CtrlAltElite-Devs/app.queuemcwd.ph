@@ -38,7 +38,7 @@ export default function AppointmentCalendar({
 
     const nextWorking = getNextWorkingDay(monthDaysMap);
     handleDateSelect(nextWorking);
-  }, [monthDaysMap]);
+  }, [monthDaysMap, handleDateSelect]);
 
   useEffect(() => {
     if (selectedDate) {
@@ -52,7 +52,6 @@ export default function AppointmentCalendar({
   };
 
   const handleMonthChange = useCallback((date: Date) => {
-    console.log("📅 Month changed to:", date);
     setCurrentMonth(date);
   }, []);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Category, Service } from "@/constants";
+import { Service } from "@/constants";
 import {
   formDefaultValues,
   formSchema,
@@ -8,7 +8,10 @@ import {
 } from "@/services/create-appointment";
 import { Appointment, Slot } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
+import { LoaderCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "../ui/button";
 import McwdInput from "./mcwd-input";
@@ -29,7 +32,7 @@ export default function AppointmentForm({
   });
 
   const { control } = form;
-  const { mutate: createAppointment } = useCreateAppointment();
+  const { mutate: createAppointment, isPending } = useCreateAppointment();
 
   const handleFormSubmit = (data: z.infer<typeof formSchema>) => {
     if (!selectedSlot) return;
@@ -40,8 +43,15 @@ export default function AppointmentForm({
         onSuccess: (appointment) => {
           onAppointmentCreated(appointment);
         },
-        onError: (error) => {
-          console.error("Failed to create appointment:", error);
+        onError: (error: unknown) => {
+          const err = error as AxiosError<{ message?: string }>;
+          const message =
+            err.response?.data?.message ||
+            (error instanceof Error
+              ? error.message
+              : "Something went wrong. Please try again.");
+
+          toast.error(message);
         },
       },
     );
@@ -73,18 +83,6 @@ export default function AppointmentForm({
         control={control}
       />
 
-      {/* Category Dropdown */}
-      <McwdSelect
-        name="category"
-        label="Category"
-        placeholder="Select category"
-        control={control}
-        options={Object.values(Category).map((cat) => ({
-          label: cat,
-          value: cat,
-        }))}
-      />
-
       {/* Appointment Type Dropdown */}
       <McwdSelect
         name="appointmentType"
@@ -98,8 +96,13 @@ export default function AppointmentForm({
       />
 
       {/* Submit Button */}
-      <Button type="submit" className="w-full">
-        Submit Appointment
+      <Button
+        type="submit"
+        className="flex w-full items-center justify-center gap-2"
+        disabled={isPending}
+      >
+        {isPending && <LoaderCircle className="h-4 w-4 animate-spin" />}
+        {isPending ? "Submitting..." : "Submit Appointment"}
       </Button>
     </form>
   );

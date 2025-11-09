@@ -1,6 +1,7 @@
 "use client";
 
 import { Service } from "@/constants";
+import { useBranchStore } from "@/stores/branch-store";
 import { Appointment, Slot } from "@/types";
 import * as htmlToImage from "html-to-image";
 import { Download, X } from "lucide-react";
@@ -19,6 +20,7 @@ export default function AppointmentConfirmation({
   onClose,
 }: AppointmentConfirmationProps) {
   const receiptRef = useRef<HTMLDivElement>(null);
+  const { selectedBranch } = useBranchStore();
 
   const downloadReceipt = async () => {
     if (receiptRef.current) {
@@ -38,16 +40,6 @@ export default function AppointmentConfirmation({
 
   const getServiceDisplay = (appointmentType: number) =>
     serviceValues[appointmentType] || "Unknown Service";
-
-  const getCategoryDisplay = (categoryCode: string) => {
-    const categories: { [key: string]: string } = {
-      Regular: "Regular",
-      Senior: "Senior Citizen",
-      Pregnant: "Pregnant",
-      PWD: "PWD",
-    };
-    return categories[categoryCode] || categoryCode;
-  };
 
   const formatDate = (date: Date) =>
     new Date(date).toLocaleDateString("en-US", {
@@ -108,14 +100,19 @@ export default function AppointmentConfirmation({
             </div>
 
             <div className="flex-1 space-y-2">
-              <div>
-                <p className="text-xs text-gray-600">Appointment Code</p>
-                <p className="text-lg font-bold text-gray-800">
-                  {appointment.appointmentCode}
-                </p>
-              </div>
-
               <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                <div>
+                  <p className="text-xs text-gray-600">Branch</p>
+                  <p className="font-bold text-gray-800">
+                    {selectedBranch?.name}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-600">Appointment Code</p>
+                  <p className="font-bold text-gray-800">
+                    {appointment.appointmentCode}
+                  </p>
+                </div>
                 <div>
                   <p className="text-xs text-gray-600">Date</p>
                   <p className="font-semibold text-gray-900">
@@ -126,12 +123,6 @@ export default function AppointmentConfirmation({
                   <p className="text-xs text-gray-600">Time</p>
                   <p className="font-semibold text-gray-900">
                     {formatTimeSpan(slot.startTime, slot.endTime)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-600">Category</p>
-                  <p className="font-semibold text-gray-900">
-                    {getCategoryDisplay(appointment.categoryCode)}
                   </p>
                 </div>
 
@@ -148,7 +139,7 @@ export default function AppointmentConfirmation({
           <div className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">
             <span className="text-sm text-gray-600">Status</span>
             <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
-              {appointment.queueStatus}
+              {appointment.queueStatus.toUpperCase()}
             </span>
           </div>
 

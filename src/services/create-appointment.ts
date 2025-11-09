@@ -1,4 +1,4 @@
-import { Category, Service } from "@/constants";
+import { Service } from "@/constants";
 import { api } from "@/lib/axios";
 import { Appointment } from "@/types";
 import { useMutation } from "@tanstack/react-query";
@@ -12,7 +12,6 @@ export const formSchema = z.object({
     .min(1, { message: "Contact number is required" })
     .max(11, { message: "Contact number must be 11 digits" })
     .regex(/^[0-9+\-\s()]+$/, { message: "Invalid contact number format" }),
-  category: z.enum(Category, "Category is required"),
   appointmentType: z.enum(Service, "Service type is required."),
 });
 
@@ -22,7 +21,6 @@ export const formDefaultValues: CreateAppointmentDto = {
   accountCode: "",
   contactPerson: "",
   contact: "",
-  category: Category.REGULAR,
   appointmentType: Service.BILLING_CONCERNS,
 };
 
@@ -31,8 +29,6 @@ const createAppointment = async (
 ): Promise<Appointment> => {
   const response = await api.post("/api/v1/appointments", {
     ...dto,
-    // normalize casing for backend
-    category: dto.category.toLowerCase(),
     appointmentType: Object.values(Service).indexOf(dto.appointmentType),
   });
   return response.data;
