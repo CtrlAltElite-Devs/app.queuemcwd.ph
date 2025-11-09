@@ -13,3 +13,9 @@ export enum Category {
   PREGNANT = "Pregnant",
   PWD = "PWD",
 }
+
+export const pendingSlotTimeConfig = {
+  defaultEnd: 60 * 60 * 1000,
+  startTimeInterval: 60 * 60 * 1000,
+  endTimeInterval: 2 * 60 * 60 * 1000,
+};

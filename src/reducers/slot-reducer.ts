@@ -3,7 +3,8 @@ import { Slot } from "@/types";
 
 export interface SlotState {
   slots: Slot[];
-  status: "idle" | "loading" | "saving" | "deleting";
+  pendingAddedSlots: Slot[];
+  status: "idle" | "loading" | "saving" | "deleting" | "adding";
   errors: string[];
 }
 
@@ -11,6 +12,8 @@ export type SlotAction =
   | { type: "SET_SLOTS"; payload: Slot[] }
   | { type: "UPDATE_SLOT"; payload: { id: string; updates: Partial<Slot> } }
   | { type: "DELETE_SLOT"; payload: string }
+  | { type: "ADDING_SLOT"; payload: Slot }
+  | { type: "DELETE_PENDING_SLOT"; payload: string }
   | { type: "SET_STATUS"; payload: SlotState["status"] }
   | { type: "ADD_ERROR"; payload: string }
   | { type: "CLEAR_ERRORS" };
@@ -40,6 +43,20 @@ export function slotReducer(state: SlotState, action: SlotAction): SlotState {
         slots: state.slots.filter((slot) => slot.id !== action.payload),
       };
 
+    case "ADDING_SLOT":
+      return {
+        ...state,
+        pendingAddedSlots: [...state.pendingAddedSlots, action.payload],
+      };
+
+    case "DELETE_PENDING_SLOT":
+      return {
+        ...state,
+        pendingAddedSlots: state.pendingAddedSlots.filter(
+          (s) => s.id !== action.payload,
+        ),
+      };
+
     case "SET_STATUS":
       return {
         ...state,
@@ -65,6 +82,7 @@ export function slotReducer(state: SlotState, action: SlotAction): SlotState {
 
 export const initialSlotState: SlotState = {
   slots: [],
+  pendingAddedSlots: [],
   status: "idle",
   errors: [],
 };

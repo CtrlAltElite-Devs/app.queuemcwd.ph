@@ -15,7 +15,8 @@ export type Slot = Entity<{
   isActive: boolean;
   booked: number;
   maxCapacity: number;
-  branchId: string;
+  branch: Branch;
+  monthDay: MonthDay;
 }>;
 
 export type MonthDay = Entity<{

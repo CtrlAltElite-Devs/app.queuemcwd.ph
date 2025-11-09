@@ -1,3 +1,4 @@
+import { pendingSlotTimeConfig } from "@/constants";
 import { initialSlotState, slotReducer } from "@/reducers/slot-reducer";
 import { useDeleteSlot } from "@/services/delete-slot";
 import { Slot } from "@/types";
@@ -25,6 +26,13 @@ export function useSlotManager(monthDayId: string, branchId: string) {
 
   const deleteSlot = useCallback(
     (slotId: string) => {
+      const pendingSlot = state.pendingAddedSlots.find((s) => s.id === slotId);
+
+      if (pendingSlot) {
+        dispatch({ type: "DELETE_PENDING_SLOT", payload: pendingSlot.id });
+        return;
+      }
+
       dispatch({ type: "DELETE_SLOT", payload: slotId });
 
       deleteAppointmentSlot(slotId, {
@@ -42,8 +50,49 @@ export function useSlotManager(monthDayId: string, branchId: string) {
         },
       });
     },
-    [monthDayId, branchId, deleteAppointmentSlot, queryClient],
+    [
+      state.pendingAddedSlots,
+      deleteAppointmentSlot,
+      queryClient,
+      monthDayId,
+      branchId,
+    ],
   );
+
+  const addPendingSlot = useCallback(() => {
+    const lastSlot = state.pendingAddedSlots.length
+      ? state.pendingAddedSlots[state.pendingAddedSlots.length - 1]
+      : state.slots[state.slots.length - 1];
+    console.log("Last slot:", lastSlot);
+
+    const now = new Date();
+    const defaultStart = now;
+    const defaultEnd = new Date(
+      now.getTime() + pendingSlotTimeConfig.defaultEnd,
+    );
+
+    const startTime = lastSlot
+      ? new Date(
+          new Date(lastSlot.endTime).getTime() +
+            pendingSlotTimeConfig.startTimeInterval,
+        )
+      : defaultStart;
+    const endTime = lastSlot
+      ? new Date(
+          new Date(lastSlot.endTime).getTime() +
+            pendingSlotTimeConfig.endTimeInterval,
+        )
+      : defaultEnd;
+
+    const newSlot: Partial<Slot> = {
+      ...(lastSlot ?? {}),
+      id: crypto.randomUUID(),
+      startTime: startTime,
+      endTime: endTime,
+    };
+
+    dispatch({ type: "ADDING_SLOT", payload: newSlot as Slot });
+  }, [state.pendingAddedSlots, state.slots, dispatch]);
 
   const validateTimeCollisions = useCallback(
     (updatedSlot: Slot): string[] => {
@@ -96,6 +145,10 @@ export function useSlotManager(monthDayId: string, branchId: string) {
     return errors;
   }, [state.slots, validateTimeCollisions]);
 
+  // const addingSlot = () => {
+  //   dispatch({ type: "SET_STATUS", payload: "adding" });
+  // };
+
   const saveChanges = useCallback(async () => {
     dispatch({ type: "SET_STATUS", payload: "saving" });
     dispatch({ type: "CLEAR_ERRORS" });
@@ -129,6 +182,7 @@ export function useSlotManager(monthDayId: string, branchId: string) {
     slots: state.slots,
     status: state.status,
     errors: state.errors,
+    pendingAddedSlots: state.pendingAddedSlots,
 
     // Actions
     initializeSlots,
@@ -136,6 +190,7 @@ export function useSlotManager(monthDayId: string, branchId: string) {
     deleteSlot,
     saveChanges,
     validateTimeCollisions,
+    addPendingSlot,
 
     // Derived state
     hasChanges: state.slots.length > 0,

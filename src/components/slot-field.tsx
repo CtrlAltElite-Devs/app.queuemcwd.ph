@@ -11,6 +11,8 @@ interface SlotFieldProps {
   onUpdate: (updates: Partial<Slot>) => void;
   onDelete: () => void;
   allSlots: Slot[];
+  pendingAddedSlots?: Slot[];
+  pending?: boolean;
 }
 
 export default function SlotField({
@@ -19,51 +21,64 @@ export default function SlotField({
   onUpdate,
   onDelete,
   allSlots,
+  pending,
+  pendingAddedSlots,
 }: SlotFieldProps) {
   const [errors, setErrors] = useState<string[]>([]);
+
+  const validateSlot = (slotToValidate: Slot): string[] => {
+    const newErrors: string[] = [];
+
+    const startTime = new Date(slotToValidate.startTime);
+    const endTime = new Date(slotToValidate.endTime);
+
+    // Validate start time is before end time
+    if (startTime >= endTime) {
+      console.log("❌ Time validation failed - start >= end");
+      newErrors.push("End time must be after start time");
+      return newErrors; // No need to check collisions if times are invalid
+    }
+
+    // Check for collisions with other slots
+    [...allSlots, ...(pendingAddedSlots || [])].forEach(
+      (otherSlot, otherIndex) => {
+        if (otherSlot.id === slotToValidate.id) return;
+
+        const otherStart = new Date(otherSlot.startTime);
+        const otherEnd = new Date(otherSlot.endTime);
+
+        // Check for time overlap
+        if (startTime < otherEnd && endTime > otherStart) {
+          newErrors.push(
+            `Overlaps with slot ${otherIndex + 1} (${formatTimeForInput(otherSlot.startTime)} - ${formatTimeForInput(otherSlot.endTime)})`,
+          );
+        }
+      },
+    );
+
+    return newErrors;
+  };
 
   const validateTimeChange = (
     field: "startTime" | "endTime",
     newValue: string,
   ) => {
+    // Create updated slot with the change
     const updatedSlot = { ...slot };
 
+    const [hours, minutes] = newValue.split(":").map(Number);
+
     if (field === "startTime") {
-      const [hours, minutes] = newValue.split(":").map(Number);
       const newStartTime = new Date(slot.startTime);
       newStartTime.setHours(hours, minutes, 0, 0);
       updatedSlot.startTime = newStartTime;
     } else {
-      const [hours, minutes] = newValue.split(":").map(Number);
       const newEndTime = new Date(slot.endTime);
       newEndTime.setHours(hours, minutes, 0, 0);
       updatedSlot.endTime = newEndTime;
     }
 
-    // Check for collisions with other slots
-    const newErrors: string[] = [];
-
-    allSlots.forEach((otherSlot, otherIndex) => {
-      if (otherSlot.id === slot.id) return;
-
-      const thisStart = new Date(updatedSlot.startTime);
-      const thisEnd = new Date(updatedSlot.endTime);
-      const otherStart = new Date(otherSlot.startTime);
-      const otherEnd = new Date(otherSlot.endTime);
-
-      // Check for time overlap
-      if (thisStart < otherEnd && thisEnd > otherStart) {
-        newErrors.push(
-          `Overlaps with slot ${otherIndex + 1} (${formatTimeForInput(otherSlot.startTime)} - ${formatTimeForInput(otherSlot.endTime)})`,
-        );
-      }
-    });
-
-    // Validate start time is before end time
-    if (updatedSlot.startTime >= updatedSlot.endTime) {
-      newErrors.push("End time must be after start time");
-    }
-
+    const newErrors = validateSlot(updatedSlot);
     setErrors(newErrors);
     return newErrors.length === 0;
   };
@@ -94,12 +109,15 @@ export default function SlotField({
       className={`space-y-3 rounded-lg border p-4 ${errors.length > 0 ? "border-red-300 bg-red-50" : "border-gray-200"}`}
     >
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium text-gray-700">Slot {index + 1}</h4>
+        <h4 className="text-sm font-medium text-gray-700">
+          {!pending ? `Slot ${index + 1}` : "New"}
+        </h4>
         {errors.length > 0 && (
           <span className="text-xs font-medium text-red-600">
             {errors.length} issue{errors.length > 1 ? "s" : ""}
           </span>
         )}
+        {pending && <small>Pending</small>}
       </div>
 
       <div className="grid grid-cols-5 items-center gap-4">
