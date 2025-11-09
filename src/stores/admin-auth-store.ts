@@ -1,6 +1,7 @@
 import { Admin } from "@/types";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { cookieStorage } from "zustand-cookie-storage";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 interface AdminAuthState {
   admin: Admin | undefined;
@@ -19,6 +20,7 @@ export const useAdminStore = create<AdminAuthState>()(
     }),
     {
       name: "admin-auth-token",
+      storage: createJSONStorage(() => cookieStorage),
       partialize: (state) => ({ accessToken: state.accessToken }),
     },
   ),

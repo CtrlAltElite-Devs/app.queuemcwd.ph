@@ -16,3 +16,10 @@ export function isValidDate(date: Date | undefined) {
   }
   return !isNaN(date.getTime());
 }
+
+export function getBaseUrl() {
+  if (process.env.NODE_ENV === "development") {
+    return "http://localhost:3000";
+  }
+  return `https://${process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_URL}`;
+}

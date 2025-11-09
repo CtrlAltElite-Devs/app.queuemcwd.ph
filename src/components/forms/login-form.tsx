@@ -81,6 +81,7 @@ export function LoginForm({
               <McwdInputGroup
                 name="password"
                 label="Password"
+                type="password"
                 placeholder="**************"
                 control={form.control}
                 icon={Lock}

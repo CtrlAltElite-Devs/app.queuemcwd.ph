@@ -6,21 +6,16 @@ import { useAdminStore } from "@/stores/admin-auth-store";
 import { useRouter } from "next/navigation";
 import { PropsWithChildren, useEffect } from "react";
 
+// TODO: Refactor admin token to store using cookie and remove it from store and use setCookie helper in token storage
 export default function AdminPageLayout({ children }: PropsWithChildren) {
   const { data: currentAdmin } = useGetCurrentAdmin();
   const { accessToken, setAdmin } = useAdminStore();
   const router = useRouter();
 
   useEffect(() => {
-    if (!accessToken) {
-      router.replace("/login");
-    }
-
-    if (currentAdmin) {
+    if (currentAdmin && accessToken) {
       setAdmin(currentAdmin);
     }
-
-    console.log("current admin: ", JSON.stringify(currentAdmin, null, 2));
   }, [accessToken, router, currentAdmin, setAdmin]);
 
   return <AdminLayout>{children}</AdminLayout>;
