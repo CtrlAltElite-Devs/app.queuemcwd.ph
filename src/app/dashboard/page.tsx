@@ -26,13 +26,20 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!selectedBranch) router.push("/select-branch");
-  }, []);
+  }, [selectedBranch, router]);
 
   return (
     <MainLayout>
-      <AppointmentCalendar onDateSelect={handleDateSelect} />
-      <div className="space-y-4">
-        <AppointmentSlots monthDay={selectedMonthDay} />
+      <div className="flex w-full max-w-6xl flex-col gap-6 px-4 md:flex-row">
+        {/* Calendar Section */}
+        <div className="mx-auto flex-1">
+          <AppointmentCalendar onDateSelect={handleDateSelect} />
+        </div>
+
+        {/* Slots Section */}
+        <div className="flex-1 space-y-4">
+          <AppointmentSlots monthDay={selectedMonthDay} />
+        </div>
       </div>
     </MainLayout>
   );

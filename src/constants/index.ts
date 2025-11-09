@@ -1,18 +1,15 @@
-import { formSchema } from "@/services/create-appointment";
-import z from "zod";
-
 export const branches = ["Main Office", "SM Consolation Office"];
 
-export const services = [
-  "Billing Concerns",
-  "Water Supplier Issues",
-  "Leak Reports",
-  "Service Connection Concerns",
-] as const;
+export enum Service {
+  BILLING_CONCERNS = "Billing Concerns",
+  WATER_SUPPLIER_ISSUES = "Water Supplier Issues",
+  LEAK_REPORTS = "Leak Reports",
+  SERVICE_CONNECTION_CONCERNS = "Service Connection Concerns",
+}
 
-export const formDefaultValues: z.infer<typeof formSchema> = {
-  accountCode: "",
-  contactPerson: "",
-  contact: "",
-  service: services[0],
-};
+export enum Category {
+  REGULAR = "Regular",
+  SENIOR = "Senior",
+  PREGNANT = "Pregnant",
+  PWD = "PWD",
+}

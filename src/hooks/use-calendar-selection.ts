@@ -21,7 +21,6 @@ export const useCalendarSelection = (
     if (date) {
       const monthDay = getMonthDayFromDate(date);
       setSelectedMonthDay(monthDay);
-      console.log("selectedMonthDay", monthDay);
     } else {
       setSelectedMonthDay(undefined);
     }
