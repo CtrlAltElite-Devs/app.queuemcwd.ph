@@ -1,111 +1,37 @@
-import { useDeleteSlot } from "@/services/delete-slot";
+import { useSlotManager } from "@/hooks/use-slot-manager";
 import { useGetAppointmentSlots } from "@/services/get-appointment-slots";
 import { useBranchStore } from "@/stores/branch-store";
-import { Slot } from "@/types";
-import { formatTimeForInput } from "@/utils/slot-utils";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useEffect } from "react";
 import SlotField from "./slot-field";
 import { Button } from "./ui/button";
 
 interface AppointmentSlotFields {
-  monthDayId: string | undefined;
+  monthDayId: string;
 }
 
 export default function AppointmentSlotFields({
   monthDayId,
 }: AppointmentSlotFields) {
   const { selectedBranch } = useBranchStore();
-  const { mutate: deleteAppointmentSlot } = useDeleteSlot();
-  const { data: slots } = useGetAppointmentSlots(
-    monthDayId ?? "",
-    selectedBranch?.id || "",
-  );
+  const branchId = selectedBranch?.id || "";
 
-  const [localSlots, setLocalSlots] = useState<Slot[]>();
+  const { data: slots } = useGetAppointmentSlots(monthDayId || "", branchId);
+  const {
+    slots: localSlots,
+    status,
+    errors,
+    initializeSlots,
+    updateSlot,
+    deleteSlot,
+    saveChanges,
+    isValid,
+  } = useSlotManager(monthDayId, branchId);
 
   useEffect(() => {
-    if (!slots) return;
-
-    queueMicrotask(() => {
-      setLocalSlots(
-        [...slots].sort(
-          (a, b) =>
-            new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
-        ),
-      );
-    });
-  }, [slots]);
-
-  const updateSlot = (slotId: string, updates: Partial<Slot>) => {
-    setLocalSlots((prev) =>
-      prev?.map((slot) => (slot.id === slotId ? { ...slot, updates } : slot)),
-    );
-  };
-
-  const deleteSlot = (slotId: string) => {
-    deleteAppointmentSlot(slotId, {
-      onSuccess: () => {
-        toast("Successfully deleted slot");
-      },
-      onError: (error) => {
-        toast.error("Failed to delete slot");
-      },
-    });
-    // setLocalSlots((prev) => prev?.filter((slot) => slot.id !== slotId));
-  };
-
-  const checkTimeCollisions = (updatedSlot: Slot): string[] => {
-    const collisions: string[] = [];
-    const updatedStart = new Date(updatedSlot.startTime);
-    const updatedEnd = new Date(updatedSlot.endTime);
-
-    localSlots?.forEach((slot) => {
-      if (slot.id === updatedSlot.id) return;
-
-      const slotStart = new Date(slot.startTime);
-      const slotEnd = new Date(slot.endTime);
-
-      // Check for time collisions
-      if (
-        (updatedStart < slotEnd && updatedEnd > slotStart) ||
-        (slotStart < updatedEnd && slotEnd > updatedStart)
-        // updatedStart < slotEnd
-      ) {
-        collisions.push(
-          `Collision with slot ${formatTimeForInput(slot.startTime)} - ${formatTimeForInput(slot.endTime)}`,
-        );
-      }
-    });
-
-    return collisions;
-  };
-
-  const saveChanges = async () => {
-    // Validate all slots before saving
-    const errors: string[] = [];
-
-    localSlots?.forEach((slot, index) => {
-      const collisions = checkTimeCollisions(slot);
-      if (collisions.length > 0) {
-        errors.push(`Slot ${index + 1}: ${collisions.join(", ")}`);
-      }
-
-      // Validate slot duration
-      const start = new Date(slot.startTime);
-      const end = new Date(slot.endTime);
-      if (start >= end) {
-        errors.push(`Slot ${index + 1}: End time must be after start time`);
-      }
-    });
-
-    if (errors.length > 0) {
-      toast.error("Time slot errors", {
-        description: errors.join("\n"),
-      });
-      return;
+    if (slots) {
+      initializeSlots(slots);
     }
-  };
+  }, [slots, initializeSlots]);
 
   return (
     <div className="space-y-6">
