@@ -1,4 +1,5 @@
 import { Slot } from "@/types";
+import { formatTimeToHHmm } from ".";
 
 /**
  * Get available slots count for a specific day
@@ -79,27 +80,38 @@ export function formatTimeForDisplay(time: Date | string): string {
 /**
  * For DURATION CALCULATION - calculates time difference
  */
-export function calculateDuration(
+export const calculateDuration = (
   startTime: Date | string,
   endTime: Date | string,
-): string {
-  const start = typeof startTime === "string" ? new Date(startTime) : startTime;
-  const end = typeof endTime === "string" ? new Date(endTime) : endTime;
+): string => {
+  const startTimeStr = isTimeFormat(startTime)
+    ? startTime
+    : formatTimeToHHmm(startTime);
 
-  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-    return "Invalid duration";
+  const endTimeStr = isTimeFormat(endTime)
+    ? endTime
+    : formatTimeToHHmm(endTime);
+
+  const startMinutes = timeToMinutes(startTimeStr as string);
+  const endMinutes = timeToMinutes(endTimeStr as string);
+  const totalMinutes = endMinutes - startMinutes;
+
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (hours > 0) {
+    return `${hours}h ${minutes > 0 ? `${minutes}m` : ""}`.trim();
   }
+  return `${minutes}m`;
+};
 
-  const diffMs = end.getTime() - start.getTime();
-  const diffMins = Math.floor(diffMs / (1000 * 60));
-  const hours = Math.floor(diffMins / 60);
-  const minutes = diffMins % 60;
+export const timeToMinutes = (timeStr: string): number => {
+  const [hours, minutes] = timeStr.split(":").map(Number);
+  return hours * 60 + minutes;
+};
 
-  if (hours === 0) {
-    return `${minutes}m`;
-  } else if (minutes === 0) {
-    return `${hours}h`;
-  } else {
-    return `${hours}h ${minutes}m`;
-  }
-}
+export const isTimeFormat = (time: unknown): boolean => {
+  return (
+    typeof time === "string" && /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(time)
+  );
+};

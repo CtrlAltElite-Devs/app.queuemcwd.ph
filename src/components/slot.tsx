@@ -45,7 +45,8 @@ export default function AppointmentSlot({
       aria-label={`${slot.startTime} - ${slot.endTime}, ${available} slots available`}
     >
       <div className="font-semibold">
-        {formatSlotTime(slot.startTime)} - {formatSlotTime(slot.endTime)}
+        {formatSlotTime(slot.startTime as Date)} -{" "}
+        {formatSlotTime(slot.endTime as Date)}
       </div>
       <div className="flex items-center justify-center gap-1 text-xs md:text-sm">
         {isFull ? (

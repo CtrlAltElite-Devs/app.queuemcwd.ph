@@ -10,8 +10,8 @@ export type Entity<T> = BaseEntity & T;
 
 export type Slot = Entity<{
   dayId: string;
-  startTime: Date;
-  endTime: Date;
+  startTime: Date | string;
+  endTime: Date | string;
   isActive: boolean;
   booked: number;
   maxCapacity: number;

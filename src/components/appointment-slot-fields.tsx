@@ -37,13 +37,19 @@ export default function AppointmentSlotFields({
     }
   }, [slots, initializeSlots]);
 
+  const hasExistingSlots = localSlots && localSlots.length > 0;
+  const hasPendingSlots = pendingAddedSlots && pendingAddedSlots.length > 0;
+  const shouldShowActions = hasExistingSlots || hasPendingSlots;
+
   return (
     <div className="space-y-6 py-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Appointment Slots</h3>
-        <Button onClick={saveChanges} size="sm">
-          Save Changes
-        </Button>
+        {shouldShowActions && (
+          <Button onClick={saveChanges} size="sm">
+            Save Changes
+          </Button>
+        )}
       </div>
 
       {localSlots?.map((slot, index) => (
@@ -70,7 +76,9 @@ export default function AppointmentSlotFields({
           onAddSlot={addSlotToApi}
         />
       ))}
-      <Button onClick={() => addPendingSlot()}>Add Slot</Button>
+      {shouldShowActions && (
+        <Button onClick={() => addPendingSlot()}>Add Slot</Button>
+      )}
     </div>
   );
 }

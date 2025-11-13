@@ -25,7 +25,7 @@ export default function WithAdminSidebar() {
 
   useEffect(() => {
     if (branches && branches.length && !selectedBranch) setBranch(branches[0]);
-  }, [branches]);
+  }, [branches, selectedBranch, setBranch]);
 
   // Should do a full page load bai
   if (isLoading || !branches) {
@@ -34,7 +34,7 @@ export default function WithAdminSidebar() {
 
   return (
     <>
-      <AdminSidebar branches={branches} navigations={navigations} />
+      <AdminSidebar branches={branches || []} navigations={navigations} />
     </>
   );
 }

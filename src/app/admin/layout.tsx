@@ -10,6 +10,7 @@ import { PropsWithChildren, useEffect } from "react";
 export default function AdminPageLayout({ children }: PropsWithChildren) {
   const { data: currentAdmin } = useGetCurrentAdmin();
   const { accessToken, setAdmin } = useAdminStore();
+
   const router = useRouter();
 
   useEffect(() => {

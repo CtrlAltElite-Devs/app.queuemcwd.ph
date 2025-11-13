@@ -1,7 +1,15 @@
-import { Slot } from "@/types";
-import { calculateDuration, formatTimeForInput } from "@/utils/slot-utils";
+"use client";
+
+import type { Slot } from "@/types";
+import { formatTimeToHHmm } from "@/utils";
+import {
+  calculateDuration,
+  formatTimeForInput,
+  isTimeFormat,
+  timeToMinutes,
+} from "@/utils/slot-utils";
 import { Check } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaTrashCan } from "react-icons/fa6";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -16,6 +24,7 @@ interface SlotFieldProps {
   pendingAddedSlots?: Slot[];
   pending?: boolean;
   onAddSlot?: (slot: Slot) => void;
+  onSaveChanges?: () => void;
 }
 
 export default function SlotField({
@@ -30,82 +39,157 @@ export default function SlotField({
 }: SlotFieldProps) {
   const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [originalSlot, setOriginalSlot] = useState<Slot>(slot);
+
+  useEffect(() => {
+    setOriginalSlot(slot);
+  }, [slot]);
+
+  const detectChanges = () => {
+    if (pending) return false;
+    return (
+      slot.startTime !== originalSlot.startTime ||
+      slot.endTime !== originalSlot.endTime ||
+      slot.maxCapacity !== originalSlot.maxCapacity
+    );
+  };
+
+  useEffect(() => {
+    setHasChanges(detectChanges());
+  }, [slot.startTime, slot.endTime, slot.maxCapacity]);
 
   const validateSlot = (slotToValidate: Slot): string[] => {
     const newErrors: string[] = [];
 
-    const startTime = new Date(slotToValidate.startTime);
-    const endTime = new Date(slotToValidate.endTime);
+    // Convert to strings first, regardless of original type
+    const startTimeStr = isTimeFormat(slot.startTime)
+      ? slotToValidate.startTime
+      : formatTimeToHHmm(slotToValidate.startTime);
 
-    // Validate start time is before end time
-    if (startTime >= endTime) {
-      console.log("❌ Time validation failed - start >= end");
+    const endTimeStr = isTimeFormat(slot.endTime)
+      ? slotToValidate.endTime
+      : formatTimeToHHmm(slotToValidate.endTime);
+
+    const startMinutes = timeToMinutes(startTimeStr as string);
+    const endMinutes = timeToMinutes(endTimeStr as string);
+
+    console.log("Validating times:", {
+      start: startTimeStr,
+      end: endTimeStr,
+      startMinutes,
+      endMinutes,
+    });
+
+    if (startMinutes >= endMinutes) {
       newErrors.push("End time must be after start time");
-      return newErrors; // No need to check collisions if times are invalid
+      return newErrors;
     }
 
-    // Check for collisions with other slots
-    [...allSlots, ...(pendingAddedSlots || [])].forEach(
-      (otherSlot, otherIndex) => {
-        if (otherSlot.id === slotToValidate.id) return;
+    const normalizeSlotForComparison = (slot: Slot) => {
+      return {
+        ...slot,
+        startTime: isTimeFormat(slot.startTime)
+          ? slot.startTime
+          : formatTimeToHHmm(slot.startTime),
+        endTime: isTimeFormat(slot.endTime)
+          ? slot.endTime
+          : formatTimeToHHmm(slot.endTime),
+      };
+    };
 
-        const otherStart = new Date(otherSlot.startTime);
-        const otherEnd = new Date(otherSlot.endTime);
+    const allNormalizedSlots = [
+      ...allSlots.map(normalizeSlotForComparison),
+      ...(pendingAddedSlots || []).map(normalizeSlotForComparison),
+    ];
 
-        // Check for time overlap
-        if (startTime < otherEnd && endTime > otherStart) {
-          newErrors.push(
-            `Overlaps with slot ${otherIndex + 1} (${formatTimeForInput(otherSlot.startTime)} - ${formatTimeForInput(otherSlot.endTime)})`,
-          );
-        }
-      },
-    );
+    allNormalizedSlots.forEach((otherSlot, otherIndex) => {
+      if (otherSlot.id === slotToValidate.id) {
+        console.log(`Skipping self-comparison with slot ${otherIndex}`);
+        return;
+      }
+
+      const otherStart = timeToMinutes(otherSlot.startTime as string);
+      const otherEnd = timeToMinutes(otherSlot.endTime as string);
+
+      console.log(
+        `🔍 Comparing slot ${slotToValidate.id} with slot ${otherSlot.id}:`,
+      );
+      console.log(
+        `  Current: ${startTimeStr} (${startMinutes}m) - ${endTimeStr} (${endMinutes}m)`,
+      );
+      console.log(
+        `  Other:   ${otherSlot.startTime} (${otherStart}m) - ${otherSlot.endTime} (${otherEnd}m)`,
+      );
+
+      // Check for time overlap with detailed conditions
+      const condition1 = startMinutes < otherEnd;
+      const condition2 = endMinutes > otherStart;
+      const hasOverlap = condition1 && condition2;
+
+      // console.log(
+      //   `  Conditions: startMinutes < otherEnd = ${startMinutes} < ${otherEnd} = ${condition1}`,
+      // );
+      // console.log(
+      //   `  Conditions: endMinutes > otherStart = ${endMinutes} > ${otherStart} = ${condition2}`,
+      // );
+      // console.log(`  Overlap detected: ${hasOverlap}`);
+
+      if (hasOverlap) {
+        console.log(`OVERLAP DETECTED between slots!`);
+        newErrors.push(
+          `Overlaps with slot ${otherIndex + 1} (${otherSlot.startTime} - ${otherSlot.endTime})`,
+        );
+      } else {
+        console.log(`✅ No overlap`);
+      }
+      console.log("---");
+    });
 
     return newErrors;
   };
 
-  const validateTimeChange = (
-    field: "startTime" | "endTime",
-    newValue: string,
-  ) => {
-    // Create updated slot with the change
-    const updatedSlot = { ...slot };
-
-    const [hours, minutes] = newValue.split(":").map(Number);
-
-    if (field === "startTime") {
-      const newStartTime = new Date(slot.startTime);
-      newStartTime.setHours(hours, minutes, 0, 0);
-      updatedSlot.startTime = newStartTime;
-    } else {
-      const newEndTime = new Date(slot.endTime);
-      newEndTime.setHours(hours, minutes, 0, 0);
-      updatedSlot.endTime = newEndTime;
-    }
+  const handleTimeChange = (field: "startTime" | "endTime", value: string) => {
+    const updatedSlot = { ...slot, [field]: value };
 
     const newErrors = validateSlot(updatedSlot);
     setErrors(newErrors);
-    return newErrors.length === 0;
-  };
 
-  const handleTimeChange = (field: "startTime" | "endTime", value: string) => {
-    const isValid = validateTimeChange(field, value);
-
-    if (isValid) {
-      const [hours, minutes] = value.split(":").map(Number);
-      const newTime = new Date(slot[field]);
-      newTime.setHours(hours, minutes, 0, 0);
-
-      onUpdate({ [field]: newTime });
-    }
+    onUpdate({ [field]: value });
   };
 
   const handleCapacityChange = (value: string) => {
-    const capacity = parseInt(value);
+    const capacity = Number.parseInt(value);
     if (!isNaN(capacity) && capacity >= 0) {
       onUpdate({ maxCapacity: capacity });
     }
   };
+
+  // Calculate duration from time strings
+  // const calculateDuration = (
+  //   startTime: Date | string,
+  //   endTime: Date | string,
+  // ): string => {
+  //   const startTimeStr = isTimeFormat(startTime)
+  //     ? startTime
+  //     : formatTimeToHHmm(startTime);
+
+  //   const endTimeStr = isTimeFormat(endTime)
+  //     ? endTime
+  //     : formatTimeToHHmm(endTime);
+
+  //   const startMinutes = timeToMinutes(startTimeStr as string);
+  //   const endMinutes = timeToMinutes(endTimeStr as string);
+  //   const totalMinutes = endMinutes - startMinutes;
+
+  //   const hours = Math.floor(totalMinutes / 60);
+  //   const minutes = totalMinutes % 60;
+
+  //   if (hours > 0) {
+  //     return `${hours}h ${minutes > 0 ? `${minutes}m` : ""}`.trim();
+  //   }
+  //   return `${minutes}m`;
+  // };
 
   const availableCapacity = slot.maxCapacity - slot.booked;
 
@@ -114,9 +198,11 @@ export default function SlotField({
       className={`space-y-3 rounded-lg border p-4 transition-all ${
         pending
           ? "border-amber-300 bg-amber-50"
-          : errors.length > 0
-            ? "border-red-300 bg-red-50"
-            : "border-gray-200 bg-white hover:border-gray-300"
+          : hasChanges
+            ? "border-blue-300 bg-blue-50"
+            : errors.length > 0
+              ? "border-red-300 bg-red-50"
+              : "border-gray-200 bg-white hover:border-gray-300"
       }`}
     >
       <div className="flex items-center justify-between">
@@ -128,6 +214,12 @@ export default function SlotField({
             <span className="inline-flex items-center gap-1 rounded-full bg-amber-200 px-3 py-1 text-xs font-semibold text-amber-800">
               <span className="h-2 w-2 animate-pulse rounded-full bg-amber-600" />
               Pending
+            </span>
+          )}
+          {hasChanges && !pending && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-blue-200 px-3 py-1 text-xs font-semibold text-blue-800">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-blue-600" />
+              Modified
             </span>
           )}
         </div>
@@ -149,6 +241,8 @@ export default function SlotField({
           <Input
             type="time"
             className="text-sm"
+            min="01:00"
+            max="23:00"
             defaultValue={formatTimeForInput(slot.startTime)}
             onChange={(e) => handleTimeChange("startTime", e.target.value)}
             id={`startTime-${slot.id}`}
@@ -165,6 +259,8 @@ export default function SlotField({
           <Input
             type="time"
             className="text-sm"
+            min="01:00"
+            max="23:00"
             defaultValue={formatTimeForInput(slot.endTime)}
             onChange={(e) => handleTimeChange("endTime", e.target.value)}
             id={`endTime-${slot.id}`}

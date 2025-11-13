@@ -28,8 +28,23 @@ export function slotReducer(state: SlotState, action: SlotAction): SlotState {
       };
 
     case "UPDATE_SLOT":
+      const { id, updates } = action.payload;
+
+      const slotPending = state.pendingAddedSlots.find((s) => s.id === id);
+
+      let updatedPendingSlots = [] as Slot[];
+
+      if (slotPending) {
+        updatedPendingSlots = state.pendingAddedSlots.map((slot) =>
+          slot.id === action.payload.id ? { ...slot, ...updates } : slot,
+        );
+      }
+
       return {
         ...state,
+        pendingAddedSlots: slotPending
+          ? updatedPendingSlots
+          : state.pendingAddedSlots,
         slots: state.slots.map((slot) =>
           slot.id === action.payload.id
             ? { ...slot, ...action.payload.updates }

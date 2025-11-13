@@ -1,9 +1,9 @@
-import { pendingSlotTimeConfig } from "@/constants";
 import { initialSlotState, slotReducer } from "@/reducers/slot-reducer";
 import { useCreateSlot } from "@/services/add-slot";
 import { useDeleteSlot } from "@/services/delete-slot";
 import { Slot } from "@/types";
 import { formatTimeToHHmm } from "@/utils";
+import { SlotHelpers } from "@/utils/slot-helpers";
 import { formatTimeForInput } from "@/utils/slot-utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useReducer } from "react";
@@ -66,33 +66,23 @@ export function useSlotManager(monthDayId: string, branchId: string) {
     const lastSlot = state.pendingAddedSlots.length
       ? state.pendingAddedSlots[state.pendingAddedSlots.length - 1]
       : state.slots[state.slots.length - 1];
-    console.log("Last slot:", lastSlot);
 
-    const now = new Date();
-    const defaultStart = now;
-    const defaultEnd = new Date(
-      now.getTime() + pendingSlotTimeConfig.defaultEnd,
-    );
-
-    const startTime = lastSlot
-      ? new Date(
-          new Date(lastSlot.endTime).getTime() +
-            pendingSlotTimeConfig.startTimeInterval,
-        )
-      : defaultStart;
-    const endTime = lastSlot
-      ? new Date(
-          new Date(lastSlot.endTime).getTime() +
-            pendingSlotTimeConfig.endTimeInterval,
-        )
-      : defaultEnd;
+    const lastSlotEnd = lastSlot ? new Date(lastSlot.endTime) : null;
+    const { startTime, endTime } = SlotHelpers.createSlotAfter(lastSlotEnd);
 
     const newSlot: Partial<Slot> = {
       ...(lastSlot ?? {}),
       id: crypto.randomUUID(),
-      startTime: startTime,
-      endTime: endTime,
+      startTime,
+      endTime,
+      ...(lastSlot ? { id: crypto.randomUUID(), booked: 0 } : {}),
     };
+
+    console.log("Created new 1-hour slot:", {
+      start: startTime.toLocaleTimeString(),
+      end: endTime.toLocaleTimeString(),
+      date: startTime.toLocaleDateString(),
+    });
 
     dispatch({ type: "ADDING_SLOT", payload: newSlot as Slot });
   }, [state.pendingAddedSlots, state.slots, dispatch]);
@@ -103,12 +93,16 @@ export function useSlotManager(monthDayId: string, branchId: string) {
 
       if (!newSlot) return;
 
+      console.log(`new slot: ${JSON.stringify(newSlot, null, 2)}`);
+
       const newSlotDto = {
         monthDayId,
         limit: newSlot.maxCapacity,
-        startTime: formatTimeToHHmm(newSlot.startTime.toISOString()),
-        endTime: formatTimeToHHmm(newSlot.endTime.toISOString()),
+        startTime: formatTimeToHHmm(newSlot.startTime),
+        endTime: formatTimeToHHmm(newSlot.endTime),
       };
+
+      console.log(`new slot dto: ${JSON.stringify(newSlotDto, null, 2)}`);
 
       createSlot(newSlotDto, {
         onSuccess: () => {
