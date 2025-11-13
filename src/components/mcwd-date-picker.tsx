@@ -23,7 +23,7 @@ interface McwdDatePickerProps {
 }
 
 export function McwdDatePicker({ onDateSelect }: McwdDatePickerProps) {
-  const [open, setOpen] = useState(false);
+  const [, setOpen] = useState(false);
 
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [value, setValue] = useState(formatDate(date));
@@ -62,7 +62,7 @@ export function McwdDatePicker({ onDateSelect }: McwdDatePickerProps) {
             }
           }}
         />
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover defaultOpen onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
               id="date-picker"

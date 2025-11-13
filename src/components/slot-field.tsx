@@ -8,7 +8,7 @@ import {
   isTimeFormat,
   timeToMinutes,
 } from "@/utils/slot-utils";
-import { Check } from "lucide-react";
+import { Check, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FaTrashCan } from "react-icons/fa6";
 import { Button } from "./ui/button";
@@ -24,7 +24,7 @@ interface SlotFieldProps {
   pendingAddedSlots?: Slot[];
   pending?: boolean;
   onAddSlot?: (slot: Slot) => void;
-  onSaveChanges?: () => void;
+  onSaveChanges?: (slot: Slot) => void;
 }
 
 export default function SlotField({
@@ -36,6 +36,7 @@ export default function SlotField({
   pending,
   pendingAddedSlots,
   onAddSlot,
+  onSaveChanges,
 }: SlotFieldProps) {
   const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -127,14 +128,6 @@ export default function SlotField({
       const condition2 = endMinutes > otherStart;
       const hasOverlap = condition1 && condition2;
 
-      // console.log(
-      //   `  Conditions: startMinutes < otherEnd = ${startMinutes} < ${otherEnd} = ${condition1}`,
-      // );
-      // console.log(
-      //   `  Conditions: endMinutes > otherStart = ${endMinutes} > ${otherStart} = ${condition2}`,
-      // );
-      // console.log(`  Overlap detected: ${hasOverlap}`);
-
       if (hasOverlap) {
         console.log(`OVERLAP DETECTED between slots!`);
         newErrors.push(
@@ -165,51 +158,41 @@ export default function SlotField({
     }
   };
 
-  // Calculate duration from time strings
-  // const calculateDuration = (
-  //   startTime: Date | string,
-  //   endTime: Date | string,
-  // ): string => {
-  //   const startTimeStr = isTimeFormat(startTime)
-  //     ? startTime
-  //     : formatTimeToHHmm(startTime);
-
-  //   const endTimeStr = isTimeFormat(endTime)
-  //     ? endTime
-  //     : formatTimeToHHmm(endTime);
-
-  //   const startMinutes = timeToMinutes(startTimeStr as string);
-  //   const endMinutes = timeToMinutes(endTimeStr as string);
-  //   const totalMinutes = endMinutes - startMinutes;
-
-  //   const hours = Math.floor(totalMinutes / 60);
-  //   const minutes = totalMinutes % 60;
-
-  //   if (hours > 0) {
-  //     return `${hours}h ${minutes > 0 ? `${minutes}m` : ""}`.trim();
-  //   }
-  //   return `${minutes}m`;
-  // };
-
   const availableCapacity = slot.maxCapacity - slot.booked;
+
+  const getSlotStyles = () => {
+    if (!slot.isActive) {
+      return "border-gray-200 bg-gray-50 opacity-75";
+    }
+    if (pending) {
+      return "border-amber-300 bg-amber-50";
+    }
+    if (hasChanges) {
+      return "border-blue-300 bg-blue-50";
+    }
+    if (errors.length > 0) {
+      return "border-red-300 bg-red-50";
+    }
+    return "border-gray-200 bg-white hover:border-gray-300";
+  };
 
   return (
     <div
-      className={`space-y-3 rounded-lg border p-4 transition-all ${
-        pending
-          ? "border-amber-300 bg-amber-50"
-          : hasChanges
-            ? "border-blue-300 bg-blue-50"
-            : errors.length > 0
-              ? "border-red-300 bg-red-50"
-              : "border-gray-200 bg-white hover:border-gray-300"
-      }`}
+      className={`space-y-3 rounded-lg border p-4 transition-all ${getSlotStyles()}`}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h4 className="text-sm font-medium text-gray-700">
+          <h4
+            className={`text-sm font-medium ${!slot.isActive ? "text-gray-400" : "text-gray-700"}`}
+          >
             {!pending ? `Slot ${index + 1}` : "New Slot"}
           </h4>
+          {!slot.isActive && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-600">
+              <EyeOff className="h-3 w-3" />
+              Inactive
+            </span>
+          )}
           {pending && (
             <span className="inline-flex items-center gap-1 rounded-full bg-amber-200 px-3 py-1 text-xs font-semibold text-amber-800">
               <span className="h-2 w-2 animate-pulse rounded-full bg-amber-600" />
@@ -233,7 +216,7 @@ export default function SlotField({
       <div className="grid grid-cols-5 items-center gap-4">
         <div className="space-y-1">
           <Label
-            className="text-xs text-gray-500"
+            className={`text-xs ${!slot.isActive ? "text-gray-400" : "text-gray-500"}`}
             htmlFor={`startTime-${slot.id}`}
           >
             Start Time
@@ -241,17 +224,16 @@ export default function SlotField({
           <Input
             type="time"
             className="text-sm"
-            min="01:00"
-            max="23:00"
             defaultValue={formatTimeForInput(slot.startTime)}
             onChange={(e) => handleTimeChange("startTime", e.target.value)}
             id={`startTime-${slot.id}`}
+            disabled={!slot.isActive}
           />
         </div>
 
         <div className="space-y-1">
           <Label
-            className="text-xs text-gray-500"
+            className={`text-xs ${!slot.isActive ? "text-gray-400" : "text-gray-500"}`}
             htmlFor={`endTime-${slot.id}`}
           >
             End Time
@@ -259,17 +241,16 @@ export default function SlotField({
           <Input
             type="time"
             className="text-sm"
-            min="01:00"
-            max="23:00"
             defaultValue={formatTimeForInput(slot.endTime)}
             onChange={(e) => handleTimeChange("endTime", e.target.value)}
             id={`endTime-${slot.id}`}
+            disabled={!slot.isActive}
           />
         </div>
 
         <div className="space-y-1">
           <Label
-            className="text-xs text-gray-500"
+            className={`text-xs ${!slot.isActive ? "text-gray-400" : "text-gray-500"}`}
             htmlFor={`duration-${slot.id}`}
           >
             Duration
@@ -277,14 +258,14 @@ export default function SlotField({
           <Input
             readOnly
             value={calculateDuration(slot.startTime, slot.endTime)}
-            className="bg-gray-50 text-sm"
+            className={`text-sm ${!slot.isActive ? "bg-gray-100 text-gray-400" : "bg-gray-50"}`}
             id={`duration-${slot.id}`}
           />
         </div>
 
         <div className="space-y-1">
           <Label
-            className="text-xs text-gray-500"
+            className={`text-xs ${!slot.isActive ? "text-gray-400" : "text-gray-500"}`}
             htmlFor={`capacity-${slot.id}`}
           >
             Available Capacity
@@ -292,18 +273,21 @@ export default function SlotField({
           <Input
             type="number"
             min="0"
-            max={slot.maxCapacity}
+            max={5}
             value={availableCapacity}
             onChange={(e) => handleCapacityChange(e.target.value)}
             className="text-sm"
             id={`capacity-${slot.id}`}
+            disabled={!slot.isActive}
           />
-          <div className="text-xs text-gray-500">
+          <div
+            className={`text-xs ${!slot.isActive ? "text-gray-400" : "text-gray-500"}`}
+          >
             Booked: {slot.booked} / Max: {slot.maxCapacity}
           </div>
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex items-center justify-center gap-2">
           <button
             onClick={onDelete}
             className="p-2 text-red-400 transition-colors hover:text-red-600"
@@ -333,8 +317,42 @@ export default function SlotField({
         </div>
       )}
 
+      {hasChanges && !pending && (
+        <div className="flex gap-2 border-t border-blue-200 pt-3">
+          <Button
+            onClick={() => {
+              setIsSubmitting(true);
+              try {
+                onSaveChanges?.(slot);
+                setOriginalSlot(slot);
+                setHasChanges(false);
+              } finally {
+                setIsSubmitting(false);
+              }
+            }}
+            disabled={errors.length > 0 || isSubmitting}
+            className="flex flex-1 items-center gap-2 bg-blue-600 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Check className="h-4 w-4" />
+            {isSubmitting ? "Saving..." : "Save Changes"}
+          </Button>
+          <Button
+            onClick={() => {
+              setHasChanges(false);
+              setOriginalSlot(slot);
+              onUpdate(originalSlot);
+            }}
+            variant="outline"
+            disabled={isSubmitting}
+            className="flex items-center gap-2 border-blue-300 text-blue-600 hover:bg-blue-50 disabled:opacity-50"
+          >
+            ✕ Discard
+          </Button>
+        </div>
+      )}
+
       {pending && (
-        <div className="flex gap-2 border-t border-amber-200 pt-2">
+        <div className="flex gap-2 border-t border-amber-200 pt-3">
           <Button
             onClick={async () => {
               setIsSubmitting(true);

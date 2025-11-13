@@ -1,6 +1,7 @@
 import { initialSlotState, slotReducer } from "@/reducers/slot-reducer";
 import { useCreateSlot } from "@/services/add-slot";
 import { useDeleteSlot } from "@/services/delete-slot";
+import { EditSlotDto, useEditSlot } from "@/services/edit-slot";
 import { Slot } from "@/types";
 import { formatTimeToHHmm } from "@/utils";
 import { SlotHelpers } from "@/utils/slot-helpers";
@@ -13,6 +14,7 @@ export function useSlotManager(monthDayId: string, branchId: string) {
   const [state, dispatch] = useReducer(slotReducer, initialSlotState);
   const { mutate: deleteAppointmentSlot } = useDeleteSlot();
   const { mutate: createSlot } = useCreateSlot();
+  const { mutate: editSlot } = useEditSlot();
   const queryClient = useQueryClient();
 
   const initializeSlots = useCallback((slots: Slot[]) => {
@@ -127,6 +129,28 @@ export function useSlotManager(monthDayId: string, branchId: string) {
     ],
   );
 
+  const saveSlotChangesToApi = useCallback(
+    (slot: Slot) => {
+      // const updatedSlot = state.slots.find((s) => s.id === slot.id);
+      // if (!updatedSlot) return;
+      const editSlotDto = {
+        slotId: slot.id,
+        limit: slot.maxCapacity,
+        startTime: formatTimeToHHmm(slot.startTime),
+        endTime: formatTimeForInput(slot.endTime),
+      };
+      editSlot(editSlotDto as EditSlotDto, {
+        onSuccess: () => {
+          toast.success("Slot successfully updated");
+        },
+        onError: () => {
+          toast.error("Failed to update slot");
+        },
+      });
+    },
+    [editSlot],
+  );
+
   const validateTimeCollisions = useCallback(
     (updatedSlot: Slot): string[] => {
       const collisions: string[] = [];
@@ -225,6 +249,7 @@ export function useSlotManager(monthDayId: string, branchId: string) {
     validateTimeCollisions,
     addPendingSlot,
     addSlotToApi,
+    saveSlotChangesToApi,
 
     // Derived state
     hasChanges: state.slots.length > 0,

@@ -5,8 +5,6 @@ import { McwdDatePicker } from "@/components/mcwd-date-picker";
 import { MonthDay } from "@/types";
 import { useState } from "react";
 
-// TODO: should have store for current working day
-
 export default function AppointmentSettings() {
   const [selectedMonthDay, setSelectedMonthDay] = useState<MonthDay>();
 
