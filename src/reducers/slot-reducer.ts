@@ -14,6 +14,7 @@ export type SlotAction =
   | { type: "DELETE_SLOT"; payload: string }
   | { type: "ADDING_SLOT"; payload: Slot }
   | { type: "DELETE_PENDING_SLOT"; payload: string }
+  | { type: "RESET_PENDING_SLOT" }
   | { type: "SET_STATUS"; payload: SlotState["status"] }
   | { type: "ADD_ERROR"; payload: string }
   | { type: "CLEAR_ERRORS" };
@@ -70,6 +71,12 @@ export function slotReducer(state: SlotState, action: SlotAction): SlotState {
         pendingAddedSlots: state.pendingAddedSlots.filter(
           (s) => s.id !== action.payload,
         ),
+      };
+
+    case "RESET_PENDING_SLOT":
+      return {
+        ...state,
+        pendingAddedSlots: [],
       };
 
     case "SET_STATUS":

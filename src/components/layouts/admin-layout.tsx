@@ -1,4 +1,8 @@
+"use client";
+
+import { generateBreadcrumbs } from "@/utils";
 import { Separator } from "@radix-ui/react-separator";
+import { usePathname } from "next/navigation";
 import { PropsWithChildren } from "react";
 import {
   Breadcrumb,
@@ -12,6 +16,9 @@ import { SidebarTrigger } from "../ui/sidebar";
 import WithAdminSidebar from "../with-admin-sidebar";
 
 export default function AdminLayout({ children }: PropsWithChildren) {
+  const pathname = usePathname();
+  const breadcrumbs = generateBreadcrumbs(pathname);
+
   return (
     <div className="w-full font-sans dark:bg-black">
       <div className="flex min-h-screen">
@@ -26,14 +33,28 @@ export default function AdminLayout({ children }: PropsWithChildren) {
               />
               <Breadcrumb>
                 <BreadcrumbList>
-                  <BreadcrumbItem className="hidden md:block">
-                    {/* Pwede e dynamic dire */}
-                    <BreadcrumbLink href="#">Admin</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator className="hidden md:block" />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Appointments</BreadcrumbPage>
-                  </BreadcrumbItem>
+                  {breadcrumbs.map((breadcrumb, index) => {
+                    const isLast = index === breadcrumbs.length - 1;
+
+                    return (
+                      <div key={breadcrumb.href} className="flex items-center">
+                        <BreadcrumbItem
+                          className={index > 0 ? "hidden md:block" : ""}
+                        >
+                          {isLast ? (
+                            <BreadcrumbPage>{breadcrumb.name}</BreadcrumbPage>
+                          ) : (
+                            <BreadcrumbLink href={breadcrumb.href}>
+                              {breadcrumb.name}
+                            </BreadcrumbLink>
+                          )}
+                        </BreadcrumbItem>
+                        {!isLast && (
+                          <BreadcrumbSeparator className="hidden md:block" />
+                        )}
+                      </div>
+                    );
+                  })}
                 </BreadcrumbList>
               </Breadcrumb>
             </div>

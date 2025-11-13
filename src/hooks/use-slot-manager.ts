@@ -89,6 +89,10 @@ export function useSlotManager(monthDayId: string, branchId: string) {
     dispatch({ type: "ADDING_SLOT", payload: newSlot as Slot });
   }, [state.pendingAddedSlots, state.slots, dispatch]);
 
+  const resetPendingSlot = useCallback(() => {
+    dispatch({ type: "RESET_PENDING_SLOT" });
+  }, []);
+
   const addSlotToApi = useCallback(
     (slot: Slot) => {
       const newSlot = state.pendingAddedSlots.find((s) => s.id === slot.id);
@@ -131,13 +135,11 @@ export function useSlotManager(monthDayId: string, branchId: string) {
 
   const saveSlotChangesToApi = useCallback(
     (slot: Slot) => {
-      // const updatedSlot = state.slots.find((s) => s.id === slot.id);
-      // if (!updatedSlot) return;
       const editSlotDto = {
         slotId: slot.id,
         limit: slot.maxCapacity,
         startTime: formatTimeToHHmm(slot.startTime),
-        endTime: formatTimeForInput(slot.endTime),
+        endTime: formatTimeToHHmm(slot.endTime),
       };
       editSlot(editSlotDto as EditSlotDto, {
         onSuccess: () => {
@@ -150,6 +152,12 @@ export function useSlotManager(monthDayId: string, branchId: string) {
     },
     [editSlot],
   );
+
+  const onDiscard = useCallback(() => {
+    queryClient.invalidateQueries({
+      queryKey: ["appointment-slots", monthDayId, branchId],
+    });
+  }, [branchId, monthDayId, queryClient]);
 
   const validateTimeCollisions = useCallback(
     (updatedSlot: Slot): string[] => {
@@ -250,6 +258,8 @@ export function useSlotManager(monthDayId: string, branchId: string) {
     addPendingSlot,
     addSlotToApi,
     saveSlotChangesToApi,
+    onDiscard,
+    resetPendingSlot,
 
     // Derived state
     hasChanges: state.slots.length > 0,

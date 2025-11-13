@@ -30,6 +30,8 @@ export default function AppointmentSlotFields({
     addPendingSlot,
     addSlotToApi,
     saveSlotChangesToApi,
+    onDiscard,
+    resetPendingSlot,
   } = useSlotManager(monthDayId, branchId);
 
   useEffect(() => {
@@ -37,6 +39,10 @@ export default function AppointmentSlotFields({
       initializeSlots(slots);
     }
   }, [slots, initializeSlots]);
+
+  useEffect(() => {
+    resetPendingSlot();
+  }, [monthDayId]);
 
   const hasExistingSlots = localSlots && localSlots.length > 0;
   const hasPendingSlots = pendingAddedSlots && pendingAddedSlots.length > 0;
@@ -63,6 +69,7 @@ export default function AppointmentSlotFields({
           allSlots={localSlots || []}
           pendingAddedSlots={pendingAddedSlots}
           onSaveChanges={saveSlotChangesToApi}
+          onDiscardChanges={onDiscard}
         />
       ))}
       {pendingAddedSlots?.map((slot, index) => (

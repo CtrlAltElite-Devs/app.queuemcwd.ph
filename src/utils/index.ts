@@ -85,3 +85,20 @@ export const createNextDayTime = (
   nextDay.setHours(hours, minutes, 0, 0);
   return nextDay;
 };
+
+export const generateBreadcrumbs = (pathname: string) => {
+  const paths = pathname.split("/").filter((path) => path);
+
+  const breadcrumbs = paths.map((path, index) => {
+    const href = "/" + paths.slice(0, index + 1).join("/");
+    const name = path.charAt(0).toUpperCase() + path.slice(1);
+
+    return {
+      href,
+      name,
+      isCurrent: index === paths.length - 1,
+    };
+  });
+
+  return breadcrumbs;
+};

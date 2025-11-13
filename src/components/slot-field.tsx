@@ -9,7 +9,7 @@ import {
   timeToMinutes,
 } from "@/utils/slot-utils";
 import { Check, EyeOff } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaTrashCan } from "react-icons/fa6";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -25,6 +25,7 @@ interface SlotFieldProps {
   pending?: boolean;
   onAddSlot?: (slot: Slot) => void;
   onSaveChanges?: (slot: Slot) => void;
+  onDiscardChanges?: () => void;
 }
 
 export default function SlotField({
@@ -37,22 +38,20 @@ export default function SlotField({
   pendingAddedSlots,
   onAddSlot,
   onSaveChanges,
+  onDiscardChanges,
 }: SlotFieldProps) {
   const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [originalSlot, setOriginalSlot] = useState<Slot>(slot);
-
-  useEffect(() => {
-    setOriginalSlot(slot);
-  }, [slot]);
+  const initialSlotRef = useRef<Slot>(slot);
 
   const detectChanges = () => {
-    if (pending) return false;
     return (
-      slot.startTime !== originalSlot.startTime ||
-      slot.endTime !== originalSlot.endTime ||
-      slot.maxCapacity !== originalSlot.maxCapacity
+      formatTimeToHHmm(slot.startTime) !==
+        formatTimeToHHmm(initialSlotRef.current.startTime) ||
+      formatTimeToHHmm(slot.endTime) !==
+        formatTimeToHHmm(initialSlotRef.current.endTime) ||
+      slot.maxCapacity !== initialSlotRef.current.maxCapacity
     );
   };
 
@@ -156,6 +155,13 @@ export default function SlotField({
     if (!isNaN(capacity) && capacity >= 0) {
       onUpdate({ maxCapacity: capacity });
     }
+  };
+
+  const handleReset = () => {
+    console.log("reset called");
+    onDiscardChanges?.();
+    setHasChanges(false);
+    setErrors([]);
   };
 
   const availableCapacity = slot.maxCapacity - slot.booked;
@@ -324,7 +330,6 @@ export default function SlotField({
               setIsSubmitting(true);
               try {
                 onSaveChanges?.(slot);
-                setOriginalSlot(slot);
                 setHasChanges(false);
               } finally {
                 setIsSubmitting(false);
@@ -337,11 +342,7 @@ export default function SlotField({
             {isSubmitting ? "Saving..." : "Save Changes"}
           </Button>
           <Button
-            onClick={() => {
-              setHasChanges(false);
-              setOriginalSlot(slot);
-              onUpdate(originalSlot);
-            }}
+            onClick={() => handleReset()}
             variant="outline"
             disabled={isSubmitting}
             className="flex items-center gap-2 border-blue-300 text-blue-600 hover:bg-blue-50 disabled:opacity-50"
