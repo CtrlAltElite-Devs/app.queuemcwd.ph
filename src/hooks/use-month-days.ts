@@ -1,7 +1,7 @@
 import { useGetMonthDays } from "@/services/get-month-days";
 import { useBranchStore } from "@/stores/branch-store";
 import { MonthDay } from "@/types";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 export const useMonthDaysMap = (monthNumber: number) => {
   const { selectedBranch } = useBranchStore();
@@ -43,14 +43,13 @@ export const useMonthDaysMap = (monthNumber: number) => {
 };
 
 export const useDateToMonthDay = (monthDaysMap: Map<string, MonthDay>) => {
-  const getMonthDayFromDate = (date: Date): MonthDay | undefined => {
-    const key = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
-
-    const result = monthDaysMap.get(key);
-    // console.log("✅ Found monthDay:", result);
-
-    return result;
-  };
+  const getMonthDayFromDate = useCallback(
+    (date: Date): MonthDay | undefined => {
+      const key = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+      return monthDaysMap.get(key);
+    },
+    [monthDaysMap],
+  );
 
   return { getMonthDayFromDate };
 };

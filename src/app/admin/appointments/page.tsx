@@ -20,7 +20,7 @@ export default function AppointmentSettings() {
   return (
     <div className="space-y-6 px-4">
       <McwdDatePicker onDateSelect={handleSelectDate} />
-      <AppointmentSlotFields monthDayId={selectedMonthDay?.id} />
+      <AppointmentSlotFields monthDayId={selectedMonthDay?.id || ""} />
     </div>
   );
 }
