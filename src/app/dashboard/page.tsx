@@ -25,7 +25,7 @@ export default function Dashboard() {
   );
 
   useEffect(() => {
-    if (!selectedBranch) router.push("/select-branch");
+    if (!selectedBranch) router.push("/select-service-hub");
   }, [selectedBranch, router]);
 
   return (
