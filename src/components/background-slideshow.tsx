@@ -24,12 +24,9 @@ export default function BackgroundSlideShow({
   const [bgIndex, setBgIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
-  }, []);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setMounted(true), []);
 
-  // Rotate background every interval
   useEffect(() => {
     const id = setInterval(() => {
       setBgIndex((prev) => (prev + 1) % backgrounds.length);
@@ -40,18 +37,17 @@ export default function BackgroundSlideShow({
   if (!mounted) return null;
 
   const overlayColor =
-    typeof window !== "undefined"
-      ? resolvedTheme === "dark"
-        ? `rgba(0,0,0,${overlayOpacity})`
-        : `rgba(255,255,255,${overlayOpacity * 0.6})`
-      : "transparent";
+    resolvedTheme === "dark"
+      ? `rgba(0,0,0,${overlayOpacity})`
+      : `rgba(255,255,255,${overlayOpacity * 0.6})`;
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden">
+    <div className="relative w-full">
+      {/* Background Layer */}
       {backgrounds.map((src, index) => (
         <div
           key={src}
-          className={`duration-2000ms absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity ease-in-out ${
+          className={`fixed inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ease-in-out ${
             bgIndex === index ? "opacity-100" : "opacity-0"
           }`}
           style={{
@@ -62,11 +58,13 @@ export default function BackgroundSlideShow({
         />
       ))}
 
+      {/* Overlay */}
       <div
-        className="absolute inset-0 z-10 transition-colors duration-500"
+        className="fixed inset-0 z-10 transition-colors duration-500"
         style={{ backgroundColor: overlayColor }}
       />
 
+      {/* Content */}
       <div className="relative z-20">{children}</div>
     </div>
   );
