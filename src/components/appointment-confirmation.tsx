@@ -3,10 +3,17 @@
 import { Service } from "@/constants";
 import { useBranchStore } from "@/stores/branch-store";
 import { Appointment, Slot } from "@/types";
+import { formatTimeForDisplay } from "@/utils/slot-utils";
 import * as htmlToImage from "html-to-image";
 import { Download, X } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+
+const importantNotes = [
+  "Keep this code secure",
+  "Present code upon arrival",
+  "Arrive 10 minutes early",
+];
 
 interface AppointmentConfirmationProps {
   appointment: Appointment;
@@ -20,19 +27,37 @@ export default function AppointmentConfirmation({
   onClose,
 }: AppointmentConfirmationProps) {
   const receiptRef = useRef<HTMLDivElement>(null);
+  const [showX, setShowX] = useState(true);
   const { selectedBranch } = useBranchStore();
 
   const downloadReceipt = async () => {
-    if (receiptRef.current) {
-      try {
-        const dataUrl = await htmlToImage.toPng(receiptRef.current);
-        const link = document.createElement("a");
-        link.href = dataUrl;
-        link.download = `appointment-${appointment.appointmentCode}.png`;
-        link.click();
-      } catch (err) {
-        console.error("Failed to download receipt:", err);
-      }
+    if (!receiptRef.current) return;
+    setShowX(false);
+
+    const node = receiptRef.current;
+    const originalMargin = node.style.margin;
+    node.style.margin = "0";
+
+    try {
+      const node = receiptRef.current;
+      const dataUrl = await htmlToImage.toPng(node, {
+        width: node.scrollWidth,
+        height: node.scrollHeight,
+        style: {
+          transform: "scale(1)",
+          transformOrigin: "top left",
+        },
+      });
+
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = `appointment-${appointment.appointmentCode}.png`;
+      link.click();
+    } catch (err) {
+      console.error("Failed to download receipt:", err);
+    } finally {
+      node.style.margin = originalMargin;
+      setShowX(true);
     }
   };
 
@@ -52,13 +77,7 @@ export default function AppointmentConfirmation({
   const formatTimeSpan = (startTime: Date, endTime: Date) => {
     const start = new Date(startTime);
     const end = new Date(endTime);
-    const fmt = (d: Date) =>
-      d.toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      });
-    return `${fmt(start)} TO ${fmt(end)}`;
+    return `${formatTimeForDisplay(start)} TO ${formatTimeForDisplay(end)}`;
   };
 
   return (
@@ -68,12 +87,14 @@ export default function AppointmentConfirmation({
         ref={receiptRef}
       >
         {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute -top-2 -right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-600 text-white shadow-lg transition-colors hover:bg-gray-700"
-        >
-          <X className="h-4 w-4" />
-        </button>
+        {showX && (
+          <button
+            onClick={onClose}
+            className="absolute -top-2 -right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-600 text-white shadow-lg transition-colors hover:bg-gray-700"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
 
         {/* Header */}
         <div className="rounded-t-lg bg-blue-600 p-4 text-white">
@@ -147,13 +168,13 @@ export default function AppointmentConfirmation({
           </div>
 
           <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
-            <h3 className="mb-2 text-sm font-semibold text-yellow-800">
+            <h3 className="text-md mb-2 font-semibold text-yellow-800 md:text-lg">
               Important Notes
             </h3>
-            <ul className="space-y-1 text-xs text-yellow-700">
-              <li>• Keep this code secure</li>
-              <li>• Present code upon arrival</li>
-              <li>• Arrive 10 minutes early</li>
+            <ul className="space-y-1 text-sm text-yellow-700">
+              {importantNotes.map((note, idx) => (
+                <li key={idx}>• {note}</li>
+              ))}
             </ul>
           </div>
         </div>
@@ -165,7 +186,7 @@ export default function AppointmentConfirmation({
           </p>
           <button
             onClick={downloadReceipt}
-            className="ml-auto flex items-center gap-1 rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
+            className="bg-primary ml-auto flex items-center gap-1 rounded px-3 py-1 text-xs font-medium text-white"
           >
             <Download className="h-3 w-3" />
             Download
