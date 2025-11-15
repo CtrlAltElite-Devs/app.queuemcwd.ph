@@ -116,13 +116,16 @@ export default function AppointmentConfirmation({
                 <div>
                   <p className="text-xs text-gray-600">Date</p>
                   <p className="font-semibold text-gray-900">
-                    {formatDate(slot.startTime)}
+                    {formatDate(slot.startTime as Date)}
                   </p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-600">Time</p>
                   <p className="font-semibold text-gray-900">
-                    {formatTimeSpan(slot.startTime, slot.endTime)}
+                    {formatTimeSpan(
+                      slot.startTime as Date,
+                      slot.endTime as Date,
+                    )}
                   </p>
                 </div>
 

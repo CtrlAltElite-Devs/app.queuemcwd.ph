@@ -1,5 +1,5 @@
 import { MonthDay } from "@/types";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export interface CalendarSelection {
   selectedDate: Date | undefined;
@@ -15,16 +15,19 @@ export const useCalendarSelection = (
     MonthDay | undefined
   >();
 
-  const handleDateSelect = (date: Date | undefined) => {
-    setSelectedDate(date);
+  const handleDateSelect = useCallback(
+    (date: Date | undefined) => {
+      setSelectedDate(date);
 
-    if (date) {
-      const monthDay = getMonthDayFromDate(date);
-      setSelectedMonthDay(monthDay);
-    } else {
-      setSelectedMonthDay(undefined);
-    }
-  };
+      if (date) {
+        const monthDay = getMonthDayFromDate(date);
+        setSelectedMonthDay(monthDay);
+      } else {
+        setSelectedMonthDay(undefined);
+      }
+    },
+    [getMonthDayFromDate],
+  );
 
   return {
     selectedDate,
