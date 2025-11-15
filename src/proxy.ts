@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { redirectToLogin, validateToken } from "./services/validate-token";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const cookies = request.cookies.getAll();
 
   // Debug
