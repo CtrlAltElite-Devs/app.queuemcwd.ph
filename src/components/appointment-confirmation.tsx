@@ -3,6 +3,7 @@
 import { Service } from "@/constants";
 import { useBranchStore } from "@/stores/branch-store";
 import { Appointment, Slot } from "@/types";
+import { formatTimeForDisplay } from "@/utils/slot-utils";
 import * as htmlToImage from "html-to-image";
 import { Download, X } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
@@ -52,13 +53,7 @@ export default function AppointmentConfirmation({
   const formatTimeSpan = (startTime: Date, endTime: Date) => {
     const start = new Date(startTime);
     const end = new Date(endTime);
-    const fmt = (d: Date) =>
-      d.toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      });
-    return `${fmt(start)} TO ${fmt(end)}`;
+    return `${formatTimeForDisplay(start)} TO ${formatTimeForDisplay(end)}`;
   };
 
   return (

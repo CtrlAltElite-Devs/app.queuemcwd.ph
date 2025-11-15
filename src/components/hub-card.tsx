@@ -1,27 +1,45 @@
 import { Branch } from "@/types";
 import { MapPin } from "lucide-react";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+
+const branchImages: Record<string, string> = {
+  MAIN: "/images/main_office.png",
+  SMCL: "/images/sm_consolacion_hub.jpg",
+};
 
 type HubCardProps = Branch & {
   onSelect: (branch: Branch) => void;
 };
 
 export default function HubCard(props: HubCardProps) {
+  const imageSrc = branchImages[props.branchCode];
+
   return (
     <Card
       onClick={() => props.onSelect(props)}
-      className="w-full max-w-sm cursor-pointer rounded-xl text-center transition-all hover:shadow-lg hover:-translate-y-1 p-4 sm:p-6 border border-gray-200"
+      className="border-secondary w-full max-w-sm cursor-pointer rounded-xl border p-0 text-center transition-all hover:scale-103 hover:shadow-lg"
     >
-      <CardHeader className="flex flex-col items-center p-0 mb-3 sm:mb-4">
-        <MapPin className="text-blue-500 w-7 h-7 sm:w-8 sm:h-8 mb-2" />
-        <CardTitle className="text-lg sm:text-xl font-semibold">
+      {/* Card Image */}
+      <div className="relative mb-4 h-32 w-full overflow-hidden rounded-t-lg">
+        <Image
+          src={imageSrc}
+          alt={`${props.name} Logo`}
+          fill
+          className="object-cover"
+        />
+      </div>
+
+      <CardHeader className="flex flex-col items-center p-0 sm:mb-4">
+        <MapPin className="text-primary size-6 sm:size-8" />
+        <CardTitle className="sm:text-md text-lg font-semibold">
           {props.name}
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="p-0 text-gray-600 space-y-1 flex flex-col items-center">
+      <CardContent className="flex flex-col items-center space-y-4 p-4 pt-0 text-gray-600">
         <p className="text-sm sm:text-base">{props.address}</p>
-        <p className="text-xs text-gray-500">{props.branchCode}</p>
+        <p className="text-xs font-bold">{props.branchCode}</p>
       </CardContent>
     </Card>
   );

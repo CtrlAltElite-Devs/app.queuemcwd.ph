@@ -1,5 +1,5 @@
 import { useBranchStore } from "@/stores/branch-store";
-import { Building } from "lucide-react";
+import { RefreshCcwDot } from "lucide-react";
 import { useRouter } from "next/navigation";
 import NavBar from "./containers/navbar";
 import { Button } from "./ui/button";
@@ -33,7 +33,8 @@ export default function WithNavbar() {
               onClick={handleChangeBranch}
               className="hidden h-9 sm:flex"
             >
-              Change Branch
+              <RefreshCcwDot className="h-5 w-5" />
+              {selectedBranch.name}
             </Button>
 
             <Button
@@ -41,7 +42,7 @@ export default function WithNavbar() {
               onClick={handleChangeBranch}
               className="flex h-9 w-9 items-center justify-center sm:hidden"
             >
-              <Building className="h-5 w-5" />
+              <RefreshCcwDot className="h-5 w-5" />
             </Button>
 
             <ModeToggle />
