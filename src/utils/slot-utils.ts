@@ -22,18 +22,16 @@ export function isSlotAvailable(slot: Slot): boolean {
   return slot.isActive && slot.booked < slot.maxCapacity;
 }
 
-export function formatSlotTime(time: Date) {
+export function formatSlotTime(time: Date | string) {
   const dateObj = typeof time === "string" ? new Date(time) : time;
 
-  const options: Intl.DateTimeFormatOptions = {
+  return dateObj.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
-  };
-
-  return dateObj.toLocaleTimeString(undefined, options);
+    timeZone: "UTC", // <- treat the time as UTC but display it "as-is"
+  });
 }
-
 /**
  * Convert ISO date string to 24-hour format for time inputs
  * Example: "2025-11-12T01:00:00.000Z" → "01:00"
@@ -50,8 +48,8 @@ export function formatTimeForInput(time: Date | string): string {
   }
 
   // Use local time (not UTC) since time inputs use local time
-  const hours = dateObj.getHours().toString().padStart(2, "0");
-  const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+  const hours = dateObj.getUTCHours().toString().padStart(2, "0");
+  const minutes = dateObj.getUTCMinutes().toString().padStart(2, "0");
 
   return `${hours}:${minutes}`;
 }
@@ -72,6 +70,7 @@ export function formatTimeForDisplay(time: Date | string): string {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
+    timeZone: "UTC",
   };
 
   return dateObj.toLocaleTimeString("en-US", options);

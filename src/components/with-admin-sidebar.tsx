@@ -14,7 +14,7 @@ export default function WithAdminSidebar() {
 
   // Should do a full page load bai
   if (isLoading || !branches) {
-    return <p>Fucking loading...</p>;
+    return <p>Loading branch...</p>;
   }
 
   return (

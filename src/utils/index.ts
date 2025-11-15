@@ -45,8 +45,8 @@ export function formatTimeToHHmm(dateOrString: Date | string): string {
       return "00:00";
     }
 
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const hours = date.getUTCHours().toString().padStart(2, "0");
+    const minutes = date.getUTCMinutes().toString().padStart(2, "0");
 
     console.log(`Formatting: ${dateOrString} -> ${hours}:${minutes}`);
     return `${hours}:${minutes}`;
