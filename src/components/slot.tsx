@@ -34,13 +34,13 @@ export default function AppointmentSlot({
       aria-disabled={isDisabled}
       className={cn(
         "rounded-2xl border p-4 transition-all duration-200",
-        "flex min-h-[4rem] min-w-[6rem] flex-col items-center justify-center gap-2",
+        "flex min-h-16 min-w-24 flex-col items-center justify-center gap-2",
         "text-sm lg:text-base",
         isDisabled
-          ? "cursor-not-allowed border-gray-300 bg-gray-100 text-gray-400 opacity-60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-500"
+          ? "bg-secondary cursor-not-allowed opacity-60"
           : isSelected
             ? "bg-primary border-primary text-primary-foreground scale-105 shadow-lg"
-            : "hover:border-primary border-gray-300 bg-white text-gray-900 hover:scale-102 hover:shadow-md dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100",
+            : "hover:border-primary dark:bg-background bg-white hover:scale-102 hover:shadow-md",
       )}
       aria-label={`${slot.startTime} - ${slot.endTime}, ${available} slots available`}
     >
