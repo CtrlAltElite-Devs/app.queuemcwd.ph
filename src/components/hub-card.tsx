@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 const branchImages: Record<string, string> = {
-  MAIN: "/images/main_office.png",
+  MAIN: "/images/main_office.jpg",
   SMCL: "/images/sm_consolacion_hub.jpg",
 };
 
@@ -18,15 +18,15 @@ export default function HubCard(props: HubCardProps) {
   return (
     <Card
       onClick={() => props.onSelect(props)}
-      className="border-secondary w-full max-w-sm cursor-pointer rounded-xl border p-0 text-center transition-all hover:scale-103 hover:shadow-lg"
+      className="border-secondary w-full max-w-sm cursor-pointer overflow-hidden rounded-xl border p-0 text-center transition-all hover:scale-103 hover:shadow-lg"
     >
       {/* Card Image */}
-      <div className="relative mb-4 h-32 w-full overflow-hidden rounded-t-lg">
+      <div className="relative h-32 w-full overflow-hidden rounded-t-lg">
         <Image
           src={imageSrc}
           alt={`${props.name} Logo`}
           fill
-          className="object-cover"
+          className="object-cover object-top"
         />
       </div>
 

@@ -10,7 +10,7 @@ type BackgroundSlideShowProps = PropsWithChildren<{
 }>;
 
 const backgrounds = [
-  "/images/main_office.png",
+  "/images/main_office.jpg",
   "/images/sm_consolacion_hub.jpg",
 ];
 

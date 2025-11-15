@@ -2,8 +2,8 @@ import Footer from "./containers/footer";
 
 export default function WithFooter() {
   return (
-    <div>
+    <footer>
       <Footer />
-    </div>
+    </footer>
   );
 }

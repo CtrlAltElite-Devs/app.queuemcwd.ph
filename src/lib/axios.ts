@@ -8,7 +8,7 @@ export const api = Axios.create({
 
 api.interceptors.request.use((config) => {
   const accessToken = ZustandCookieParser.parseFromBrowser();
-  console.log("token from axios: ", accessToken);
+  // console.log("token from axios: ", accessToken);
 
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;

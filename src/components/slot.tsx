@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useBranchStore } from "@/stores/branch-store";
 import { Slot } from "@/types";
 import { formatSlotTime } from "@/utils/slot-utils";
 import { CheckCircle2, Users } from "lucide-react";
@@ -16,11 +17,15 @@ export default function AppointmentSlot({
   onSelect,
   isSelected,
 }: AppointmentSlotProps) {
+  const { selectedBranch } = useBranchStore();
+
   const available = slot.maxCapacity - slot.booked;
   const isFull = available === 0;
   const isDisabled = !slot.isActive || isFull;
 
   const handleClick = (e: React.MouseEvent) => {
+    if (!selectedBranch) return;
+
     if (isDisabled) {
       e.stopPropagation();
       return;
@@ -35,12 +40,12 @@ export default function AppointmentSlot({
       className={cn(
         "rounded-2xl border p-4 transition-all duration-200",
         "flex min-h-16 min-w-24 flex-col items-center justify-center gap-2",
-        "text-sm lg:text-base",
+        "text-sm shadow-md lg:text-base",
         isDisabled
           ? "bg-secondary cursor-not-allowed opacity-60"
           : isSelected
             ? "bg-primary border-primary text-primary-foreground scale-105 shadow-lg"
-            : "hover:border-primary dark:bg-background bg-white hover:scale-102 hover:shadow-md",
+            : "hover:border-primary dark:bg-background bg-white hover:scale-102 hover:cursor-pointer hover:shadow-lg",
       )}
       aria-label={`${slot.startTime} - ${slot.endTime}, ${available} slots available`}
     >
