@@ -19,10 +19,20 @@ const importantNotes = [
 export default function Dashboard() {
   const router = useRouter();
   const [, setSelectedDate] = useState<Date | undefined>();
-  const { selectedBranch } = useBranchStore();
   const [selectedMonthDay, setSelectedMonthDay] = useState<
     MonthDay | undefined
   >();
+
+  const selectedBranch = useBranchStore((s) => s.selectedBranch);
+  const hasHydrated = useBranchStore((s) => s.hasHydrated);
+
+  useEffect(() => {
+    if (!hasHydrated) return;
+
+    if (!selectedBranch) {
+      router.replace("/select-service-hub");
+    }
+  }, [selectedBranch, hasHydrated, router]);
 
   const handleDateSelect = useCallback(
     (date: Date | undefined, monthDay: MonthDay | undefined) => {
@@ -37,9 +47,11 @@ export default function Dashboard() {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, []);
 
-  useEffect(() => {
-    if (!selectedBranch) router.push("/select-service-hub");
-  }, [selectedBranch, router]);
+  // useEffect(() => {
+  //   if (selectedBranch === undefined) {
+  //     router.replace("/select-service-hub");
+  //   }
+  // }, [selectedBranch, router]);
 
   return (
     <>
