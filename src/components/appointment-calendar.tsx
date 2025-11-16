@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { useBranchStore } from "@/stores/branch-store";
 import { MonthDay } from "@/types";
 import {
-  calendarModifiersStyles,
+  calendarModifiersClassNames,
   createCalendarModifiers,
 } from "@/utils/calendar-modifiers";
 import { getNextWorkingDay } from "@/utils/next-working-day";
@@ -89,7 +89,9 @@ export default function AppointmentCalendar({
   if (error) {
     return (
       <div className="flex h-32 flex-col items-center justify-center space-y-2">
-        <div className="text-lg text-red-600">Error loading calendar data</div>
+        <div className="text-lg text-[#B50505]">
+          Error loading calendar data
+        </div>
         <button
           onClick={() => refetch()}
           className="rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
@@ -116,9 +118,10 @@ export default function AppointmentCalendar({
           numberOfMonths={1}
           onMonthChange={handleMonthChange}
           showOutsideDays={false}
-          className="w-full max-w-md gap-x-1 gap-y-2 rounded-3xl border p-4 text-lg shadow-lg [--cell-size:2.75rem] sm:max-w-sm sm:gap-x-1 sm:text-base sm:[--cell-size:2.5rem] md:gap-x-3 md:text-xl md:[--cell-size:3rem]"
+          className="dark:border-secondary dark:bg-card w-full max-w-md gap-x-1 gap-y-2 rounded-3xl border p-4 text-lg shadow-xl [--cell-size:2.75rem] sm:max-w-sm sm:gap-x-1 sm:text-base sm:[--cell-size:2.5rem] md:gap-x-3 md:text-xl md:[--cell-size:3rem]"
           modifiers={modifiers}
-          modifiersStyles={calendarModifiersStyles}
+          // modifiersStyles={calendarModifiersStyles}
+          modifiersClassNames={calendarModifiersClassNames}
         />
       </div>
     </div>

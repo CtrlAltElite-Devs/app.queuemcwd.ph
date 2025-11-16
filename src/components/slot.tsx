@@ -60,7 +60,7 @@ export default function AppointmentSlot({
           </>
         ) : (
           <>
-            <Users className="h-4 w-4 text-green-500 opacity-50" />
+            <Users className="h-4 w-4 text-[#006605] opacity-50 dark:text-[#DDFFAB]" />
             <span className="opacity-80">{available} available</span>
           </>
         )}

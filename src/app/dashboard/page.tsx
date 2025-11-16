@@ -47,12 +47,6 @@ export default function Dashboard() {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, []);
 
-  // useEffect(() => {
-  //   if (selectedBranch === undefined) {
-  //     router.replace("/select-service-hub");
-  //   }
-  // }, [selectedBranch, router]);
-
   return (
     <>
       <BackgroundSlideShow blur={50} overlayOpacity={0.8} interval={15000}>

@@ -92,7 +92,7 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
 
     return (
       <div className="flex h-32 items-center justify-center">
-        <div className="text-center text-lg text-red-600">{message}</div>
+        <div className="text-center text-lg text-[#B50505]">{message}</div>
       </div>
     );
   }

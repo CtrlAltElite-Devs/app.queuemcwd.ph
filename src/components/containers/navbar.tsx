@@ -26,7 +26,7 @@ export default function NavBar({
           height={35}
         />
         <h1
-          className="truncate text-base font-semibold text-white sm:text-base md:text-lg lg:text-xl"
+          className="truncate text-base font-medium text-white sm:text-base md:text-lg lg:text-xl"
           style={{ lineHeight: "1.2" }}
         >
           {title}
