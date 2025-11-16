@@ -1,3 +1,4 @@
+// app/layout.tsx
 import AppProvider from "@/lib/providers";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -20,17 +21,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <main>
-          <AppProvider>{children}</AppProvider>
-        </main>
+        <AppProvider>{children}</AppProvider>
       </body>
     </html>
   );

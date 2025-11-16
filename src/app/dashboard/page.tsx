@@ -33,6 +33,11 @@ export default function Dashboard() {
   );
 
   useEffect(() => {
+    // Scroll to top on mount
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, []);
+
+  useEffect(() => {
     if (!selectedBranch) router.push("/select-service-hub");
   }, [selectedBranch, router]);
 

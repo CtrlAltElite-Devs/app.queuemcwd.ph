@@ -10,20 +10,22 @@ import { Branch } from "@/types";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function SelectServiceHubPage() {
   const router = useRouter();
   const { data: branches = [], isLoading, isError } = useGetBranches();
-  const { setBranch, selectedBranch } = useBranchStore();
+  const { setBranch } = useBranchStore();
+  const [isNavigating, setIsNavigating] = useState(false);
 
   useEffect(() => {
-    if (selectedBranch) router.push("/dashboard");
-  }, [selectedBranch, router]);
+    setBranch(undefined);
+  }, [setBranch]);
 
   const handleSelect = (branch: Branch) => {
+    setIsNavigating(true);
     setBranch(branch);
-    router.push("/");
+    router.push("/dashboard");
   };
 
   return (
@@ -63,7 +65,7 @@ export default function SelectServiceHubPage() {
             <div
               className={cn(
                 "flex w-full flex-wrap justify-center gap-4 px-4 transition-opacity duration-300",
-                selectedBranch && "pointer-events-none opacity-80",
+                isNavigating && "pointer-events-none opacity-80",
               )}
             >
               {branches.map((b: Branch) => (
