@@ -4,7 +4,7 @@ import WithNavbar from "../with-navbar";
 
 export default function MainLayout({ children }: PropsWithChildren) {
   return (
-    <div className="bg-zinc-50 font-sans dark:bg-black">
+    <div className="w-full font-sans">
       <div className="flex min-h-screen flex-col">
         <WithNavbar />
         <main className="flex flex-1 flex-col items-center justify-center gap-10">

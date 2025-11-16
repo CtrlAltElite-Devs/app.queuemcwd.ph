@@ -7,6 +7,7 @@ import { useBranchStore } from "@/stores/branch-store";
 import { Appointment, MonthDay, Slot } from "@/types";
 import { getNextWorkingDay } from "@/utils/next-working-day";
 import { useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { MdEventAvailable } from "react-icons/md";
@@ -70,27 +71,37 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
     error,
   } = useGetAppointmentSlots(dayId, selectedBranch?.id);
 
-  if (!currentMonthDay || monthDaysLoading || slotsLoading) {
+  if (!currentMonthDay || monthDaysLoading || slotsLoading || !selectedBranch) {
     const placeholderCount = 8; // 2 rows × 4 columns
 
     return (
       <div className="space-y-4">
         {/* Header skeleton */}
-        <Skeleton className="h-6 w-1/3 rounded-md bg-gray-200" />
+        <Skeleton className="bg-background/30 h-6 w-1/3 rounded-md" />
         <SlotsGridSkeleton placeholderCount={placeholderCount} />
       </div>
     );
   }
 
   if (error) {
+    const axiosError = error as AxiosError<{ message?: string }>;
+    const message =
+      axiosError.response?.data?.message ||
+      axiosError.message ||
+      "An unexpected error occurred.";
+
     return (
       <div className="flex h-32 items-center justify-center">
-        <div className="text-lg text-red-600">Error loading slots</div>
+        <div className="text-center text-lg text-red-600">{message}</div>
       </div>
     );
   }
 
   if (slots.length === 0) {
+    if (!selectedBranch) {
+      return <div />;
+    }
+
     return (
       <div className="flex h-32 items-center justify-center">
         <div className="text-lg text-gray-500">
@@ -122,19 +133,21 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
       {/* Temporary rani na indicator  */}
       <div className="flex items-center gap-3">
         <MdEventAvailable size={20} />
-        <h2 className="text-md dark:text-primary-foreground font-semibold">
+        <p className="text-md dark:text-primary-foreground">
           Available Slots for{" "}
-          {currentMonthDay
-            ? format(
-                new Date(
-                  currentMonthDay.year,
-                  currentMonthDay.month - 1,
-                  currentMonthDay.day,
-                ),
-                "MMMM d, yyyy",
-              )
-            : ""}
-        </h2>
+          <span className="font-semibold">
+            {currentMonthDay
+              ? format(
+                  new Date(
+                    currentMonthDay.year,
+                    currentMonthDay.month - 1,
+                    currentMonthDay.day,
+                  ),
+                  "MMMM d, yyyy",
+                )
+              : ""}
+          </span>
+        </p>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {slots.map((slot) => (

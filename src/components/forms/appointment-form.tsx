@@ -98,7 +98,7 @@ export default function AppointmentForm({
       {/* Submit Button */}
       <Button
         type="submit"
-        className="flex w-full items-center justify-center gap-2"
+        className="flex w-full items-center justify-center gap-2 hover:cursor-pointer"
         disabled={isPending}
       >
         {isPending && <LoaderCircle className="h-4 w-4 animate-spin" />}

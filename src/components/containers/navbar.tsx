@@ -17,8 +17,8 @@ export default function NavBar({
       <Image
         src="/images/mcwd_logo.png"
         alt="official_logo"
-        width={25}
-        height={25}
+        width={35}
+        height={35}
       />
       <h1
         className="text-base font-semibold text-white sm:text-base md:text-lg lg:text-xl"

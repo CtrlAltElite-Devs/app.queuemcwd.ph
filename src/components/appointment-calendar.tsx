@@ -4,6 +4,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCalendarSelection } from "@/hooks/use-calendar-selection";
 import { useDateToMonthDay, useMonthDaysMap } from "@/hooks/use-month-days";
+import { cn } from "@/lib/utils";
+import { useBranchStore } from "@/stores/branch-store";
 import { MonthDay } from "@/types";
 import {
   calendarModifiersStyles,
@@ -25,6 +27,7 @@ export default function AppointmentCalendar({
 }: AppointmentCalendarProps) {
   const today = startOfDay(new Date());
   const [currentMonth, setCurrentMonth] = useState<Date>(today);
+  const { selectedBranch } = useBranchStore();
 
   const { monthDaysMap, isLoading, error, refetch } = useMonthDaysMap(
     currentMonth.getMonth() + 1,
@@ -99,12 +102,17 @@ export default function AppointmentCalendar({
 
   return (
     <div className="space-y-4">
-      <div className="transition-transform duration-200">
+      <div
+        className={cn(
+          "transition-all duration-300",
+          !selectedBranch && "pointer-events-none opacity-40",
+        )}
+      >
         <Calendar
           mode="single"
           selected={selectedDate}
           onSelect={handleSelect}
-          month={currentMonth} // use controlled month to avoid reset
+          month={currentMonth}
           numberOfMonths={1}
           onMonthChange={handleMonthChange}
           showOutsideDays={false}

@@ -1,19 +1,22 @@
+import { IconType } from "react-icons/lib";
+
 export type BaseEntity = {
   id: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export type Entity<T> = BaseEntity & T;
 
 export type Slot = Entity<{
   dayId: string;
-  startTime: Date;
-  endTime: Date;
+  startTime: Date | string;
+  endTime: Date | string;
   isActive: boolean;
   booked: number;
   maxCapacity: number;
-  branchId: string;
+  branch: Branch;
+  monthDay: MonthDay;
 }>;
 
 export type MonthDay = Entity<{
@@ -46,3 +49,19 @@ export type Branch = Entity<{
   branchCode: string;
   address: string;
 }>;
+
+export type Navigation = {
+  icon: IconType;
+  url: string;
+  name: string;
+};
+
+export type Account = {
+  email: string;
+  password: string;
+};
+
+export type Admin = Account & {
+  role: string;
+  branchId: string;
+};

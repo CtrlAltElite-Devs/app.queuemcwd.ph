@@ -1,19 +1,5 @@
 import { Slot } from "@/types";
-
-/**
- * Load slots from JSON data
- * Later, this can be replaced with an API call
- */
-export async function loadSlots(dayId: string): Promise<Slot[]> {
-  try {
-    const response = await fetch(`http://localhost:3001/slots?dayId=${dayId}`);
-    const data: Slot[] = await response.json(); // data is already an array
-    return data;
-  } catch (error) {
-    console.error("[v0] Error loading slots:", error);
-    return [];
-  }
-}
+import { formatTimeToHHmm } from ".";
 
 /**
  * Get available slots count for a specific day
@@ -36,14 +22,95 @@ export function isSlotAvailable(slot: Slot): boolean {
   return slot.isActive && slot.booked < slot.maxCapacity;
 }
 
-export function formatSlotTime(time: Date) {
+export function formatSlotTime(time: Date | string) {
   const dateObj = typeof time === "string" ? new Date(time) : time;
+
+  return dateObj.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "UTC", // <- treat the time as UTC but display it "as-is"
+  });
+}
+/**
+ * Convert ISO date string to 24-hour format for time inputs
+ * Example: "2025-11-12T01:00:00.000Z" → "01:00"
+ * Example: "2025-11-12T14:30:00.000Z" → "14:30"
+ */
+export function formatTimeForInput(time: Date | string): string {
+  if (!time) return "";
+
+  const dateObj = typeof time === "string" ? new Date(time) : time;
+
+  if (isNaN(dateObj.getTime())) {
+    console.warn("Invalid date:", time);
+    return "";
+  }
+
+  // Use local time (not UTC) since time inputs use local time
+  const hours = dateObj.getUTCHours().toString().padStart(2, "0");
+  const minutes = dateObj.getUTCMinutes().toString().padStart(2, "0");
+
+  return `${hours}:${minutes}`;
+}
+
+/**
+ * For display - shows 12-hour format with AM/PM
+ * Example: "2025-11-12T01:00:00.000Z" → "1:00 AM"
+ * Example: "2025-11-12T14:30:00.000Z" → "2:30 PM"
+ */
+export function formatTimeForDisplay(time: Date | string): string {
+  const dateObj = typeof time === "string" ? new Date(time) : time;
+
+  if (isNaN(dateObj.getTime())) {
+    return "Invalid Time";
+  }
 
   const options: Intl.DateTimeFormatOptions = {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
+    timeZone: "UTC",
   };
 
-  return dateObj.toLocaleTimeString(undefined, options);
+  return dateObj.toLocaleTimeString("en-US", options);
 }
+
+/**
+ * For DURATION CALCULATION - calculates time difference
+ */
+export const calculateDuration = (
+  startTime: Date | string,
+  endTime: Date | string,
+): string => {
+  const startTimeStr = isTimeFormat(startTime)
+    ? startTime
+    : formatTimeToHHmm(startTime);
+
+  const endTimeStr = isTimeFormat(endTime)
+    ? endTime
+    : formatTimeToHHmm(endTime);
+
+  const startMinutes = timeToMinutes(startTimeStr as string);
+  const endMinutes = timeToMinutes(endTimeStr as string);
+  const totalMinutes = endMinutes - startMinutes;
+
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (hours > 0) {
+    return `${hours}h ${minutes > 0 ? `${minutes}m` : ""}`.trim();
+  }
+  return `${minutes}m`;
+};
+
+export const timeToMinutes = (timeStr: string): number => {
+  const [hours, minutes] = timeStr.split(":").map(Number);
+  return hours * 60 + minutes;
+};
+
+export const isTimeFormat = (time: unknown): boolean => {
+  return (
+    typeof time === "string" && /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(time)
+  );
+};
