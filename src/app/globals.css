@@ -41,6 +41,8 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-working-day: var(--working-day);
+  --color-non-working-day: var(--non-working-day);
 }
 
 :root {
@@ -76,6 +78,8 @@
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.708 0 0);
+  --working-day: oklch(0.9562 0.1132 126.35);
+  --non-working-day: oklch(0.6368 0.2078 25.33 / 20%);
 }
 
 .dark {
@@ -110,6 +114,8 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.439 0 0);
+  --working-day: oklch(0.7949 0.1854 129.13);
+  --non-working-day: oklch(0.5771 0.2152 27.33 / 25%);
 }
 
 @layer base {

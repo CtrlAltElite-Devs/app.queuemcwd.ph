@@ -3,6 +3,9 @@
 import AppointmentCalendar from "@/components/appointment-calendar";
 import AppointmentSlots from "@/components/appointment-slots";
 import BackgroundSlideShow from "@/components/background-slideshow";
+import { CalendarLegend } from "@/components/calendar-legend";
+import { FABDialogCalendarLegend } from "@/components/fab-dialog-calendar-legend";
+import ImportantNotesSection from "@/components/important-notes-section";
 import MainLayout from "@/components/layouts/main-layout";
 import { useBranchStore } from "@/stores/branch-store";
 import { MonthDay } from "@/types";
@@ -43,7 +46,6 @@ export default function Dashboard() {
   );
 
   useEffect(() => {
-    // Scroll to top on mount
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, []);
 
@@ -51,27 +53,33 @@ export default function Dashboard() {
     <>
       <BackgroundSlideShow blur={50} overlayOpacity={0.8} interval={15000}>
         <MainLayout>
-          <div className="flex w-full max-w-6xl flex-col gap-6 px-4 md:flex-row">
-            <div className="mx-auto flex-1">
-              <AppointmentCalendar onDateSelect={handleDateSelect} />
-            </div>
+          <div className="flex w-full max-w-6xl flex-col gap-6 px-4">
+            <div className="hidden w-full gap-6 lg:flex">
+              <div className="bg-background/40 fixed right-6 bottom-18 z-50 flex flex-col rounded-lg p-2 shadow-lg">
+                <h1 className="mt-2 ml-4 text-sm font-semibold">Legend</h1>
+                <CalendarLegend />
+              </div>
 
-            <div className="flex-1 space-y-4">
-              <AppointmentSlots monthDay={selectedMonthDay} />
+              {/* Calendar in CENTER */}
+              <div className="flex-1">
+                <AppointmentCalendar onDateSelect={handleDateSelect} />
+              </div>
 
-              <Separator className="my-4 h-px w-full bg-gray-300 dark:bg-gray-600" />
-
-              <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
-                <h3 className="text-md mb-2 font-semibold text-yellow-800 md:text-lg">
-                  Important Notes
-                </h3>
-                <ul className="space-y-1 text-sm text-yellow-700">
-                  {importantNotes.map((note, idx) => (
-                    <li key={idx}>• {note}</li>
-                  ))}
-                </ul>
+              <div className="flex-1 space-y-4">
+                <AppointmentSlots monthDay={selectedMonthDay} />
+                <Separator className="my-4 h-px w-full bg-gray-300 dark:bg-gray-600" />
+                <ImportantNotesSection importantNotes={importantNotes} />
               </div>
             </div>
+
+            {/* Mobile layout */}
+            <div className="flex flex-col items-center gap-6 lg:hidden">
+              <AppointmentCalendar onDateSelect={handleDateSelect} />
+              <AppointmentSlots monthDay={selectedMonthDay} />
+              <Separator className="my-4 h-px w-full bg-gray-300 dark:bg-gray-600" />
+              <ImportantNotesSection importantNotes={importantNotes} />
+            </div>
+            <FABDialogCalendarLegend />
           </div>
         </MainLayout>
       </BackgroundSlideShow>

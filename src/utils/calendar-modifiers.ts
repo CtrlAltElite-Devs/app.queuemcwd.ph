@@ -105,9 +105,8 @@ export const calendarModifiersClassNames = {
   selected: "bg-primary text-white font-semibold rounded-lg dark:bg-blue-400",
   today:
     "border-2 border-blue-500 font-semibold rounded-lg dark:border-blue-400",
-  working: "bg-[#DDFFAB] rounded-lg dark:bg-[#96d23d] dark:text-black",
-  nonWorking:
-    "bg-red-500/20 text-red-700 rounded-lg dark:bg-red-600/25 dark:text-red-400",
+  working: "bg-working-day rounded-lg dark:text-black",
+  nonWorking: "bg-non-working-day text-red-700 rounded-lg dark:text-red-400",
   hover:
     "cursor-pointer hover:bg-blue-500/10 dark:hover:bg-blue-400/20 transition-all",
   Chevron: "text-primary",

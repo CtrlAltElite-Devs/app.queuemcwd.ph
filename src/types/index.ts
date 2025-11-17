@@ -25,6 +25,7 @@ export type MonthDay = Entity<{
   day: number;
   dayOfWeek: string;
   isWorkingDay: boolean;
+  additionalNotes?: string;
 }>;
 
 export enum QueueStatus {
@@ -64,4 +65,9 @@ export type Account = {
 export type Admin = Account & {
   role: string;
   branchId: string;
+};
+
+export type GetSlotsResponse = {
+  slots: Slot[];
+  additionalNotes: string;
 };

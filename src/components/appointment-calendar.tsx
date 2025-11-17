@@ -118,9 +118,8 @@ export default function AppointmentCalendar({
           numberOfMonths={1}
           onMonthChange={handleMonthChange}
           showOutsideDays={false}
-          className="dark:border-secondary dark:bg-card w-full max-w-md gap-x-1 gap-y-2 rounded-3xl border p-4 text-lg shadow-xl [--cell-size:2.75rem] sm:max-w-sm sm:gap-x-1 sm:text-base sm:[--cell-size:2.5rem] md:gap-x-3 md:text-xl md:[--cell-size:3rem]"
+          className="dark:border-secondary dark:bg-card mx-auto w-full max-w-sm gap-x-1 gap-y-2 rounded-3xl border p-4 text-sm shadow-xl [--cell-size:2.25rem] sm:max-w-md sm:text-base sm:[--cell-size:2.5rem] md:mx-0 md:max-w-lg md:text-lg md:[--cell-size:3rem] lg:[--cell-size:3.25rem]"
           modifiers={modifiers}
-          // modifiersStyles={calendarModifiersStyles}
           modifiersClassNames={calendarModifiersClassNames}
         />
       </div>

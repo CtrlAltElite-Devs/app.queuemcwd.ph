@@ -2,7 +2,7 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDateToMonthDay, useMonthDaysMap } from "@/hooks/use-month-days";
-import { useGetAppointmentSlots } from "@/services/get-appointment-slots";
+import { useGetAppointmentSlotsV2 } from "@/services/get-appointment-slots";
 import { useBranchStore } from "@/stores/branch-store";
 import { Appointment, MonthDay, Slot } from "@/types";
 import { getNextWorkingDay } from "@/utils/next-working-day";
@@ -66,10 +66,10 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
   const dayId = currentMonthDay?.id || "";
 
   const {
-    data: slots = [],
+    data,
     isLoading: slotsLoading,
     error,
-  } = useGetAppointmentSlots(dayId, selectedBranch?.id);
+  } = useGetAppointmentSlotsV2(dayId, selectedBranch?.id);
 
   if (!currentMonthDay || monthDaysLoading || slotsLoading || !selectedBranch) {
     const placeholderCount = 8; // 2 rows × 4 columns
@@ -97,17 +97,14 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
     );
   }
 
-  if (slots.length === 0) {
+  if (data?.slots.length === 0) {
     if (!selectedBranch) {
       return <div />;
     }
 
     return (
       <div className="flex h-32 items-center justify-center">
-        <div className="text-lg text-gray-500">
-          No available slots for {currentMonthDay.month}/{currentMonthDay.day}/
-          {currentMonthDay.year}
-        </div>
+        <div className="text-lg text-gray-700">{data.additionalNotes}</div>
       </div>
     );
   }
@@ -150,7 +147,7 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
         </p>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {slots.map((slot) => (
+        {data?.slots.map((slot) => (
           <Dialog key={slot.id}>
             <DialogTrigger>
               <AppointmentSlot
