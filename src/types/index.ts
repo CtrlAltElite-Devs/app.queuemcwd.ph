@@ -49,6 +49,7 @@ export type Branch = Entity<{
   name: string;
   branchCode: string;
   address: string;
+  allowedTimeFrame: number;
 }>;
 
 export type Navigation = {

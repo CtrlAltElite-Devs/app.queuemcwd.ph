@@ -8,7 +8,7 @@ export default function SlotsGridSkeleton({
   placeholderCount,
 }: SlotsGridSkeletonProps) {
   return (
-    <div className="grid min-h-[12rem] animate-pulse grid-cols-2 gap-3 sm:grid-cols-3">
+    <div className="grid min-h-48 w-full animate-pulse grid-cols-2 gap-3 sm:grid-cols-3">
       {Array.from({ length: placeholderCount }).map((_, i) => (
         <div
           key={i}

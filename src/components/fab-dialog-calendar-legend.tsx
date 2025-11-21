@@ -10,9 +10,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Lightbulb, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { CalendarLegend } from "./calendar-legend";
 
 export function FABDialogCalendarLegend() {
+  const pathname = usePathname();
+
+  if (pathname !== "/dashboard") return null;
+
   return (
     <Dialog>
       {/* Floating Action Button in top-right */}

@@ -1,7 +1,7 @@
 import { MonthDay } from "@/types";
 import {
   addDays,
-  isBefore,
+  isAfter,
   isSameDay,
   isSaturday,
   isSunday,
@@ -18,6 +18,7 @@ export interface CalendarModifiers {
 export const createCalendarModifiers = (
   monthDaysMap: Map<string, MonthDay>,
   today: Date = startOfDay(new Date()),
+  allowedDaysCount: number = 7,
 ): Record<string, Matcher | Matcher[]> => {
   const getDayData = (date: Date): MonthDay | undefined => {
     const key = `${date.getFullYear()}-${(date.getMonth() + 1)
@@ -26,21 +27,20 @@ export const createCalendarModifiers = (
     return monthDaysMap.get(key);
   };
 
-  // --- Compute next 7 weekdays from today (skipping weekends)
+  // --- Compute next 7 weekdays from tomorrow (skipping weekends)
   const allowedWeekdays: Date[] = [];
-  let current = startOfDay(today);
-  while (allowedWeekdays.length < 7) {
+  let current = addDays(startOfDay(today), 1); // start from tomorrow
+  while (allowedWeekdays.length < allowedDaysCount) {
     if (!isSaturday(current) && !isSunday(current)) {
       allowedWeekdays.push(current);
     }
     current = addDays(current, 1);
   }
 
-  // --- Define the modifiers
   return {
     disabled: (date: Date) =>
-      // disable if before today
-      isBefore(date, today) ||
+      // disable today and past dates
+      !isAfter(date, today) ||
       // disable weekends
       isSaturday(date) ||
       isSunday(date) ||

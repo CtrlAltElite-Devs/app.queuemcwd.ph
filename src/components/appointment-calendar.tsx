@@ -1,7 +1,6 @@
 "use client";
 
 import { Calendar } from "@/components/ui/calendar";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useCalendarSelection } from "@/hooks/use-calendar-selection";
 import { useDateToMonthDay, useMonthDaysMap } from "@/hooks/use-month-days";
 import { cn } from "@/lib/utils";
@@ -58,29 +57,28 @@ export default function AppointmentCalendar({
     setCurrentMonth(date);
   }, []);
 
-  const modifiers = createCalendarModifiers(monthDaysMap, today);
+  const modifiers = createCalendarModifiers(
+    monthDaysMap,
+    today,
+    selectedBranch?.allowedTimeFrame,
+  );
 
   if (isLoading) {
     return (
-      <div className="animate-pulse space-y-4">
-        {/* Weekday headers placeholder */}
-        <div className="grid grid-cols-7 gap-2 text-center">
-          {["S", "M", "T", "W", "TH", "F", "SUN"].map((day) => (
-            <Skeleton
-              key={day}
-              className="h-5 w-full rounded-md bg-gray-200 sm:h-6 md:h-7"
-            />
-          ))}
-        </div>
+      <div className="animate-pulse p-4">
+        <div className="bg-background/20 border2 mx-auto w-full max-w-sm rounded-3xl p-4 shadow-xl [--cell-size:2.25rem] sm:max-w-md sm:[--cell-size:2.5rem] md:max-w-lg md:[--cell-size:3rem] lg:max-w-xl lg:[--cell-size:3.25rem]">
+          {/* Placeholder for month header */}
+          <div className="bg-background/40 mb-4 h-6 w-1/3 rounded" />
 
-        {/* Calendar cells */}
-        <div className="grid grid-cols-7 justify-items-center gap-2">
-          {Array.from({ length: 42 }).map((_, i) => (
-            <Skeleton
-              key={i}
-              className="h-[2.75rem] w-[2.75rem] rounded-md bg-gray-200 sm:h-[3rem] sm:w-[3rem] md:h-[3.25rem] md:w-[3.25rem] lg:mx-2"
-            />
-          ))}
+          {/* Calendar cells */}
+          <div className="grid grid-cols-7 gap-1 gap-y-2">
+            {Array.from({ length: 31 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-background/40 h-(--cell-size) w-(--cell-size) rounded"
+              />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -106,7 +104,7 @@ export default function AppointmentCalendar({
     <div className="space-y-4">
       <div
         className={cn(
-          "transition-all duration-300",
+          "transition-none duration-300",
           !selectedBranch && "pointer-events-none opacity-40",
         )}
       >

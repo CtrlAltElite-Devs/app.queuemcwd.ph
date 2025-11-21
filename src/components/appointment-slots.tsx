@@ -75,7 +75,7 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
     const placeholderCount = 8; // 2 rows × 4 columns
 
     return (
-      <div className="space-y-4">
+      <div className="min-w-full space-y-4 px-4">
         {/* Header skeleton */}
         <Skeleton className="bg-background/30 h-6 w-1/3 rounded-md" />
         <SlotsGridSkeleton placeholderCount={placeholderCount} />
