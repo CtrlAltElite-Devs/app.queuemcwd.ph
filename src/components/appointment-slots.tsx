@@ -75,9 +75,9 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
     const placeholderCount = 8; // 2 rows × 4 columns
 
     return (
-      <div className="space-y-4">
+      <div className="bg-background/20 min-w-full space-y-4 rounded-3xl p-4">
         {/* Header skeleton */}
-        <Skeleton className="bg-background/30 h-6 w-1/3 rounded-md" />
+        <Skeleton className="bg-background/20 h-6 w-1/3 rounded-md" />
         <SlotsGridSkeleton placeholderCount={placeholderCount} />
       </div>
     );
@@ -126,13 +126,16 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="bg-background/15 space-y-4 rounded-3xl p-4">
       {/* Temporary rani na indicator  */}
       <div className="flex items-center gap-3">
         <MdEventAvailable size={20} />
         <p className="text-md dark:text-primary-foreground">
           Available Slots for{" "}
-          <span className="font-semibold">
+          <span
+            key={`${currentMonthDay?.year}-${currentMonthDay?.month}-${currentMonthDay?.day}`}
+            className="animate-fadeBasic font-semibold"
+          >
             {currentMonthDay
               ? format(
                   new Date(
@@ -146,7 +149,10 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
           </span>
         </p>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <div
+        key={`slots-${currentMonthDay?.id}`}
+        className="page-fade grid grid-cols-2 gap-3 sm:grid-cols-3"
+      >
         {data?.slots.map((slot) => (
           <Dialog key={slot.id}>
             <DialogTrigger>
