@@ -12,6 +12,8 @@ type McwdInputProps = {
   type?: string;
   disabled?: boolean;
   className?: string;
+  numeric?: boolean;
+  maxLength?: number;
 };
 
 export default function McwdInput({
@@ -22,6 +24,8 @@ export default function McwdInput({
   type = "text",
   disabled = false,
   className,
+  numeric = false,
+  maxLength,
 }: McwdInputProps) {
   return (
     <Controller
@@ -49,6 +53,19 @@ export default function McwdInput({
                 className,
               )}
               {...field}
+              onChange={(e) => {
+                let value = e.target.value;
+
+                if (numeric) {
+                  value = value.replace(/\D/g, "");
+                }
+
+                if (maxLength) {
+                  value = value.slice(0, maxLength);
+                }
+
+                field.onChange(value);
+              }}
             />
 
             {error && <p className="text-xs text-red-500">{error.message}</p>}

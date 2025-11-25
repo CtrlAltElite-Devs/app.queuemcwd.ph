@@ -65,6 +65,8 @@ export default function AppointmentForm({
         label="Account Code"
         placeholder="Enter your account code"
         control={control}
+        numeric
+        maxLength={20}
       />
 
       {/* Contact Person */}
@@ -81,6 +83,8 @@ export default function AppointmentForm({
         label="Contact Number"
         placeholder="Enter contact number"
         control={control}
+        numeric
+        maxLength={11}
       />
 
       {/* Appointment Type Dropdown */}
