@@ -13,6 +13,7 @@ type McwdInputProps = {
   disabled?: boolean;
   className?: string;
   numeric?: boolean;
+  maxLength?: number;
 };
 
 export default function McwdInput({
@@ -24,6 +25,7 @@ export default function McwdInput({
   disabled = false,
   className,
   numeric = false,
+  maxLength,
 }: McwdInputProps) {
   return (
     <Controller
@@ -56,6 +58,10 @@ export default function McwdInput({
 
                 if (numeric) {
                   value = value.replace(/\D/g, "");
+                }
+
+                if (maxLength) {
+                  value = value.slice(0, maxLength);
                 }
 
                 field.onChange(value);
