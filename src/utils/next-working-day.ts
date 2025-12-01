@@ -19,5 +19,5 @@ export const getNextWorkingDay = (monthDaysMap: Map<string, MonthDay>) => {
     if (!isWeekend(date) && monthDay?.isWorkingDay) return date;
   }
 
-  return null;
+  return undefined;
 };
