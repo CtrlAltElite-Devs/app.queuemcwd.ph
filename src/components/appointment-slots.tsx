@@ -46,6 +46,7 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
   useEffect(() => {
     if (!monthDay && !monthDaysLoading && monthDaysMap.size > 0) {
       const nextWorking = getNextWorkingDay(monthDaysMap);
+      if (!nextWorking) return;
       const todayMonthDay = getMonthDayFromDate(nextWorking);
 
       if (currentMonthDay?.id !== todayMonthDay?.id) {
