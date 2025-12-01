@@ -1,23 +1,23 @@
 import { MonthDay } from "@/types";
-import { addDays, isWeekend, startOfDay } from "date-fns";
+import { isWeekend } from "date-fns";
+
+const getKey = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+    date.getDate(),
+  ).padStart(2, "0")}`;
 
 export const getNextWorkingDay = (monthDaysMap: Map<string, MonthDay>) => {
-  let current = addDays(startOfDay(new Date()), 1);
+  const sortedDates = [...monthDaysMap.keys()].sort();
+  const todayKey = getKey(new Date());
 
-  const getKey = (date: Date) =>
-    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
-      date.getDate(),
-    ).padStart(2, "0")}`;
+  for (const dateKey of sortedDates) {
+    if (dateKey <= todayKey) continue;
 
-  // Keep looping until we find a working day
-  while (true) {
-    const key = getKey(current);
-    const monthDay = monthDaysMap.get(key);
+    const date = new Date(dateKey);
+    const monthDay = monthDaysMap.get(dateKey);
 
-    if (!isWeekend(current) && monthDay?.isWorkingDay) {
-      return current;
-    }
-
-    current = addDays(current, 1);
+    if (!isWeekend(date) && monthDay?.isWorkingDay) return date;
   }
+
+  return null;
 };
