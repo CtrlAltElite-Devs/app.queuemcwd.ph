@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "../ui/button";
 import McwdInput from "./mcwd-input";
-import McwdSelect from "./mcwd-select";
+import McwdSelectV2 from "./mcwd-select-v2";
 
 interface AppointmentFormProps {
   selectedSlot: Slot | null;
@@ -88,7 +88,7 @@ export default function AppointmentForm({
       />
 
       {/* Appointment Type Dropdown */}
-      <McwdSelect
+      <McwdSelectV2
         name="appointmentType"
         label="Service Type"
         placeholder="Select service type"
@@ -102,11 +102,11 @@ export default function AppointmentForm({
       {/* Submit Button */}
       <Button
         type="submit"
-        className="flex w-full items-center justify-center gap-2 hover:cursor-pointer"
+        className="flex w-full items-center justify-center gap-2 rounded-2xl py-4 font-bold hover:cursor-pointer"
         disabled={isPending}
       >
         {isPending && <LoaderCircle className="h-4 w-4 animate-spin" />}
-        {isPending ? "Submitting..." : "Submit Appointment"}
+        {isPending ? "Submitting..." : "Submit"}
       </Button>
     </form>
   );
