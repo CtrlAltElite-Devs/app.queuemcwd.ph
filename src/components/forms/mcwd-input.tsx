@@ -37,7 +37,7 @@ export default function McwdInput({
         return (
           <div className="flex flex-col gap-1">
             {label && (
-              <Label htmlFor={name} className="text-sm font-medium">
+              <Label htmlFor={name} className="mb-2 text-sm font-medium">
                 {label} <span className="text-red-500">*</span>
               </Label>
             )}

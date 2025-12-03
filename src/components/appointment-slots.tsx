@@ -6,10 +6,12 @@ import { useGetAppointmentSlotsV2 } from "@/services/get-appointment-slots";
 import { useBranchStore } from "@/stores/branch-store";
 import { Appointment, MonthDay, Slot } from "@/types";
 import { getNextWorkingDay } from "@/utils/next-working-day";
+import { formatSlotTime } from "@/utils/slot-utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { format } from "date-fns";
-import { useEffect, useState } from "react";
+import { Calendar1, ClockIcon } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { MdEventAvailable } from "react-icons/md";
 import AppointmentConfirmation from "./appointment-confirmation";
 import AppointmentForm from "./forms/appointment-form";
@@ -18,6 +20,7 @@ import AppointmentSlot from "./slot";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -71,6 +74,18 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
     isLoading: slotsLoading,
     error,
   } = useGetAppointmentSlotsV2(dayId, selectedBranch?.id);
+
+  const formattedDate = useMemo(() => {
+    if (!currentMonthDay) return "";
+    return format(
+      new Date(
+        currentMonthDay.year,
+        currentMonthDay.month - 1,
+        currentMonthDay.day,
+      ),
+      "MMMM d, yyyy",
+    );
+  }, [currentMonthDay]);
 
   if (!currentMonthDay || monthDaysLoading || slotsLoading || !selectedBranch) {
     const placeholderCount = 8; // 2 rows × 4 columns
@@ -128,7 +143,6 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
 
   return (
     <div className="bg-background/15 space-y-4 rounded-3xl p-4">
-      {/* Temporary rani na indicator  */}
       <div className="flex items-center gap-3">
         <MdEventAvailable size={20} />
         <p className="text-md dark:text-primary-foreground">
@@ -137,16 +151,7 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
             key={`${currentMonthDay?.year}-${currentMonthDay?.month}-${currentMonthDay?.day}`}
             className="animate-fadeBasic font-semibold"
           >
-            {currentMonthDay
-              ? format(
-                  new Date(
-                    currentMonthDay.year,
-                    currentMonthDay.month - 1,
-                    currentMonthDay.day,
-                  ),
-                  "MMMM d, yyyy",
-                )
-              : ""}
+            {formattedDate}
           </span>
         </p>
       </div>
@@ -162,12 +167,27 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
                 onSelect={() => setSelectedSlot(slot)}
               />
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="bg-background rounded-3xl">
               <DialogHeader>
-                <DialogTitle>Enter your details</DialogTitle>
+                <DialogTitle className="text-2xl text-blue-500">
+                  Create Appointment
+                </DialogTitle>
+                <DialogDescription asChild>
+                  <div>
+                    <p className="my-2 flex flex-row items-center gap-1">
+                      <Calendar1 size={16} />
+                      {formattedDate}
+                    </p>
+                    <p className="my-2 flex flex-row items-center gap-1">
+                      <ClockIcon size={16} />
+                      {formatSlotTime(slot.startTime)} -{" "}
+                      {formatSlotTime(slot.endTime)}
+                    </p>
+                  </div>
+                </DialogDescription>
               </DialogHeader>
               <AppointmentForm
-                selectedSlot={selectedSlot}
+                selectedSlot={slot}
                 onAppointmentCreated={onAppointmentCreated}
               />
             </DialogContent>
