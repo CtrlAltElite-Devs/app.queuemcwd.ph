@@ -18,5 +18,7 @@ export default function Home() {
     }
   }, [selectedBranch, hasHydrated, router]);
 
+  console.log('test');
+
   return null; // nothing to render
 }
