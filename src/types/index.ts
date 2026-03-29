@@ -45,6 +45,17 @@ export type Appointment = Entity<{
   appointmentType: number;
 }>;
 
+export type ReportRecord = {
+  id: string;
+  branchId: string;
+  contactPerson: string;
+  accountNumber: string;
+  referenceNumber: string;
+  requestType: string;
+  cellphoneNumber: string;
+  scheduledAt: string;
+};
+
 export type Branch = Entity<{
   name: string;
   branchCode: string;

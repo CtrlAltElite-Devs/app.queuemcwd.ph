@@ -8,7 +8,15 @@ const getAppointmentSlots = (
 ): Promise<Slot[]> =>
   api
     .get(`/api/v1/branch/${branchId}/month-days/${monthDayId}/slots`)
-    .then((res) => res.data);
+    .then((res) => {
+      const data = res.data as Slot[] | GetSlotsResponse;
+
+      if (Array.isArray(data)) {
+        return data;
+      }
+
+      return data.slots ?? [];
+    });
 
 export const useGetAppointmentSlots = (
   monthDayId: string,
