@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminPageSkeleton } from "@/components/admin-page-skeleton";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -86,16 +87,7 @@ export default function ReportsPage() {
   };
 
   if (!selectedBranch) {
-    return (
-      <Card className="border-dashed">
-        <CardHeader>
-          <CardTitle>Reports</CardTitle>
-          <CardDescription>
-            Select a branch from the admin sidebar to view branch reports.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-    );
+    return <AdminPageSkeleton />;
   }
 
   return (

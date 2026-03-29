@@ -1,11 +1,14 @@
 "use client";
 
+import { AdminPageSkeleton } from "@/components/admin-page-skeleton";
 import AppointmentSlotFields from "@/components/appointment-slot-fields";
 import { McwdDatePicker } from "@/components/mcwd-date-picker";
+import { useBranchStore } from "@/stores/branch-store";
 import { MonthDay } from "@/types";
 import { useState } from "react";
 
 export default function AppointmentSettings() {
+  const { selectedBranch } = useBranchStore();
   const [selectedMonthDay, setSelectedMonthDay] = useState<MonthDay>();
 
   const handleSelectDate = (
@@ -14,6 +17,10 @@ export default function AppointmentSettings() {
   ) => {
     setSelectedMonthDay(monthDay);
   };
+
+  if (!selectedBranch) {
+    return <AdminPageSkeleton />;
+  }
 
   return (
     <div className="space-y-6 px-4">
