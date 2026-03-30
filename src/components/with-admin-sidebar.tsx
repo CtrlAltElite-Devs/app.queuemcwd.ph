@@ -1,3 +1,4 @@
+import { AdminSidebarSkeleton } from "@/components/admin-page-skeleton";
 import { navigations } from "@/constants/navigations";
 import { useGetBranches } from "@/services/get-branches";
 import { useBranchStore } from "@/stores/branch-store";
@@ -12,9 +13,8 @@ export default function WithAdminSidebar() {
     if (branches && branches.length && !selectedBranch) setBranch(branches[0]);
   }, [branches, selectedBranch, setBranch]);
 
-  // Should do a full page load bai
   if (isLoading || !branches) {
-    return <p>Loading branch...</p>;
+    return <AdminSidebarSkeleton />;
   }
 
   return (

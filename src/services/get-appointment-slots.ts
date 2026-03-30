@@ -7,8 +7,24 @@ const getAppointmentSlots = (
   branchId: string | undefined,
 ): Promise<Slot[]> =>
   api
-    .get(`/api/v1/branch/${branchId}/month-days/${monthDayId}/slots`)
-    .then((res) => res.data);
+    .get(`/api/v1/branch/${branchId}/month-days/${monthDayId}/slots`, {
+      headers: {
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
+      },
+      params: {
+        _t: Date.now(),
+      },
+    })
+    .then((res) => {
+      const data = res.data as Slot[] | GetSlotsResponse;
+
+      if (Array.isArray(data)) {
+        return data;
+      }
+
+      return data.slots ?? [];
+    });
 
 export const useGetAppointmentSlots = (
   monthDayId: string,
@@ -25,7 +41,15 @@ const getAppointmentSlotsV2 = (
   branchId: string | undefined,
 ): Promise<GetSlotsResponse> =>
   api
-    .get(`/api/v2/branch/${branchId}/month-days/${monthDayId}/slots`)
+    .get(`/api/v2/branch/${branchId}/month-days/${monthDayId}/slots`, {
+      headers: {
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
+      },
+      params: {
+        _t: Date.now(),
+      },
+    })
     .then((res) => res.data);
 
 export const useGetAppointmentSlotsV2 = (
