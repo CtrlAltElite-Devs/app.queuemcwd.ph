@@ -168,61 +168,61 @@ export default function SlotField({
 
   const getSlotStyles = () => {
     if (!slot.isActive) {
-      return "border-gray-200 bg-gray-50 opacity-75";
+      return "border-border border-l-muted-foreground/30 bg-muted/50 opacity-75";
     }
     if (pending) {
-      return "border-amber-300 bg-amber-50";
+      return "border-amber-200 border-l-amber-500 bg-amber-50/50 dark:border-amber-800 dark:border-l-amber-500 dark:bg-amber-950/20";
     }
     if (hasChanges) {
-      return "border-blue-300 bg-blue-50";
+      return "border-blue-200 border-l-blue-500 bg-blue-50/50 dark:border-blue-800 dark:border-l-blue-500 dark:bg-blue-950/20";
     }
     if (errors.length > 0) {
-      return "border-red-300 bg-red-50";
+      return "border-red-200 border-l-red-500 bg-red-50/50 dark:border-red-800 dark:border-l-red-500 dark:bg-red-950/20";
     }
-    return "border-gray-200 bg-white hover:border-gray-300";
+    return "border-border border-l-primary/40 bg-background hover:border-primary/20 dark:border-l-primary/50 dark:hover:border-primary/30";
   };
 
   return (
     <div
-      className={`space-y-3 rounded-lg border p-4 transition-all ${getSlotStyles()}`}
+      className={`space-y-3 rounded-xl border border-l-[3px] p-4 transition-all ${getSlotStyles()}`}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h4
-            className={`text-sm font-medium ${!slot.isActive ? "text-gray-400" : "text-gray-700"}`}
+            className={`text-sm font-medium ${!slot.isActive ? "text-muted-foreground" : "text-foreground"}`}
           >
             {!pending ? `Slot ${index + 1}` : "New Slot"}
           </h4>
           {!slot.isActive && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-600">
+            <span className="bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold">
               <EyeOff className="h-3 w-3" />
               Inactive
             </span>
           )}
           {pending && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-200 px-3 py-1 text-xs font-semibold text-amber-800">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-amber-600" />
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-200 px-3 py-1 text-xs font-semibold text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-amber-600 dark:bg-amber-400" />
               Pending
             </span>
           )}
           {hasChanges && !pending && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-blue-200 px-3 py-1 text-xs font-semibold text-blue-800">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-blue-600" />
+            <span className="inline-flex items-center gap-1 rounded-full bg-blue-200 px-3 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-blue-600 dark:bg-blue-400" />
               Modified
             </span>
           )}
         </div>
         {errors.length > 0 && (
-          <span className="text-xs font-medium text-red-600">
+          <span className="text-xs font-medium text-red-600 dark:text-red-400">
             {errors.length} issue{errors.length > 1 ? "s" : ""}
           </span>
         )}
       </div>
 
-      <div className="grid grid-cols-5 items-center gap-4">
+      <div className="grid grid-cols-2 items-end gap-3 md:grid-cols-5 md:gap-4">
         <div className="space-y-1">
           <Label
-            className={`text-xs ${!slot.isActive ? "text-gray-400" : "text-gray-500"}`}
+            className="text-muted-foreground text-xs"
             htmlFor={`startTime-${slot.id}`}
           >
             Start Time
@@ -239,7 +239,7 @@ export default function SlotField({
 
         <div className="space-y-1">
           <Label
-            className={`text-xs ${!slot.isActive ? "text-gray-400" : "text-gray-500"}`}
+            className="text-muted-foreground text-xs"
             htmlFor={`endTime-${slot.id}`}
           >
             End Time
@@ -256,7 +256,7 @@ export default function SlotField({
 
         <div className="space-y-1">
           <Label
-            className={`text-xs ${!slot.isActive ? "text-gray-400" : "text-gray-500"}`}
+            className="text-muted-foreground text-xs"
             htmlFor={`duration-${slot.id}`}
           >
             Duration
@@ -264,17 +264,17 @@ export default function SlotField({
           <Input
             readOnly
             value={calculateDuration(slot.startTime, slot.endTime)}
-            className={`text-sm ${!slot.isActive ? "bg-gray-100 text-gray-400" : "bg-gray-50"}`}
+            className={`text-sm ${!slot.isActive ? "bg-muted text-muted-foreground" : "bg-muted/50"}`}
             id={`duration-${slot.id}`}
           />
         </div>
 
         <div className="space-y-1">
           <Label
-            className={`text-xs ${!slot.isActive ? "text-gray-400" : "text-gray-500"}`}
+            className="text-muted-foreground text-xs"
             htmlFor={`capacity-${slot.id}`}
           >
-            Available Capacity
+            Capacity
           </Label>
           <Input
             type="number"
@@ -286,17 +286,15 @@ export default function SlotField({
             id={`capacity-${slot.id}`}
             disabled={!slot.isActive}
           />
-          <div
-            className={`text-xs ${!slot.isActive ? "text-gray-400" : "text-gray-500"}`}
-          >
+          <div className="text-muted-foreground text-xs">
             Booked: {slot.booked} / Max: {slot.maxCapacity}
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-start gap-2 md:justify-center">
           <button
             onClick={onDelete}
-            className="p-2 text-red-400 transition-colors hover:text-red-600"
+            className="text-destructive/60 hover:text-destructive p-2 transition-colors"
             disabled={slot.booked > 0}
             title={
               slot.booked > 0
@@ -314,7 +312,7 @@ export default function SlotField({
           {errors.map((error, errorIndex) => (
             <div
               key={errorIndex}
-              className="flex items-center gap-1 text-xs text-red-600"
+              className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400"
             >
               <span>•</span>
               {error}
@@ -324,7 +322,7 @@ export default function SlotField({
       )}
 
       {hasChanges && !pending && (
-        <div className="flex gap-2 border-t border-blue-200 pt-3">
+        <div className="flex gap-2 border-t border-blue-200 pt-3 dark:border-blue-800">
           <Button
             onClick={() => {
               setIsSubmitting(true);
@@ -336,7 +334,7 @@ export default function SlotField({
               }
             }}
             disabled={errors.length > 0 || isSubmitting}
-            className="flex flex-1 items-center gap-2 bg-blue-600 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex flex-1 items-center gap-2"
           >
             <Check className="h-4 w-4" />
             {isSubmitting ? "Saving..." : "Save Changes"}
@@ -345,15 +343,15 @@ export default function SlotField({
             onClick={() => handleReset()}
             variant="outline"
             disabled={isSubmitting}
-            className="flex items-center gap-2 border-blue-300 text-blue-600 hover:bg-blue-50 disabled:opacity-50"
+            className="flex items-center gap-2"
           >
-            ✕ Discard
+            Discard
           </Button>
         </div>
       )}
 
       {pending && (
-        <div className="flex gap-2 border-t border-amber-200 pt-3">
+        <div className="flex gap-2 border-t border-amber-200 pt-3 dark:border-amber-800">
           <Button
             onClick={async () => {
               setIsSubmitting(true);
@@ -364,7 +362,7 @@ export default function SlotField({
               }
             }}
             disabled={errors.length > 0 || isSubmitting}
-            className="flex flex-1 items-center gap-2 bg-amber-600 text-white hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex flex-1 items-center gap-2 bg-amber-600 text-white hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-amber-700 dark:hover:bg-amber-600"
           >
             <Check className="h-4 w-4" />
             {isSubmitting ? "Adding..." : "Add Slot"}

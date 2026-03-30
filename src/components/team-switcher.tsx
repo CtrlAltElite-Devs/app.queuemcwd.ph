@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, MapPin } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -16,6 +16,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 import { useBranchStore } from "@/stores/branch-store";
 import { Branch } from "@/types";
 import { useEffect, useState } from "react";
@@ -39,6 +40,7 @@ export function TeamSwitcher({ branches }: { branches: BranchExtended[] }) {
   if (!activeTeam) {
     return null;
   }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -48,14 +50,21 @@ export function TeamSwitcher({ branches }: { branches: BranchExtended[] }) {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                {/* <activeTeam.logo className="size-4" /> */}
+              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg text-xs font-bold">
+                {activeTeam.name
+                  .split(" ")
+                  .map((w) => w[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase()}
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{activeTeam.name}</span>
-                <span className="truncate text-xs">{activeTeam.plan}</span>
+                <span className="text-sidebar-foreground/60 truncate text-xs">
+                  Service Hub
+                </span>
               </div>
-              <ChevronsUpDown className="ml-auto" />
+              <ChevronsUpDown className="text-sidebar-foreground/50 ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -67,26 +76,35 @@ export function TeamSwitcher({ branches }: { branches: BranchExtended[] }) {
             <DropdownMenuLabel className="text-muted-foreground text-xs">
               Branches
             </DropdownMenuLabel>
-            {branches.map((team, index) => (
-              <DropdownMenuItem
-                key={team.name}
-                onClick={() => setActiveTeam(team)}
-                className="gap-2 p-2"
-              >
-                <div className="flex size-6 items-center justify-center rounded-md border">
-                  {/* <team.logo className="size-3.5 shrink-0" /> */}
-                </div>
-                {team.name}
-                <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-              </DropdownMenuItem>
-            ))}
-            {/* <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
-              <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-                <Plus className="size-4" />
-              </div>
-              <div className="text-muted-foreground font-medium">Add team</div>
-            </DropdownMenuItem> */}
+            {branches.map((team, index) => {
+              const isActive = team.id === activeTeam.id;
+              return (
+                <DropdownMenuItem
+                  key={team.name}
+                  onClick={() => setActiveTeam(team)}
+                  className={cn(
+                    "gap-2 p-2",
+                    isActive && "bg-accent font-medium",
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "flex size-6 items-center justify-center rounded-md border text-xs",
+                      isActive
+                        ? "border-primary/30 bg-primary/10 text-primary"
+                        : "text-muted-foreground",
+                    )}
+                  >
+                    <MapPin className="size-3.5" />
+                  </div>
+                  <span className="flex-1">{team.name}</span>
+                  {isActive && (
+                    <Check className="text-primary ml-auto size-4" />
+                  )}
+                  <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                </DropdownMenuItem>
+              );
+            })}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
