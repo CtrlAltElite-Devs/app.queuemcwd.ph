@@ -38,17 +38,14 @@ export async function proxy(request: NextRequest) {
     if (!token) return redirectToLogin(request, pathname);
 
     try {
-      const res = await fetch(
-        `${process.env.API_BASE_URL}/api/v1/admin/me`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          cache: "no-store",
+      const res = await fetch(`${process.env.API_BASE_URL}/api/v1/admin/me`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-      );
+        cache: "no-store",
+      });
 
       if (!res.ok) return redirectToLogin(request, pathname, true);
     } catch {
@@ -64,17 +61,14 @@ export async function proxy(request: NextRequest) {
   if (pathname === "/login") {
     if (token) {
       try {
-        const res = await fetch(
-          `${process.env.API_BASE_URL}/api/v1/admin/me`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            cache: "no-store",
+        const res = await fetch(`${process.env.API_BASE_URL}/api/v1/admin/me`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
-        );
+          cache: "no-store",
+        });
 
         if (res.ok) {
           return NextResponse.redirect(new URL("/admin", request.url));
