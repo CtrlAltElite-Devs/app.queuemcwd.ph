@@ -16,8 +16,33 @@ import { useGetReports } from "@/services/get-reports";
 import { useBranchStore } from "@/stores/branch-store";
 import { ReportRecord } from "@/types";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { CalendarRange, FileText, TableProperties } from "lucide-react";
 import { useMemo, useState } from "react";
+
+const serviceStyles: Record<string, string> = {
+  [Service.BILLING_CONCERNS]:
+    "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  [Service.WATER_SUPPLIER_ISSUES]:
+    "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300",
+  [Service.LEAK_REPORTS]:
+    "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+  [Service.SERVICE_CONNECTION_CONCERNS]:
+    "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+};
+
+function ServiceBadge({ type }: { type: string }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap",
+        serviceStyles[type] ?? "bg-muted text-muted-foreground",
+      )}
+    >
+      {type}
+    </span>
+  );
+}
 
 function toDateInputValue(date: Date) {
   return format(date, "yyyy-MM-dd");
@@ -93,13 +118,18 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6 pb-6">
       <section className="flex flex-col gap-3">
-        <div className="flex items-center gap-2">
-          <FileText className="size-5" />
+        <div className="flex items-center gap-3">
+          <div className="bg-primary/10 text-primary dark:bg-primary/20 flex size-9 items-center justify-center rounded-lg">
+            <FileText className="size-5" />
+          </div>
           <div>
             <h1 className="text-2xl font-semibold">Reports</h1>
             <p className="text-muted-foreground text-sm">
               Summary and detail records for{" "}
-              <span className="font-medium">{selectedBranch.name}</span>.
+              <span className="text-primary font-medium">
+                {selectedBranch.name}
+              </span>
+              .
             </p>
           </div>
         </div>
@@ -108,7 +138,7 @@ export default function ReportsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <CalendarRange className="size-4" />
+            <CalendarRange className="text-primary size-4" />
             Date Range
           </CardTitle>
           <CardDescription>
@@ -143,10 +173,10 @@ export default function ReportsPage() {
       </Card>
 
       <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
-        <Card className="h-fit">
+        <Card className="sticky top-4 h-fit">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TableProperties className="size-4" />
+              <TableProperties className="text-primary size-4" />
               Details
             </CardTitle>
             <CardDescription>
@@ -154,24 +184,28 @@ export default function ReportsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-lg border">
+            <div className="overflow-hidden rounded-lg border">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50 text-left">
                   <tr className="border-b">
-                    <th className="px-4 py-3 font-medium">Request type</th>
-                    <th className="px-4 py-3 text-right font-medium">Counts</th>
+                    <th className="px-3 py-2.5 text-xs font-medium">
+                      Request type
+                    </th>
+                    <th className="px-3 py-2.5 text-right text-xs font-medium">
+                      Counts
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {isLoading
                     ? [...Array(4)].map((_, index) => (
                         <tr key={index} className="border-b last:border-0">
-                          <td className="px-4 py-3">
-                            <Skeleton className="h-4 w-32" />
+                          <td className="px-3 py-2.5">
+                            <Skeleton className="h-5 w-32 rounded-full" />
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-3 py-2.5">
                             <div className="flex justify-end">
-                              <Skeleton className="h-4 w-10" />
+                              <Skeleton className="h-4 w-8" />
                             </div>
                           </td>
                         </tr>
@@ -181,8 +215,10 @@ export default function ReportsPage() {
                           key={row.requestType}
                           className="border-b last:border-0"
                         >
-                          <td className="px-4 py-3">{row.requestType}</td>
-                          <td className="px-4 py-3 text-right font-medium">
+                          <td className="px-3 py-2.5">
+                            <ServiceBadge type={row.requestType} />
+                          </td>
+                          <td className="px-3 py-2.5 text-right font-medium tabular-nums">
                             {row.count}
                           </td>
                         </tr>
@@ -190,8 +226,8 @@ export default function ReportsPage() {
                 </tbody>
                 <tfoot className="bg-muted/40">
                   <tr>
-                    <td className="px-4 py-3 font-semibold">Total</td>
-                    <td className="px-4 py-3 text-right font-semibold">
+                    <td className="px-3 py-2.5 text-sm font-semibold">Total</td>
+                    <td className="px-3 py-2.5 text-right text-sm font-semibold tabular-nums">
                       {isLoading ? "-" : totalCount}
                     </td>
                   </tr>
@@ -264,17 +300,23 @@ export default function ReportsPage() {
                           {formatDateTime(report.scheduledAt)}
                         </td>
                         <td className="px-4 py-3">{report.referenceNumber}</td>
-                        <td className="px-4 py-3">{report.requestType}</td>
+                        <td className="px-4 py-3">
+                          <ServiceBadge type={report.requestType} />
+                        </td>
                         <td className="px-4 py-3">{report.cellphoneNumber}</td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td
-                        colSpan={6}
-                        className="text-muted-foreground px-4 py-10 text-center"
-                      >
-                        No report data found for this branch and date range.
+                      <td colSpan={6} className="px-4 py-10 text-center">
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="bg-primary/10 dark:bg-primary/15 flex size-10 items-center justify-center rounded-full">
+                            <FileText className="text-primary/60 size-5" />
+                          </div>
+                          <p className="text-muted-foreground text-sm">
+                            No report data found for this branch and date range.
+                          </p>
+                        </div>
                       </td>
                     </tr>
                   )}

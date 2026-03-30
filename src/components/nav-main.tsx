@@ -23,7 +23,7 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Settings</SidebarGroupLabel>
+      <SidebarGroupLabel>Navigation</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>
@@ -31,20 +31,24 @@ export function NavMain({
               asChild
               isActive={item.isActive}
               className={cn(
-                "transition-colors duration-200",
+                "relative transition-all duration-200",
                 item.isActive
-                  ? "bg-accent text-accent-foreground"
-                  : "hover:bg-accent hover:text-accent-foreground",
+                  ? "bg-sidebar-primary/10 text-sidebar-primary dark:bg-sidebar-primary/15 font-medium"
+                  : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
               )}
             >
-              <Link
-                href={item.url}
-                className={cn(
-                  "flex items-center gap-3",
-                  item.isActive && "text-sidebar-primary",
+              <Link href={item.url} className="flex items-center gap-3">
+                {item.isActive && (
+                  <span className="bg-sidebar-primary absolute top-1/2 left-0 h-5 w-[3px] -translate-y-1/2 rounded-r-full" />
                 )}
-              >
-                {item.icon && <item.icon className="h-4 w-4" />}
+                {item.icon && (
+                  <item.icon
+                    className={cn(
+                      "h-4 w-4",
+                      item.isActive && "text-sidebar-primary",
+                    )}
+                  />
+                )}
                 <span>{item.name}</span>
               </Link>
             </SidebarMenuButton>
