@@ -28,6 +28,7 @@ export function NavMain({
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton
+              asChild
               isActive={item.isActive}
               className={cn(
                 "transition-colors duration-200",

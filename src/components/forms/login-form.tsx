@@ -16,7 +16,6 @@ import {
 import { useAdminStore } from "@/stores/admin-auth-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, Mail } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import McwdInputGroup from "./mcwd-input-group";
@@ -32,7 +31,6 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const { mutate: adminLogin } = useAdminLogin();
   const { setAccessToken } = useAdminStore();
-  const router = useRouter();
 
   const form = useForm<AdminLoginSchema>({
     resolver: zodResolver(adminLoginSchema),
@@ -43,9 +41,8 @@ export function LoginForm({
     adminLogin(data, {
       onSuccess: (data) => {
         toast.success("Login successfully");
-        console.log("login data: ", JSON.stringify(data, null, 2));
         setAccessToken(data.accessToken);
-        router.replace("/admin");
+        window.location.href = "/admin";
       },
       onError: (error) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
