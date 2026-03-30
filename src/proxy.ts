@@ -1,8 +1,7 @@
-// middleware.ts
 import { ZustandCookieParser } from "@/lib/zustand-cookie-parser";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { redirectToLogin, validateToken } from "./services/validate-token";
+import { redirectToLogin } from "./services/validate-token";
 
 export async function proxy(request: NextRequest) {
   const cookies = request.cookies.getAll();
@@ -36,10 +35,22 @@ export async function proxy(request: NextRequest) {
   // 2. Admin auth check
   // --------------------------
   if (pathname.startsWith("/admin")) {
-    if (!token) return NextResponse.redirect(new URL("/login", request.url));
+    if (!token) return redirectToLogin(request, pathname);
 
-    const validation = await validateToken(token);
-    if (!validation.valid) return redirectToLogin(request, pathname, true);
+    try {
+      const res = await fetch(`${process.env.API_BASE_URL}/api/v1/admin/me`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      });
+
+      if (!res.ok) return redirectToLogin(request, pathname, true);
+    } catch {
+      return redirectToLogin(request, pathname, true);
+    }
 
     return NextResponse.next();
   }
@@ -49,11 +60,24 @@ export async function proxy(request: NextRequest) {
   // --------------------------
   if (pathname === "/login") {
     if (token) {
-      const validation = await validateToken(token);
-      if (validation.valid)
-        return NextResponse.redirect(new URL("/admin", request.url));
+      try {
+        const res = await fetch(`${process.env.API_BASE_URL}/api/v1/admin/me`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          cache: "no-store",
+        });
 
-      // Invalid token → clear
+        if (res.ok) {
+          return NextResponse.redirect(new URL("/admin", request.url));
+        }
+      } catch {
+        // Validation failed, fall through
+      }
+
+      // Invalid token — clear it
       const response = NextResponse.next();
       response.cookies.delete("admin-auth-token");
       return response;
@@ -68,5 +92,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*", "/login", "/:path*"],
+  matcher: ["/((?!_next|favicon|api).*)", "/admin/:path*", "/login"],
 };

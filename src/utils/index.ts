@@ -21,7 +21,7 @@ export function getBaseUrl() {
   if (process.env.NODE_ENV === "development") {
     return "http://localhost:3000";
   }
-  return `https://${process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_URL}`;
+  return process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || "";
 }
 
 export function formatTimeToHHmm(dateOrString: Date | string): string {
