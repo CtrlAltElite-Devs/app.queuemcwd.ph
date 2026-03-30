@@ -17,13 +17,21 @@ export function useSlotManager(monthDayId: string, branchId: string) {
   const { mutate: editSlot } = useEditSlot();
   const queryClient = useQueryClient();
 
-  const initializeSlots = useCallback((slots: Slot[]) => {
-    const sortedSlots = [...slots].sort(
-      (a, b) =>
-        new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
-    );
-    dispatch({ type: "SET_SLOTS", payload: sortedSlots });
-  }, []);
+  const sortSlots = useCallback(
+    (slots: Slot[]) =>
+      [...slots].sort(
+        (a, b) =>
+          new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
+      ),
+    [],
+  );
+
+  const initializeSlots = useCallback(
+    (slots: Slot[]) => {
+      dispatch({ type: "SET_SLOTS", payload: sortSlots(slots) });
+    },
+    [sortSlots],
+  );
 
   const updateSlot = useCallback((slotId: string, updates: Partial<Slot>) => {
     dispatch({ type: "UPDATE_SLOT", payload: { id: slotId, updates } });
@@ -47,7 +55,7 @@ export function useSlotManager(monthDayId: string, branchId: string) {
             queryKey: ["appointment-slots", monthDayId, branchId],
           });
         },
-        onError: (error) => {
+        onError: () => {
           toast.error("Failed to delete slot");
           queryClient.invalidateQueries({
             queryKey: ["appointment-slots", monthDayId, branchId],
@@ -111,11 +119,16 @@ export function useSlotManager(monthDayId: string, branchId: string) {
       console.log(`new slot dto: ${JSON.stringify(newSlotDto, null, 2)}`);
 
       createSlot(newSlotDto, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({
-            queryKey: ["appointment-slots", monthDayId, branchId],
-          });
+        onSuccess: async () => {
           deleteSlot(newSlot.id);
+          await queryClient.invalidateQueries({
+            queryKey: ["appointment-slots", monthDayId, branchId],
+            exact: true,
+          });
+          await queryClient.refetchQueries({
+            queryKey: ["appointment-slots", monthDayId, branchId],
+            exact: true,
+          });
           toast.success("Slot successfully added");
         },
         onError: () => {
@@ -236,11 +249,11 @@ export function useSlotManager(monthDayId: string, branchId: string) {
       // API calls to save all changes
       toast.success("Changes saved successfully");
       dispatch({ type: "SET_STATUS", payload: "idle" });
-    } catch (error) {
+    } catch {
       toast.error("Failed to save changes");
       dispatch({ type: "SET_STATUS", payload: "idle" });
     }
-  }, [state.slots, validateAllSlots]);
+  }, [validateAllSlots]);
 
   return {
     // State
