@@ -4,6 +4,7 @@ import type { Slot } from "@/types";
 import { formatTimeToHHmm } from "@/utils";
 import {
   calculateDuration,
+  formatSlotTime,
   formatTimeForInput,
   isTimeFormat,
   timeToMinutes,
@@ -11,7 +12,18 @@ import {
 import { Check, EyeOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FaTrashCan } from "react-icons/fa6";
-import { Button } from "./ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
+import { Button, buttonVariants } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
@@ -214,20 +226,44 @@ export default function SlotField({
               {errors.length} issue{errors.length > 1 ? "s" : ""}
             </span>
           )}
-          <Button
-            onClick={onDelete}
-            variant="ghost"
-            size="icon-sm"
-            className="text-destructive/60 hover:text-destructive hover:bg-destructive/10"
-            disabled={slot.booked > 0}
-            title={
-              slot.booked > 0
-                ? "Cannot delete slot with existing bookings"
-                : "Delete slot"
-            }
-          >
-            <FaTrashCan className={slot.booked > 0 ? "opacity-50" : ""} />
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="text-destructive/60 hover:text-destructive hover:bg-destructive/10"
+                disabled={slot.booked > 0}
+                title={
+                  slot.booked > 0
+                    ? "Cannot delete slot with existing bookings"
+                    : "Delete slot"
+                }
+              >
+                <FaTrashCan className={slot.booked > 0 ? "opacity-50" : ""} />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  {pending ? "Discard New Slot?" : `Delete Slot ${index + 1}?`}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {pending
+                    ? `This will discard the unsaved slot (${formatSlotTime(slot.startTime)} - ${formatSlotTime(slot.endTime)}).`
+                    : `This will permanently remove the slot (${formatSlotTime(slot.startTime)} - ${formatSlotTime(slot.endTime)}). This action cannot be undone.`}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={onDelete}
+                  className={buttonVariants({ variant: "destructive" })}
+                >
+                  {pending ? "Discard" : "Delete"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
 
