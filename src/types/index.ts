@@ -44,9 +44,11 @@ export type MonthDay = Entity<{
 export enum QueueStatus {
   PENDING = "pending",
   ACTIVE = "active",
+  ARRIVED = "arrived",
   CANCELLED = "cancelled",
   EXPIRED = "expired",
   DONE = "done",
+  NO_SHOW = "noShow",
 }
 
 export type Appointment = Entity<{
@@ -76,7 +78,16 @@ export type AppointmentResponse = {
   contactPerson: string;
   contact: string;
   appointmentType: number;
-  slot: { startTime: string };
+  queueStatus: QueueStatus;
+  dateValidity: string;
+  slot: {
+    id: string;
+    startTime: string;
+    endTime: string;
+    isActive: boolean;
+    maxCapacity: number;
+    booked: number;
+  };
   branch: { id: string };
 };
 
