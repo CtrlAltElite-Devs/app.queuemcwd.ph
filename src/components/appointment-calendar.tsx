@@ -42,8 +42,21 @@ export default function AppointmentCalendar({
     if (monthDaysMap.size === 0) return;
 
     const nextWorking = getNextWorkingDay(monthDaysMap, allowToday);
-    handleDateSelect(nextWorking);
-  }, [monthDaysMap, handleDateSelect]);
+    if (nextWorking) {
+      handleDateSelect(nextWorking);
+      return;
+    }
+
+    // No selectable working day in current month (e.g. last day of month)
+    // Auto-advance to next month only once from today's month
+    const now = startOfDay(new Date());
+    if (
+      currentMonth.getMonth() === now.getMonth() &&
+      currentMonth.getFullYear() === now.getFullYear()
+    ) {
+      setCurrentMonth(new Date(now.getFullYear(), now.getMonth() + 1, 1));
+    }
+  }, [monthDaysMap, handleDateSelect, allowToday, currentMonth]);
 
   useEffect(() => {
     if (selectedDate) {
