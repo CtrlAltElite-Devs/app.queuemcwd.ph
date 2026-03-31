@@ -1,5 +1,18 @@
 import { IconType } from "react-icons/lib";
 
+export type {
+  AnalyticsOverview,
+  TimelineDataPoint,
+  StatusBreakdownItem,
+  AppointmentTypeItem,
+  PeakHourItem,
+  StatusTrendItem,
+  TopUserItem,
+  AvgLeadTimeResult,
+  MultiSeriesDataPoint,
+  StatusTrendWideRow,
+} from "./analytics";
+
 export type BaseEntity = {
   id: string;
   createdAt?: Date;
@@ -54,6 +67,27 @@ export type ReportRecord = {
   requestType: string;
   cellphoneNumber: string;
   scheduledAt: string;
+};
+
+export type AppointmentResponse = {
+  id: string;
+  appointmentCode: string;
+  accountCode: string;
+  contactPerson: string;
+  contact: string;
+  appointmentType: number;
+  slot: { startTime: string };
+  branch: { id: string };
+};
+
+export type PaginatedResponse<T> = {
+  data: T[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 };
 
 export type Branch = Entity<{

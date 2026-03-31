@@ -7,6 +7,12 @@ export enum Service {
   SERVICE_CONNECTION_CONCERNS = "Service Connection Concerns",
 }
 
+const SERVICE_VALUES = Object.values(Service);
+
+export function appointmentTypeToService(type: number): string {
+  return SERVICE_VALUES[type] ?? `Unknown (${type})`;
+}
+
 export enum Category {
   REGULAR = "Regular",
   SENIOR = "Senior",
