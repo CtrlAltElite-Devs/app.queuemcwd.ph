@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import QueueAppointmentCard, { statusConfig } from "./queue-appointment-card";
+import { LoadingState } from "./ui/loading-state";
 import { Button } from "./ui/button";
 import {
   Card,
@@ -32,7 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Skeleton } from "./ui/skeleton";
 
 interface QueueAppointmentListProps {
   date?: string;
@@ -196,18 +196,8 @@ export default function QueueAppointmentList({
   if (isLoading) {
     return (
       <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-48" />
-          <Skeleton className="h-4 w-64" />
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {[...Array(2)].map((_, i) => (
-            <div key={i} className="space-y-3">
-              <Skeleton className="h-5 w-36" />
-              <Skeleton className="h-20 w-full rounded-lg" />
-              <Skeleton className="h-20 w-full rounded-lg" />
-            </div>
-          ))}
+        <CardContent className="py-16">
+          <LoadingState label="Loading appointments..." className="min-h-0" />
         </CardContent>
       </Card>
     );

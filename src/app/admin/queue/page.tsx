@@ -1,8 +1,8 @@
 "use client";
 
-import { AdminPageSkeleton } from "@/components/admin-page-skeleton";
 import AppointmentCalendar from "@/components/appointment-calendar";
 import QueueAppointmentList from "@/components/queue-appointment-list";
+import { LoadingState } from "@/components/ui/loading-state";
 import {
   Card,
   CardContent,
@@ -30,7 +30,7 @@ export default function QueueManagement() {
   );
 
   if (!selectedBranch) {
-    return <AdminPageSkeleton />;
+    return <LoadingState label="Loading queue..." className="min-h-[40vh]" />;
   }
 
   const dateStr = selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined;
