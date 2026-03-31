@@ -147,23 +147,41 @@ export function useSlotManager(monthDayId: string, branchId: string) {
   );
 
   const saveSlotChangesToApi = useCallback(
-    (slot: Slot) => {
-      const editSlotDto = {
-        slotId: slot.id,
-        limit: slot.maxCapacity,
-        startTime: formatTimeToHHmm(slot.startTime),
-        endTime: formatTimeToHHmm(slot.endTime),
-      };
-      editSlot(editSlotDto as EditSlotDto, {
-        onSuccess: () => {
+    (slot: Slot, originalSlot: Slot) => {
+      const editSlotDto: EditSlotDto = { slotId: slot.id };
+
+      if (slot.maxCapacity !== originalSlot.maxCapacity) {
+        editSlotDto.limit = slot.maxCapacity;
+      }
+      const startChanged =
+        formatTimeToHHmm(slot.startTime) !==
+        formatTimeToHHmm(originalSlot.startTime);
+      const endChanged =
+        formatTimeToHHmm(slot.endTime) !==
+        formatTimeToHHmm(originalSlot.endTime);
+
+      if (startChanged || endChanged) {
+        editSlotDto.startTime = formatTimeToHHmm(slot.startTime);
+        editSlotDto.endTime = formatTimeToHHmm(slot.endTime);
+      }
+
+      editSlot(editSlotDto, {
+        onSuccess: (updatedSlot) => {
           toast.success("Slot successfully updated");
+          queryClient.setQueryData<Slot[]>(
+            ["appointment-slots", monthDayId, branchId],
+            (old) =>
+              old?.map((s) =>
+                s.id === updatedSlot.id ? { ...s, ...updatedSlot } : s,
+              ),
+          );
         },
         onError: () => {
           toast.error("Failed to update slot");
         },
       });
     },
-    [editSlot],
+    [editSlot, queryClient, monthDayId, branchId],
   );
 
   const onDiscard = useCallback(() => {

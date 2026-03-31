@@ -36,7 +36,7 @@ interface SlotFieldProps {
   pendingAddedSlots?: Slot[];
   pending?: boolean;
   onAddSlot?: (slot: Slot) => void;
-  onSaveChanges?: (slot: Slot) => void;
+  onSaveChanges?: (slot: Slot, originalSlot: Slot) => void;
   onDiscardChanges?: () => void;
 }
 
@@ -58,14 +58,10 @@ export default function SlotField({
   const initialSlotRef = useRef<Slot>(slot);
 
   useEffect(() => {
-    setHasChanges(
-      formatTimeToHHmm(slot.startTime) !==
-        formatTimeToHHmm(initialSlotRef.current.startTime) ||
-        formatTimeToHHmm(slot.endTime) !==
-          formatTimeToHHmm(initialSlotRef.current.endTime) ||
-        slot.maxCapacity !== initialSlotRef.current.maxCapacity,
-    );
-  }, [slot.startTime, slot.endTime, slot.maxCapacity]);
+    if (!hasChanges) {
+      initialSlotRef.current = slot;
+    }
+  }, [slot, hasChanges]);
 
   const validateSlot = (slotToValidate: Slot): string[] => {
     const newErrors: string[] = [];
@@ -156,18 +152,23 @@ export default function SlotField({
     setErrors(newErrors);
 
     onUpdate({ [field]: value });
+    setHasChanges(true);
   };
 
   const handleCapacityChange = (value: string) => {
     const capacity = Number.parseInt(value);
     if (!isNaN(capacity) && capacity >= 0) {
       onUpdate({ maxCapacity: capacity });
+      setHasChanges(true);
     }
   };
 
   const handleReset = () => {
-    console.log("reset called");
-    onDiscardChanges?.();
+    onUpdate({
+      startTime: initialSlotRef.current.startTime,
+      endTime: initialSlotRef.current.endTime,
+      maxCapacity: initialSlotRef.current.maxCapacity,
+    });
     setHasChanges(false);
     setErrors([]);
   };
@@ -397,7 +398,7 @@ export default function SlotField({
           <Input
             type="time"
             className="text-sm"
-            defaultValue={formatTimeForInput(slot.startTime)}
+            value={formatTimeForInput(slot.startTime)}
             onChange={(e) => handleTimeChange("startTime", e.target.value)}
             id={`startTime-${slot.id}`}
             disabled={!slot.isActive}
@@ -414,7 +415,7 @@ export default function SlotField({
           <Input
             type="time"
             className="text-sm"
-            defaultValue={formatTimeForInput(slot.endTime)}
+            value={formatTimeForInput(slot.endTime)}
             onChange={(e) => handleTimeChange("endTime", e.target.value)}
             id={`endTime-${slot.id}`}
             disabled={!slot.isActive}
@@ -479,7 +480,8 @@ export default function SlotField({
             onClick={() => {
               setIsSubmitting(true);
               try {
-                onSaveChanges?.(slot);
+                onSaveChanges?.(slot, initialSlotRef.current);
+                initialSlotRef.current = slot;
                 setHasChanges(false);
               } finally {
                 setIsSubmitting(false);
