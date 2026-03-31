@@ -303,7 +303,7 @@ export default function ReportsPage() {
       </Card>
 
       <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
-        <Card className="sticky top-4 h-fit">
+        <Card className="h-fit xl:sticky xl:top-4">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TableProperties className="text-primary size-4" />

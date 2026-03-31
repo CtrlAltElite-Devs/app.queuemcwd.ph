@@ -56,7 +56,7 @@ export default function QueueManagement() {
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[auto_minmax(0,1fr)]">
-        <Card className="sticky top-4 h-fit">
+        <Card className="h-fit xl:sticky xl:top-4">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CalendarDays className="text-primary size-4" />
@@ -67,7 +67,7 @@ export default function QueueManagement() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <AppointmentCalendar onDateSelect={handleSelectDate} />
+            <AppointmentCalendar onDateSelect={handleSelectDate} allowToday />
             {selectedDate && selectedMonthDay && (
               <div className="bg-primary/5 border-primary/20 dark:bg-primary/10 dark:border-primary/30 mt-4 rounded-lg border px-4 py-3">
                 <p className="text-sm font-medium">

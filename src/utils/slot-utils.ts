@@ -40,6 +40,14 @@ export function formatSlotTime(time: Date | string) {
 export function formatTimeForInput(time: Date | string): string {
   if (!time) return "";
 
+  // If already in HH:mm format, return directly
+  if (
+    typeof time === "string" &&
+    /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(time)
+  ) {
+    return time;
+  }
+
   const dateObj = typeof time === "string" ? new Date(time) : time;
 
   if (isNaN(dateObj.getTime())) {
@@ -47,7 +55,6 @@ export function formatTimeForInput(time: Date | string): string {
     return "";
   }
 
-  // Use local time (not UTC) since time inputs use local time
   const hours = dateObj.getUTCHours().toString().padStart(2, "0");
   const minutes = dateObj.getUTCMinutes().toString().padStart(2, "0");
 

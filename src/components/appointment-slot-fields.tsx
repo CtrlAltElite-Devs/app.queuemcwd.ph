@@ -51,7 +51,7 @@ export default function AppointmentSlotFields({
 
   useEffect(() => {
     resetPendingSlot();
-  }, [monthDayId]);
+  }, [monthDayId, resetPendingSlot]);
 
   const hasExistingSlots = localSlots && localSlots.length > 0;
   const hasPendingSlots = pendingAddedSlots && pendingAddedSlots.length > 0;
@@ -111,8 +111,8 @@ export default function AppointmentSlotFields({
       <CardContent className="space-y-4">
         {stats && (
           <div className="flex flex-wrap gap-3">
-            <div className="rounded-lg border border-blue-200 bg-blue-50/60 px-3 py-2 dark:border-blue-800 dark:bg-blue-950/30">
-              <p className="text-xs text-blue-600 dark:text-blue-400">
+            <div className="rounded-lg border border-blue-200/35 bg-blue-50/20 px-3 py-2 dark:border-blue-800/20 dark:bg-blue-950/10">
+              <p className="text-xs text-blue-500/70 dark:text-blue-400/60">
                 Active Slots
               </p>
               <p className="text-lg font-semibold">
@@ -123,14 +123,14 @@ export default function AppointmentSlotFields({
                 </span>
               </p>
             </div>
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 px-3 py-2 dark:border-emerald-800 dark:bg-emerald-950/30">
-              <p className="text-xs text-emerald-600 dark:text-emerald-400">
+            <div className="rounded-lg border border-emerald-200/35 bg-emerald-50/20 px-3 py-2 dark:border-emerald-800/20 dark:bg-emerald-950/10">
+              <p className="text-xs text-emerald-500/70 dark:text-emerald-400/60">
                 Total Capacity
               </p>
               <p className="text-lg font-semibold">{stats.totalCapacity}</p>
             </div>
-            <div className="rounded-lg border border-violet-200 bg-violet-50/60 px-3 py-2 dark:border-violet-800 dark:bg-violet-950/30">
-              <p className="text-xs text-violet-600 dark:text-violet-400">
+            <div className="rounded-lg border border-violet-200/35 bg-violet-50/20 px-3 py-2 dark:border-violet-800/20 dark:bg-violet-950/10">
+              <p className="text-xs text-violet-500/70 dark:text-violet-400/60">
                 Booked
               </p>
               <p className="text-lg font-semibold">
@@ -145,8 +145,8 @@ export default function AppointmentSlotFields({
         )}
 
         {!isWorkingDay && hasDateSelected && (
-          <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-800 dark:bg-amber-950/30">
-            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+          <div className="rounded-lg border border-amber-200/40 bg-amber-50/30 px-4 py-3 dark:border-amber-800/25 dark:bg-amber-950/10">
+            <p className="text-sm font-medium text-amber-700/80 dark:text-amber-300/70">
               This is a non-working day. Slots may not be available for booking.
             </p>
           </div>

@@ -35,7 +35,7 @@ export function TeamSwitcher({ branches }: { branches: BranchExtended[] }) {
 
   useEffect(() => {
     if (activeTeam) setBranch(activeTeam);
-  }, [activeTeam]);
+  }, [activeTeam, setBranch]);
 
   if (!activeTeam) {
     return null;

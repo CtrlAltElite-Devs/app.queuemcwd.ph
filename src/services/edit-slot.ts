@@ -4,9 +4,9 @@ import { useMutation } from "@tanstack/react-query";
 
 export type EditSlotDto = {
   slotId: string;
-  limit: number;
-  startTime: string;
-  endTime: string;
+  limit?: number;
+  startTime?: string;
+  endTime?: string;
 };
 
 const editSlot = async (dto: EditSlotDto): Promise<Slot> => {

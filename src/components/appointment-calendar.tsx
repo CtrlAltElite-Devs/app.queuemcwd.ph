@@ -20,10 +20,12 @@ interface AppointmentCalendarProps {
     date: Date | undefined,
     monthDay: MonthDay | undefined,
   ) => void;
+  allowToday?: boolean;
 }
 
 export default function AppointmentCalendar({
   onDateSelect,
+  allowToday = false,
 }: AppointmentCalendarProps) {
   const today = startOfDay(new Date());
   const [currentMonth, setCurrentMonth] = useState<Date>(today);
@@ -36,12 +38,33 @@ export default function AppointmentCalendar({
   const { selectedDate, selectedMonthDay, handleDateSelect } =
     useCalendarSelection(getMonthDayFromDate);
 
+  // Auto-advance to next month if current month has no working days
+  // Uses React's "adjusting state during render" pattern to avoid setState in effects
+  const [prevMonthDaysMap, setPrevMonthDaysMap] = useState(monthDaysMap);
+  if (monthDaysMap !== prevMonthDaysMap) {
+    setPrevMonthDaysMap(monthDaysMap);
+    if (monthDaysMap.size > 0) {
+      const nextWorking = getNextWorkingDay(monthDaysMap, allowToday);
+      if (!nextWorking) {
+        const now = startOfDay(new Date());
+        if (
+          currentMonth.getMonth() === now.getMonth() &&
+          currentMonth.getFullYear() === now.getFullYear()
+        ) {
+          setCurrentMonth(new Date(now.getFullYear(), now.getMonth() + 1, 1));
+        }
+      }
+    }
+  }
+
+  // Select the next available working day when data loads
   useEffect(() => {
     if (monthDaysMap.size === 0) return;
-
-    const nextWorking = getNextWorkingDay(monthDaysMap);
-    handleDateSelect(nextWorking);
-  }, [monthDaysMap, handleDateSelect]);
+    const nextWorking = getNextWorkingDay(monthDaysMap, allowToday);
+    if (nextWorking) {
+      handleDateSelect(nextWorking);
+    }
+  }, [monthDaysMap, handleDateSelect, allowToday]);
 
   useEffect(() => {
     if (selectedDate) {
@@ -62,6 +85,7 @@ export default function AppointmentCalendar({
     monthDaysMap,
     today,
     selectedBranch?.allowedTimeFrame,
+    allowToday,
   );
 
   if (error && !isLoading) {
