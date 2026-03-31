@@ -2,6 +2,7 @@
 
 import { AdminPageSkeleton } from "@/components/admin-page-skeleton";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Card,
   CardContent,
@@ -9,16 +10,34 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Service } from "@/constants";
+import { useGetReportSummary } from "@/services/get-report-summary";
 import { useGetReports } from "@/services/get-reports";
 import { useBranchStore } from "@/stores/branch-store";
-import { ReportRecord } from "@/types";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { CalendarRange, FileText, TableProperties } from "lucide-react";
+import {
+  CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  TableProperties,
+} from "lucide-react";
 import { useMemo, useState } from "react";
+import { type DateRange } from "react-day-picker";
 
 const serviceStyles: Record<string, string> = {
   [Service.BILLING_CONCERNS]:
@@ -44,71 +63,67 @@ function ServiceBadge({ type }: { type: string }) {
   );
 }
 
-function toDateInputValue(date: Date) {
-  return format(date, "yyyy-MM-dd");
-}
-
 function formatDateTime(value: string) {
   return format(new Date(value), "MMM d, yyyy h:mm a");
 }
 
-function isWithinRange(
-  record: ReportRecord,
-  startDate: string,
-  endDate: string,
-) {
-  const scheduledTime = new Date(record.scheduledAt).getTime();
-
-  if (startDate) {
-    const startTime = new Date(`${startDate}T00:00:00`).getTime();
-    if (scheduledTime < startTime) {
-      return false;
-    }
-  }
-
-  if (endDate) {
-    const endTime = new Date(`${endDate}T23:59:59.999`).getTime();
-    if (scheduledTime > endTime) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 export default function ReportsPage() {
   const today = new Date();
-  const [startDate, setStartDate] = useState(
-    toDateInputValue(new Date(today.getFullYear(), today.getMonth(), 1)),
-  );
-  const [endDate, setEndDate] = useState(toDateInputValue(today));
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: new Date(today.getFullYear(), today.getMonth(), 1),
+    to: today,
+  });
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const { selectedBranch } = useBranchStore();
   const branchId = selectedBranch?.id || "";
-  const { data: reports = [], isLoading, isFetching } = useGetReports(branchId);
 
-  const filteredReports = useMemo(
-    () => reports.filter((record) => isWithinRange(record, startDate, endDate)),
-    [reports, startDate, endDate],
+  const startDate = dateRange?.from
+    ? format(dateRange.from, "yyyy-MM-dd")
+    : undefined;
+  const endDate = dateRange?.to
+    ? format(dateRange.to, "yyyy-MM-dd")
+    : undefined;
+
+  const { data, isLoading, isFetching } = useGetReports(
+    branchId,
+    startDate,
+    endDate,
+    page,
+    limit,
   );
 
+  const reports = data?.data ?? [];
+  const meta = data?.meta;
+  const {
+    data: summaryData = [],
+    isLoading: isSummaryLoading,
+    isFetching: isSummaryFetching,
+  } = useGetReportSummary(branchId, startDate, endDate);
+
   const summaryRows = useMemo(() => {
-    const counts = Object.values(Service).map((requestType) => ({
+    const countMap = new Map(
+      summaryData.map((row) => [row.requestType, row.count]),
+    );
+    return Object.values(Service).map((requestType) => ({
       requestType,
-      count: filteredReports.filter(
-        (record) => record.requestType === requestType,
-      ).length,
+      count: countMap.get(requestType) ?? 0,
     }));
+  }, [summaryData]);
 
-    return counts;
-  }, [filteredReports]);
+  const totalCount = summaryRows.reduce((sum, row) => sum + row.count, 0);
 
-  const totalCount = filteredReports.length;
+  const handleDateRangeChange = (range: DateRange | undefined) => {
+    setDateRange(range);
+    setPage(1);
+  };
 
   const handleResetDateRange = () => {
-    setStartDate(
-      toDateInputValue(new Date(today.getFullYear(), today.getMonth(), 1)),
-    );
-    setEndDate(toDateInputValue(today));
+    setDateRange({
+      from: new Date(today.getFullYear(), today.getMonth(), 1),
+      to: today,
+    });
+    setPage(1);
   };
 
   if (!selectedBranch) {
@@ -138,34 +153,48 @@ export default function ReportsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <CalendarRange className="text-primary size-4" />
+            <CalendarIcon className="text-primary size-4" />
             Date Range
           </CardTitle>
           <CardDescription>
             Filter the report summary and details by the selected date range.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-4 md:flex-row md:items-end">
-          <div className="grid flex-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">From</label>
-              <Input
-                type="date"
-                value={startDate}
-                max={endDate || undefined}
-                onChange={(event) => setStartDate(event.target.value)}
+        <CardContent className="flex items-center gap-4">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "justify-start px-2.5 font-normal",
+                  !dateRange && "text-muted-foreground",
+                )}
+              >
+                <CalendarIcon className="size-4" />
+                {dateRange?.from ? (
+                  dateRange.to ? (
+                    <>
+                      {format(dateRange.from, "LLL dd, y")} -{" "}
+                      {format(dateRange.to, "LLL dd, y")}
+                    </>
+                  ) : (
+                    format(dateRange.from, "LLL dd, y")
+                  )
+                ) : (
+                  <span>Pick a date range</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="range"
+                defaultMonth={dateRange?.from}
+                selected={dateRange}
+                onSelect={handleDateRangeChange}
+                numberOfMonths={2}
               />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">To</label>
-              <Input
-                type="date"
-                value={endDate}
-                min={startDate || undefined}
-                onChange={(event) => setEndDate(event.target.value)}
-              />
-            </div>
-          </div>
+            </PopoverContent>
+          </Popover>
           <Button variant="outline" onClick={handleResetDateRange}>
             Reset
           </Button>
@@ -197,7 +226,7 @@ export default function ReportsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {isLoading
+                  {isSummaryLoading
                     ? [...Array(4)].map((_, index) => (
                         <tr key={index} className="border-b last:border-0">
                           <td className="px-3 py-2.5">
@@ -228,14 +257,14 @@ export default function ReportsPage() {
                   <tr>
                     <td className="px-3 py-2.5 text-sm font-semibold">Total</td>
                     <td className="px-3 py-2.5 text-right text-sm font-semibold tabular-nums">
-                      {isLoading ? "-" : totalCount}
+                      {isSummaryLoading ? "-" : totalCount}
                     </td>
                   </tr>
                 </tfoot>
               </table>
             </div>
             <p className="text-muted-foreground text-xs">
-              {isFetching
+              {isSummaryFetching
                 ? "Refreshing data..."
                 : "Showing records for the selected branch only."}
             </p>
@@ -289,8 +318,8 @@ export default function ReportsPage() {
                         </td>
                       </tr>
                     ))
-                  ) : filteredReports.length > 0 ? (
-                    filteredReports.map((report) => (
+                  ) : reports.length > 0 ? (
+                    reports.map((report) => (
                       <tr key={report.id} className="border-b last:border-0">
                         <td className="px-4 py-3 font-medium">
                           {report.contactPerson}
@@ -323,6 +352,55 @@ export default function ReportsPage() {
                 </tbody>
               </table>
             </div>
+            {meta && (
+              <div className="flex items-center justify-between pt-4">
+                <div className="flex items-center gap-2">
+                  <p className="text-muted-foreground text-sm whitespace-nowrap">
+                    Rows per page
+                  </p>
+                  <Select
+                    value={String(limit)}
+                    onValueChange={(value) => {
+                      setLimit(Number(value));
+                      setPage(1);
+                    }}
+                  >
+                    <SelectTrigger size="sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="25">25</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-muted-foreground text-sm">
+                    Page {meta.page} of {meta.totalPages} ({meta.total}{" "}
+                    records)
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page <= 1}
+                    onClick={() => setPage((p) => p - 1)}
+                  >
+                    <ChevronLeft className="size-4" />
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page >= meta.totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                  >
+                    Next
+                    <ChevronRight className="size-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

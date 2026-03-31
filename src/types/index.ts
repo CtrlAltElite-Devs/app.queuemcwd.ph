@@ -56,6 +56,27 @@ export type ReportRecord = {
   scheduledAt: string;
 };
 
+export type AppointmentResponse = {
+  id: string;
+  appointmentCode: string;
+  accountCode: string;
+  contactPerson: string;
+  contact: string;
+  appointmentType: number;
+  slot: { startTime: string };
+  branch: { id: string };
+};
+
+export type PaginatedResponse<T> = {
+  data: T[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+};
+
 export type Branch = Entity<{
   name: string;
   branchCode: string;
