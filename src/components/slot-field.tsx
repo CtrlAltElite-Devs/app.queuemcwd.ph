@@ -45,18 +45,14 @@ export default function SlotField({
   const [hasChanges, setHasChanges] = useState(false);
   const initialSlotRef = useRef<Slot>(slot);
 
-  const detectChanges = () => {
-    return (
+  useEffect(() => {
+    setHasChanges(
       formatTimeToHHmm(slot.startTime) !==
         formatTimeToHHmm(initialSlotRef.current.startTime) ||
-      formatTimeToHHmm(slot.endTime) !==
-        formatTimeToHHmm(initialSlotRef.current.endTime) ||
-      slot.maxCapacity !== initialSlotRef.current.maxCapacity
+        formatTimeToHHmm(slot.endTime) !==
+          formatTimeToHHmm(initialSlotRef.current.endTime) ||
+        slot.maxCapacity !== initialSlotRef.current.maxCapacity,
     );
-  };
-
-  useEffect(() => {
-    setHasChanges(detectChanges());
   }, [slot.startTime, slot.endTime, slot.maxCapacity]);
 
   const validateSlot = (slotToValidate: Slot): string[] => {

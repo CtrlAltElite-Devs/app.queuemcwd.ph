@@ -21,7 +21,7 @@ export default function AdminLayout({ children }: PropsWithChildren) {
   const breadcrumbs = generateBreadcrumbs(pathname);
 
   return (
-    <div className="w-full font-sans dark:bg-background">
+    <div className="dark:bg-background w-full font-sans">
       <div className="flex min-h-screen">
         <WithAdminSidebar />
         <div className="flex flex-1 flex-col gap-10">
