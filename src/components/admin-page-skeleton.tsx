@@ -55,7 +55,7 @@ export function AdminPageSkeleton() {
 
 export function AdminShellSkeleton() {
   return (
-    <div className="w-full font-sans dark:bg-black">
+    <div className="dark:bg-background w-full font-sans">
       <div className="flex min-h-screen">
         <AdminSidebarSkeleton />
         <div className="flex flex-1 flex-col gap-10">

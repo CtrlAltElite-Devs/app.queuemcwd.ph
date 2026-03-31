@@ -45,18 +45,14 @@ export default function SlotField({
   const [hasChanges, setHasChanges] = useState(false);
   const initialSlotRef = useRef<Slot>(slot);
 
-  const detectChanges = () => {
-    return (
+  useEffect(() => {
+    setHasChanges(
       formatTimeToHHmm(slot.startTime) !==
         formatTimeToHHmm(initialSlotRef.current.startTime) ||
-      formatTimeToHHmm(slot.endTime) !==
-        formatTimeToHHmm(initialSlotRef.current.endTime) ||
-      slot.maxCapacity !== initialSlotRef.current.maxCapacity
+        formatTimeToHHmm(slot.endTime) !==
+          formatTimeToHHmm(initialSlotRef.current.endTime) ||
+        slot.maxCapacity !== initialSlotRef.current.maxCapacity,
     );
-  };
-
-  useEffect(() => {
-    setHasChanges(detectChanges());
   }, [slot.startTime, slot.endTime, slot.maxCapacity]);
 
   const validateSlot = (slotToValidate: Slot): string[] => {
@@ -186,7 +182,7 @@ export default function SlotField({
     <div
       className={`space-y-3 rounded-xl border border-l-[3px] p-4 transition-all ${getSlotStyles()}`}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           <h4
             className={`text-sm font-medium ${!slot.isActive ? "text-muted-foreground" : "text-foreground"}`}
@@ -212,14 +208,30 @@ export default function SlotField({
             </span>
           )}
         </div>
-        {errors.length > 0 && (
-          <span className="text-xs font-medium text-red-600 dark:text-red-400">
-            {errors.length} issue{errors.length > 1 ? "s" : ""}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {errors.length > 0 && (
+            <span className="text-xs font-medium text-red-600 dark:text-red-400">
+              {errors.length} issue{errors.length > 1 ? "s" : ""}
+            </span>
+          )}
+          <Button
+            onClick={onDelete}
+            variant="ghost"
+            size="icon-sm"
+            className="text-destructive/60 hover:text-destructive hover:bg-destructive/10"
+            disabled={slot.booked > 0}
+            title={
+              slot.booked > 0
+                ? "Cannot delete slot with existing bookings"
+                : "Delete slot"
+            }
+          >
+            <FaTrashCan className={slot.booked > 0 ? "opacity-50" : ""} />
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 items-end gap-3 md:grid-cols-5 md:gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 xl:gap-4">
         <div className="space-y-1">
           <Label
             className="text-muted-foreground text-xs"
@@ -289,21 +301,6 @@ export default function SlotField({
           <div className="text-muted-foreground text-xs">
             Booked: {slot.booked} / Max: {slot.maxCapacity}
           </div>
-        </div>
-
-        <div className="flex items-center justify-start gap-2 md:justify-center">
-          <button
-            onClick={onDelete}
-            className="text-destructive/60 hover:text-destructive p-2 transition-colors"
-            disabled={slot.booked > 0}
-            title={
-              slot.booked > 0
-                ? "Cannot delete slot with existing bookings"
-                : "Delete slot"
-            }
-          >
-            <FaTrashCan className={slot.booked > 0 ? "opacity-50" : ""} />
-          </button>
         </div>
       </div>
 

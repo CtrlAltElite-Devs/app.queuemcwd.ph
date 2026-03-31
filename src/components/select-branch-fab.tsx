@@ -73,9 +73,9 @@ export default function SelectBranchFab() {
           variant="outline"
           onClick={handleChangeBranch}
           className={cn(
-            "fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-2xl border p-3 text-white transition-all duration-200",
+            "fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-2xl border p-3 transition-all duration-200",
             "text-sm lg:text-base",
-            "dark:bg-primary hover:border-primary hover:bg-background bg-primary hover:scale-105 hover:cursor-pointer hover:shadow-md",
+            "border-border/70 bg-card/95 text-foreground hover:border-primary hover:bg-secondary/95 dark:border-border/80 dark:bg-card dark:hover:bg-secondary hover:scale-105 hover:cursor-pointer hover:shadow-md",
           )}
           aria-label={`Switch to ${selectedBranch.name}`}
         >
