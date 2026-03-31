@@ -178,7 +178,9 @@ function StatsBar({
           <Tooltip key={s.label}>
             <TooltipTrigger asChild>
               <div className="flex cursor-default items-center gap-1.5">
-                <span className={cn("size-2 rounded-full shrink-0", s.dotClass)} />
+                <span
+                  className={cn("size-2 shrink-0 rounded-full", s.dotClass)}
+                />
                 <span
                   className={cn(
                     "text-sm font-semibold tabular-nums",
@@ -295,14 +297,16 @@ function SlotHeader({ group }: { group: SlotGroup }) {
                   style={{ width: `${fillPct}%` }}
                 />
               </div>
-              <span className="text-muted-foreground text-xs tabular-nums whitespace-nowrap">
+              <span className="text-muted-foreground text-xs whitespace-nowrap tabular-nums">
                 {group.booked}/{group.maxCapacity}
               </span>
             </div>
           </TooltipTrigger>
           <TooltipContent>
             {group.booked} of {group.maxCapacity} capacity booked ({fillPct}%).{" "}
-            {openSlots > 0 ? `${openSlots} slot${openSlots !== 1 ? "s" : ""} still open.` : "Fully booked."}
+            {openSlots > 0
+              ? `${openSlots} slot${openSlots !== 1 ? "s" : ""} still open.`
+              : "Fully booked."}
           </TooltipContent>
         </Tooltip>
       )}
@@ -509,7 +513,9 @@ export default function QueueAppointmentList({
                 Refresh
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Reload appointment data from the server</TooltipContent>
+            <TooltipContent>
+              Reload appointment data from the server
+            </TooltipContent>
           </Tooltip>
         </div>
       </CardHeader>
@@ -575,7 +581,9 @@ export default function QueueAppointmentList({
                     </SelectContent>
                   </Select>
                 </TooltipTrigger>
-                <TooltipContent>Number of appointments to show per page</TooltipContent>
+                <TooltipContent>
+                  Number of appointments to show per page
+                </TooltipContent>
               </Tooltip>
               <p className="text-muted-foreground text-sm">
                 Page {meta.page} of {meta.totalPages} ({meta.total} records)

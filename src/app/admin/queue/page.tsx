@@ -56,7 +56,7 @@ export default function QueueManagement() {
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[auto_minmax(0,1fr)]">
-        <Card className="xl:sticky xl:top-4 h-fit">
+        <Card className="h-fit xl:sticky xl:top-4">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CalendarDays className="text-primary size-4" />

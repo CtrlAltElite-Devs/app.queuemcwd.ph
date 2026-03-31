@@ -51,7 +51,7 @@ export default function AppointmentSlotFields({
 
   useEffect(() => {
     resetPendingSlot();
-  }, [monthDayId]);
+  }, [monthDayId, resetPendingSlot]);
 
   const hasExistingSlots = localSlots && localSlots.length > 0;
   const hasPendingSlots = pendingAddedSlots && pendingAddedSlots.length > 0;

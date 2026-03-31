@@ -50,7 +50,6 @@ export default function SlotField({
   pendingAddedSlots,
   onAddSlot,
   onSaveChanges,
-  onDiscardChanges,
 }: SlotFieldProps) {
   const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -245,27 +244,27 @@ export default function SlotField({
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="rounded-lg bg-muted/60 px-3 py-2.5 dark:bg-muted/30">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+          <div className="bg-muted/60 dark:bg-muted/30 rounded-lg px-3 py-2.5">
+            <p className="text-muted-foreground text-[10px] font-medium tracking-wider uppercase">
               Start
             </p>
             <p className="text-sm font-semibold tabular-nums">
               {formatSlotTime(slot.startTime)}
             </p>
           </div>
-          <div className="rounded-lg bg-muted/60 px-3 py-2.5 dark:bg-muted/30">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+          <div className="bg-muted/60 dark:bg-muted/30 rounded-lg px-3 py-2.5">
+            <p className="text-muted-foreground text-[10px] font-medium tracking-wider uppercase">
               End
             </p>
             <p className="text-sm font-semibold tabular-nums">
               {formatSlotTime(slot.endTime)}
             </p>
           </div>
-          <div className="rounded-lg border border-dashed border-muted-foreground/20 px-3 py-2.5">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+          <div className="border-muted-foreground/20 rounded-lg border border-dashed px-3 py-2.5">
+            <p className="text-muted-foreground text-[10px] font-medium tracking-wider uppercase">
               Duration
             </p>
-            <p className="text-sm font-medium text-muted-foreground">
+            <p className="text-muted-foreground text-sm font-medium">
               {calculateDuration(slot.startTime, slot.endTime)}
             </p>
           </div>
@@ -273,7 +272,7 @@ export default function SlotField({
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium text-muted-foreground">
+            <p className="text-muted-foreground text-xs font-medium">
               Capacity
             </p>
             <p className="text-xs tabular-nums">

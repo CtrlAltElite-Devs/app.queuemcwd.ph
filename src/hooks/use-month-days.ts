@@ -37,7 +37,7 @@ export const useMonthDaysMap = (monthNumber: number) => {
         return [key, monthDay];
       }),
     );
-  }, [monthDays]);
+  }, [monthDays, currentYear]);
 
   return { monthDaysMap, isLoading, error, rawData: monthDays, refetch };
 };
