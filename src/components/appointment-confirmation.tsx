@@ -81,7 +81,7 @@ export default function AppointmentConfirmation({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 backdrop-blur-sm">
       <div
         className="relative mx-4 max-w-lg rounded-lg border border-gray-200 bg-white shadow-lg"
         ref={receiptRef}

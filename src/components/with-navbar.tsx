@@ -36,7 +36,7 @@ export default function WithNavbar() {
                   className={cn(
                     "hidden items-center gap-2 rounded-2xl border p-2 transition-all duration-200 md:flex",
                     "text-sm lg:text-base",
-                    "dark:bg-background hover:border-primary hover:bg-background hover:scale-105 hover:cursor-pointer hover:shadow-md",
+                    "border-border/70 bg-card/95 text-foreground hover:border-primary hover:bg-secondary/95 hover:scale-105 hover:cursor-pointer hover:shadow-md dark:border-border/80 dark:bg-card dark:hover:bg-secondary",
                   )}
                   aria-label={`Switch to ${selectedBranch.name}`}
                 >
