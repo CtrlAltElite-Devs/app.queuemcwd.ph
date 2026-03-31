@@ -12,6 +12,13 @@ export function redirectToLogin(
 
   if (clearToken) {
     response.cookies.delete("admin-auth-token");
+    response.cookies.delete(
+      encodeURIComponent("admin-auth-token|state|accessToken"),
+    );
+    response.cookies.delete(
+      encodeURIComponent("admin-auth-token|state|refreshToken"),
+    );
+    response.cookies.delete(encodeURIComponent("admin-auth-token|version"));
   }
 
   return response;

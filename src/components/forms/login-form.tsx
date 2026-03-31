@@ -30,7 +30,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const { mutate: adminLogin } = useAdminLogin();
-  const { setAccessToken } = useAdminStore();
+  const { setTokens } = useAdminStore();
 
   const form = useForm<AdminLoginSchema>({
     resolver: zodResolver(adminLoginSchema),
@@ -41,7 +41,7 @@ export function LoginForm({
     adminLogin(data, {
       onSuccess: (data) => {
         toast.success("Login successfully");
-        setAccessToken(data.accessToken);
+        setTokens(data.accessToken, data.refreshToken);
         window.location.href = "/admin";
       },
       onError: (error) => {

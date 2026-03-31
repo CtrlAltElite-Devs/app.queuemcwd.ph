@@ -1,70 +1,99 @@
 /**
  * Parses zustand-cookie-storage format.
  *
- * zustand-cookie-storage splits state into pipe-delimited cookies:
- *   admin-auth-token|state|accessToken = <raw JWT>
- *   admin-auth-token|version = 0
+ * zustand-cookie-storage URL-encodes cookie names, so pipes become %7C:
+ *   admin-auth-token%7Cstate%7CaccessToken = <URL-encoded JWT>
+ *   admin-auth-token%7Cstate%7CrefreshToken = <URL-encoded JWT>
+ *   admin-auth-token%7Cversion = 0
  *
- * This parser looks for the specific accessToken cookie by name.
+ * All lookups decode cookie names before comparing.
  */
 
 export class ZustandCookieParser {
-  private static readonly COOKIE_PREFIX = "admin-auth-token";
   private static readonly TOKEN_COOKIE_NAME =
     "admin-auth-token|state|accessToken";
+  private static readonly REFRESH_TOKEN_COOKIE_NAME =
+    "admin-auth-token|state|refreshToken";
 
   /**
-   * Extract token from zustand cookie in proxy/middleware (Edge Runtime)
+   * Extract access token from zustand cookie in proxy/middleware (Edge Runtime)
    */
   static parseFromRequest(
     cookies: { name: string; value: string }[],
   ): string | null {
     try {
       const tokenCookie = cookies.find(
-        (cookie) => cookie.name === this.TOKEN_COOKIE_NAME,
+        (cookie) => decodeURIComponent(cookie.name) === this.TOKEN_COOKIE_NAME,
       );
-      if (tokenCookie?.value) return tokenCookie.value;
-
-      // Fallback: try to find any cookie with the prefix that looks like a JWT
-      const authCookie = cookies.find(
-        (cookie) =>
-          cookie.name.startsWith(this.COOKIE_PREFIX) &&
-          cookie.value.length > 10,
-      );
-      return authCookie?.value || null;
-    } catch (error) {
-      console.error("Error parsing zustand cookie in proxy:", error);
+      if (tokenCookie?.value) {
+        return decodeURIComponent(tokenCookie.value);
+      }
+      return null;
+    } catch {
       return null;
     }
   }
 
   /**
-   * Extract token from zustand cookie in client-side (Browser)
+   * Extract access token from zustand cookie in client-side (Browser)
    */
   static parseFromBrowser(): string | null {
     if (typeof window === "undefined") return null;
 
     try {
       const cookies = document.cookie.split("; ");
-
-      // Look for the exact token cookie
-      const tokenCookie = cookies.find((row) =>
-        row.startsWith(`${this.TOKEN_COOKIE_NAME}=`),
-      );
-      if (tokenCookie) {
-        return tokenCookie.substring(this.TOKEN_COOKIE_NAME.length + 1);
+      for (const row of cookies) {
+        const eqIndex = row.indexOf("=");
+        if (eqIndex === -1) continue;
+        const name = decodeURIComponent(row.substring(0, eqIndex));
+        if (name === this.TOKEN_COOKIE_NAME) {
+          return decodeURIComponent(row.substring(eqIndex + 1));
+        }
       }
+      return null;
+    } catch {
+      return null;
+    }
+  }
 
-      // Fallback: find any cookie with the prefix
-      const authCookie = cookies.find((row) =>
-        row.startsWith(this.COOKIE_PREFIX),
+  /**
+   * Extract refresh token from zustand cookie in proxy/middleware (Edge Runtime)
+   */
+  static parseRefreshTokenFromRequest(
+    cookies: { name: string; value: string }[],
+  ): string | null {
+    try {
+      const tokenCookie = cookies.find(
+        (cookie) =>
+          decodeURIComponent(cookie.name) === this.REFRESH_TOKEN_COOKIE_NAME,
       );
-      if (!authCookie) return null;
+      if (tokenCookie?.value) {
+        return decodeURIComponent(tokenCookie.value);
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
 
-      const eqIndex = authCookie.indexOf("=");
-      return eqIndex !== -1 ? authCookie.substring(eqIndex + 1) : null;
-    } catch (error) {
-      console.error("Error parsing zustand cookie in browser:", error);
+  /**
+   * Extract refresh token from zustand cookie in client-side (Browser)
+   */
+  static parseRefreshTokenFromBrowser(): string | null {
+    if (typeof window === "undefined") return null;
+
+    try {
+      const cookies = document.cookie.split("; ");
+      for (const row of cookies) {
+        const eqIndex = row.indexOf("=");
+        if (eqIndex === -1) continue;
+        const name = decodeURIComponent(row.substring(0, eqIndex));
+        if (name === this.REFRESH_TOKEN_COOKIE_NAME) {
+          return decodeURIComponent(row.substring(eqIndex + 1));
+        }
+      }
+      return null;
+    } catch {
       return null;
     }
   }
