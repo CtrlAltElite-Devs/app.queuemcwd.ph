@@ -20,10 +20,12 @@ interface AppointmentCalendarProps {
     date: Date | undefined,
     monthDay: MonthDay | undefined,
   ) => void;
+  allowToday?: boolean;
 }
 
 export default function AppointmentCalendar({
   onDateSelect,
+  allowToday = false,
 }: AppointmentCalendarProps) {
   const today = startOfDay(new Date());
   const [currentMonth, setCurrentMonth] = useState<Date>(today);
@@ -39,7 +41,7 @@ export default function AppointmentCalendar({
   useEffect(() => {
     if (monthDaysMap.size === 0) return;
 
-    const nextWorking = getNextWorkingDay(monthDaysMap);
+    const nextWorking = getNextWorkingDay(monthDaysMap, allowToday);
     handleDateSelect(nextWorking);
   }, [monthDaysMap, handleDateSelect]);
 
@@ -62,6 +64,7 @@ export default function AppointmentCalendar({
     monthDaysMap,
     today,
     selectedBranch?.allowedTimeFrame,
+    allowToday,
   );
 
   if (error && !isLoading) {

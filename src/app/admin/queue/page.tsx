@@ -67,7 +67,7 @@ export default function QueueManagement() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <AppointmentCalendar onDateSelect={handleSelectDate} />
+            <AppointmentCalendar onDateSelect={handleSelectDate} allowToday />
             {selectedDate && selectedMonthDay && (
               <div className="bg-primary/5 border-primary/20 dark:bg-primary/10 dark:border-primary/30 mt-4 rounded-lg border px-4 py-3">
                 <p className="text-sm font-medium">

@@ -6,12 +6,15 @@ const getKey = (date: Date) =>
     date.getDate(),
   ).padStart(2, "0")}`;
 
-export const getNextWorkingDay = (monthDaysMap: Map<string, MonthDay>) => {
+export const getNextWorkingDay = (
+  monthDaysMap: Map<string, MonthDay>,
+  allowToday: boolean = false,
+) => {
   const sortedDates = [...monthDaysMap.keys()].sort();
   const todayKey = getKey(new Date());
 
   for (const dateKey of sortedDates) {
-    if (dateKey <= todayKey) continue;
+    if (allowToday ? dateKey < todayKey : dateKey <= todayKey) continue;
 
     const date = new Date(dateKey);
     const monthDay = monthDaysMap.get(dateKey);

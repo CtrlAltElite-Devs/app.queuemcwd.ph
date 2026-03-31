@@ -19,6 +19,7 @@ export const createCalendarModifiers = (
   monthDaysMap: Map<string, MonthDay>,
   today: Date = startOfDay(new Date()),
   allowedDaysCount: number = 7,
+  allowToday: boolean = false,
 ): Record<string, Matcher | Matcher[]> => {
   const getDayData = (date: Date): MonthDay | undefined => {
     const key = `${date.getFullYear()}-${(date.getMonth() + 1)
@@ -29,8 +30,11 @@ export const createCalendarModifiers = (
 
   // --- Compute next 7 weekdays from tomorrow (skipping weekends)
   const allowedWeekdays: Date[] = [];
+  if (allowToday && !isSaturday(today) && !isSunday(today)) {
+    allowedWeekdays.push(startOfDay(today));
+  }
   let current = addDays(startOfDay(today), 1); // start from tomorrow
-  while (allowedWeekdays.length < allowedDaysCount) {
+  while (allowedWeekdays.length < allowedDaysCount + (allowToday ? 1 : 0)) {
     if (!isSaturday(current) && !isSunday(current)) {
       allowedWeekdays.push(current);
     }
@@ -39,12 +43,12 @@ export const createCalendarModifiers = (
 
   return {
     disabled: (date: Date) =>
-      // disable today and past dates
-      !isAfter(date, today) ||
+      // disable past dates (and today unless allowToday is set)
+      (!isAfter(date, today) && !(allowToday && isSameDay(date, today))) ||
       // disable weekends
       isSaturday(date) ||
       isSunday(date) ||
-      // disable if not one of the allowed next 7 weekdays
+      // disable if not one of the allowed weekdays
       !allowedWeekdays.some((d) => isSameDay(d, date)),
 
     working: (date: Date) => {
