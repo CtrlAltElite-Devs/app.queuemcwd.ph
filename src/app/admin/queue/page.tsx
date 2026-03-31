@@ -2,7 +2,7 @@
 
 import { AdminPageSkeleton } from "@/components/admin-page-skeleton";
 import AppointmentCalendar from "@/components/appointment-calendar";
-import AppointmentSlotFields from "@/components/appointment-slot-fields";
+import QueueAppointmentList from "@/components/queue-appointment-list";
 import {
   Card,
   CardContent,
@@ -13,10 +13,10 @@ import {
 import { useBranchStore } from "@/stores/branch-store";
 import { MonthDay } from "@/types";
 import { format } from "date-fns";
-import { CalendarClock, CalendarDays } from "lucide-react";
+import { CalendarDays, ListChecks } from "lucide-react";
 import { useCallback, useState } from "react";
 
-export default function AppointmentSettings() {
+export default function QueueManagement() {
   const { selectedBranch } = useBranchStore();
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedMonthDay, setSelectedMonthDay] = useState<MonthDay>();
@@ -33,17 +33,19 @@ export default function AppointmentSettings() {
     return <AdminPageSkeleton />;
   }
 
+  const dateStr = selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined;
+
   return (
     <div className="space-y-6 pb-6">
       <section className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
           <div className="bg-primary/10 text-primary dark:bg-primary/20 flex size-9 items-center justify-center rounded-lg">
-            <CalendarClock className="size-5" />
+            <ListChecks className="size-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold">Appointments</h1>
+            <h1 className="text-2xl font-semibold">Queue Management</h1>
             <p className="text-muted-foreground text-sm">
-              Manage time slots and appointments for{" "}
+              View and manage appointments for{" "}
               <span className="text-primary font-medium">
                 {selectedBranch.name}
               </span>
@@ -61,7 +63,7 @@ export default function AppointmentSettings() {
               Select Date
             </CardTitle>
             <CardDescription>
-              Pick a date to view and manage its slots.
+              Pick a date to view its appointments.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -87,9 +89,8 @@ export default function AppointmentSettings() {
           </CardContent>
         </Card>
 
-        <AppointmentSlotFields
-          monthDayId={selectedMonthDay?.id || ""}
-          isWorkingDay={selectedMonthDay?.isWorkingDay}
+        <QueueAppointmentList
+          date={dateStr}
           hasDateSelected={!!selectedMonthDay}
         />
       </div>
