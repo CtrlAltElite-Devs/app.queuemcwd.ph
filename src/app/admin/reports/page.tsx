@@ -1,6 +1,11 @@
 "use client";
 
-import { AdminPageSkeleton } from "@/components/admin-page-skeleton";
+import {
+  shimmerReportsTemplate,
+  shimmerSummaryTemplateRows,
+  shimmerSummaryTemplateTotal,
+} from "@/components/shimmer-templates";
+import { AppShimmer } from "@/components/ui/app-shimmer";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -22,10 +27,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
+import { LoadingState } from "@/components/ui/loading-state";
 import { Service } from "@/constants";
 import { useGetReportSummary } from "@/services/get-report-summary";
 import { useGetReports } from "@/services/get-reports";
+import { ReportRecord } from "@/types";
 import { useBranchStore } from "@/stores/branch-store";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -67,6 +73,101 @@ function formatDateTime(value: string) {
   return format(new Date(value), "MMM d, yyyy h:mm a");
 }
 
+function ReportsSummaryTable({
+  summaryRows,
+  totalCount,
+}: {
+  summaryRows: { requestType: string; count: number }[];
+  totalCount: number;
+}) {
+  return (
+    <div className="overflow-hidden rounded-lg border">
+      <table className="w-full text-sm">
+        <thead className="bg-muted/50 text-left">
+          <tr className="border-b">
+            <th className="px-3 py-2.5 text-xs font-medium">Request type</th>
+            <th className="px-3 py-2.5 text-right text-xs font-medium">
+              Counts
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {summaryRows.map((row) => (
+            <tr key={row.requestType} className="border-b last:border-0">
+              <td className="px-3 py-2.5">
+                <ServiceBadge type={row.requestType} />
+              </td>
+              <td className="px-3 py-2.5 text-right font-medium tabular-nums">
+                {row.count}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot className="bg-muted/40">
+          <tr>
+            <td className="px-3 py-2.5 text-sm font-semibold">Total</td>
+            <td className="px-3 py-2.5 text-right text-sm font-semibold tabular-nums">
+              {totalCount}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  );
+}
+
+function ReportsDetailTable({ reports }: { reports: ReportRecord[] }) {
+  return (
+    <div className="overflow-x-auto rounded-lg border">
+      <table className="w-full min-w-[760px] text-sm">
+        <thead className="bg-muted/50">
+          <tr className="border-b text-left">
+            <th className="px-4 py-3 font-medium">Name / Contact Person</th>
+            <th className="px-4 py-3 font-medium">Act No</th>
+            <th className="px-4 py-3 font-medium">Date Time</th>
+            <th className="px-4 py-3 font-medium">Ref #</th>
+            <th className="px-4 py-3 font-medium">Request Type</th>
+            <th className="px-4 py-3 font-medium">Cellphone #</th>
+          </tr>
+        </thead>
+        <tbody>
+          {reports.length > 0 ? (
+            reports.map((report) => (
+              <tr key={report.id} className="border-b last:border-0">
+                <td className="px-4 py-3 font-medium">
+                  {report.contactPerson}
+                </td>
+                <td className="px-4 py-3">{report.accountNumber}</td>
+                <td className="px-4 py-3">
+                  {formatDateTime(report.scheduledAt)}
+                </td>
+                <td className="px-4 py-3">{report.referenceNumber}</td>
+                <td className="px-4 py-3">
+                  <ServiceBadge type={report.requestType} />
+                </td>
+                <td className="px-4 py-3">{report.cellphoneNumber}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={6} className="px-4 py-10 text-center">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="bg-primary/10 dark:bg-primary/15 flex size-10 items-center justify-center rounded-full">
+                    <FileText className="text-primary/60 size-5" />
+                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    No report data found for this branch and date range.
+                  </p>
+                </div>
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default function ReportsPage() {
   const today = new Date();
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -85,7 +186,7 @@ export default function ReportsPage() {
     ? format(dateRange.to, "yyyy-MM-dd")
     : undefined;
 
-  const { data, isLoading, isFetching } = useGetReports(
+  const { data, isLoading } = useGetReports(
     branchId,
     startDate,
     endDate,
@@ -127,7 +228,7 @@ export default function ReportsPage() {
   };
 
   if (!selectedBranch) {
-    return <AdminPageSkeleton />;
+    return <LoadingState label="Loading reports..." className="min-h-[40vh]" />;
   }
 
   return (
@@ -213,56 +314,18 @@ export default function ReportsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="overflow-hidden rounded-lg border">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/50 text-left">
-                  <tr className="border-b">
-                    <th className="px-3 py-2.5 text-xs font-medium">
-                      Request type
-                    </th>
-                    <th className="px-3 py-2.5 text-right text-xs font-medium">
-                      Counts
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {isSummaryLoading
-                    ? [...Array(4)].map((_, index) => (
-                        <tr key={index} className="border-b last:border-0">
-                          <td className="px-3 py-2.5">
-                            <Skeleton className="h-5 w-32 rounded-full" />
-                          </td>
-                          <td className="px-3 py-2.5">
-                            <div className="flex justify-end">
-                              <Skeleton className="h-4 w-8" />
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    : summaryRows.map((row) => (
-                        <tr
-                          key={row.requestType}
-                          className="border-b last:border-0"
-                        >
-                          <td className="px-3 py-2.5">
-                            <ServiceBadge type={row.requestType} />
-                          </td>
-                          <td className="px-3 py-2.5 text-right font-medium tabular-nums">
-                            {row.count}
-                          </td>
-                        </tr>
-                      ))}
-                </tbody>
-                <tfoot className="bg-muted/40">
-                  <tr>
-                    <td className="px-3 py-2.5 text-sm font-semibold">Total</td>
-                    <td className="px-3 py-2.5 text-right text-sm font-semibold tabular-nums">
-                      {isSummaryLoading ? "-" : totalCount}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
+            <AppShimmer
+              loading={isSummaryLoading}
+              templateProps={{
+                summaryRows: shimmerSummaryTemplateRows,
+                totalCount: shimmerSummaryTemplateTotal,
+              }}
+            >
+              <ReportsSummaryTable
+                summaryRows={summaryRows}
+                totalCount={totalCount}
+              />
+            </AppShimmer>
             <p className="text-muted-foreground text-xs">
               {isSummaryFetching
                 ? "Refreshing data..."
@@ -280,78 +343,12 @@ export default function ReportsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto rounded-lg border">
-              <table className="w-full min-w-[760px] text-sm">
-                <thead className="bg-muted/50">
-                  <tr className="border-b text-left">
-                    <th className="px-4 py-3 font-medium">
-                      Name / Contact Person
-                    </th>
-                    <th className="px-4 py-3 font-medium">Act No</th>
-                    <th className="px-4 py-3 font-medium">Date Time</th>
-                    <th className="px-4 py-3 font-medium">Ref #</th>
-                    <th className="px-4 py-3 font-medium">Request Type</th>
-                    <th className="px-4 py-3 font-medium">Cellphone #</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {isLoading ? (
-                    [...Array(6)].map((_, index) => (
-                      <tr key={index} className="border-b last:border-0">
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-32" />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-24" />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-36" />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-20" />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-40" />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Skeleton className="h-4 w-28" />
-                        </td>
-                      </tr>
-                    ))
-                  ) : reports.length > 0 ? (
-                    reports.map((report) => (
-                      <tr key={report.id} className="border-b last:border-0">
-                        <td className="px-4 py-3 font-medium">
-                          {report.contactPerson}
-                        </td>
-                        <td className="px-4 py-3">{report.accountNumber}</td>
-                        <td className="px-4 py-3">
-                          {formatDateTime(report.scheduledAt)}
-                        </td>
-                        <td className="px-4 py-3">{report.referenceNumber}</td>
-                        <td className="px-4 py-3">
-                          <ServiceBadge type={report.requestType} />
-                        </td>
-                        <td className="px-4 py-3">{report.cellphoneNumber}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={6} className="px-4 py-10 text-center">
-                        <div className="flex flex-col items-center gap-2">
-                          <div className="bg-primary/10 dark:bg-primary/15 flex size-10 items-center justify-center rounded-full">
-                            <FileText className="text-primary/60 size-5" />
-                          </div>
-                          <p className="text-muted-foreground text-sm">
-                            No report data found for this branch and date range.
-                          </p>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+            <AppShimmer
+              loading={isLoading}
+              templateProps={{ reports: shimmerReportsTemplate }}
+            >
+              <ReportsDetailTable reports={reports} />
+            </AppShimmer>
             {meta && (
               <div className="flex items-center justify-between pt-4">
                 <div className="flex items-center gap-2">

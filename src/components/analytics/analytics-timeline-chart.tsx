@@ -14,7 +14,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
+import { analyticsTimelineTemplate } from "@/components/analytics/analytics-shimmer-templates";
+import { AppShimmer } from "@/components/ui/app-shimmer";
 import { TimelineDataPoint } from "@/types";
 import { format, parseISO } from "date-fns";
 import { BarChart3 } from "lucide-react";
@@ -33,6 +34,21 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function AnalyticsTimelineChart({ data = [], isLoading }: Props) {
+  return (
+    <AppShimmer
+      loading={isLoading}
+      templateProps={{ data: analyticsTimelineTemplate }}
+    >
+      <AnalyticsTimelineChartContent data={data} />
+    </AppShimmer>
+  );
+}
+
+function AnalyticsTimelineChartContent({
+  data = [],
+}: {
+  data?: TimelineDataPoint[];
+}) {
   const summary = useMemo(() => {
     if (data.length === 0) return null;
     const total = data.reduce((s, d) => s + d.count, 0);
@@ -58,9 +74,7 @@ export function AnalyticsTimelineChart({ data = [], isLoading }: Props) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <Skeleton className="h-[300px] w-full" />
-        ) : data.length === 0 ? (
+        {data.length === 0 ? (
           <div className="flex h-[300px] items-center justify-center">
             <p className="text-muted-foreground text-sm">
               No timeline data available for this date range.

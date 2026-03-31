@@ -16,7 +16,8 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
+import { analyticsStatusTrendTemplate } from "@/components/analytics/analytics-shimmer-templates";
+import { AppShimmer } from "@/components/ui/app-shimmer";
 import { StatusTrendWideRow } from "@/types";
 import { format, parseISO } from "date-fns";
 import { Activity } from "lucide-react";
@@ -47,6 +48,21 @@ const chartConfig = {
 
 export function AnalyticsStatusTrendChart({ data = [], isLoading }: Props) {
   return (
+    <AppShimmer
+      loading={isLoading}
+      templateProps={{ data: analyticsStatusTrendTemplate }}
+    >
+      <AnalyticsStatusTrendChartContent data={data} />
+    </AppShimmer>
+  );
+}
+
+function AnalyticsStatusTrendChartContent({
+  data = [],
+}: {
+  data?: StatusTrendWideRow[];
+}) {
+  return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
@@ -61,9 +77,7 @@ export function AnalyticsStatusTrendChart({ data = [], isLoading }: Props) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <Skeleton className="h-[350px] w-full" />
-        ) : data.length === 0 ? (
+        {data.length === 0 ? (
           <div className="flex h-[350px] items-center justify-center">
             <p className="text-muted-foreground text-sm">
               No trend data available.

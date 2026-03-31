@@ -7,7 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { AppShimmer } from "@/components/ui/app-shimmer";
+import { analyticsLeadTimeTemplate } from "@/components/analytics/analytics-shimmer-templates";
 import {
   Tooltip,
   TooltipContent,
@@ -31,6 +32,17 @@ function formatLeadTime(minutes: number): string {
 
 export function AnalyticsLeadTimeCard({ data, isLoading }: Props) {
   return (
+    <AppShimmer
+      loading={isLoading}
+      templateProps={{ data: analyticsLeadTimeTemplate }}
+    >
+      <AnalyticsLeadTimeCardContent data={data} />
+    </AppShimmer>
+  );
+}
+
+function AnalyticsLeadTimeCardContent({ data }: { data?: AvgLeadTimeResult }) {
+  return (
     <TooltipProvider delayDuration={200}>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -52,18 +64,14 @@ export function AnalyticsLeadTimeCard({ data, isLoading }: Props) {
           </div>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-8 w-20" />
-          ) : (
-            <>
-              <p className="text-primary text-2xl font-bold tabular-nums">
-                {data ? formatLeadTime(data.avgLeadTimeMinutes) : "N/A"}
-              </p>
-              <CardDescription className="mt-1 text-xs">
-                booking to appointment
-              </CardDescription>
-            </>
-          )}
+          <>
+            <p className="text-primary text-2xl font-bold tabular-nums">
+              {data ? formatLeadTime(data.avgLeadTimeMinutes) : "N/A"}
+            </p>
+            <CardDescription className="mt-1 text-xs">
+              booking to appointment
+            </CardDescription>
+          </>
         </CardContent>
       </Card>
     </TooltipProvider>

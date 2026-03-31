@@ -1,6 +1,5 @@
 "use client";
 
-import { AdminPageSkeleton } from "@/components/admin-page-skeleton";
 import { AnalyticsOverviewCards } from "@/components/analytics/analytics-overview-cards";
 import { AnalyticsLeadTimeCard } from "@/components/analytics/analytics-lead-time-card";
 import { AnalyticsTimelineChart } from "@/components/analytics/analytics-timeline-chart";
@@ -12,6 +11,7 @@ import { AnalyticsStatusTrendChart } from "@/components/analytics/analytics-stat
 import { AnalyticsTopUsersChart } from "@/components/analytics/analytics-top-users-chart";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { LoadingState } from "@/components/ui/loading-state";
 import {
   Card,
   CardContent,
@@ -144,7 +144,9 @@ export default function AnalyticsPage() {
       : "all time";
 
   if (!selectedBranch) {
-    return <AdminPageSkeleton />;
+    return (
+      <LoadingState label="Loading analytics..." className="min-h-[40vh]" />
+    );
   }
 
   return (

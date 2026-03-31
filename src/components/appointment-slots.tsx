@@ -1,6 +1,10 @@
 "use client";
 
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  shimmerSlotTemplateMonthDay,
+  shimmerSlotTemplates,
+} from "@/components/shimmer-templates";
+import { AppShimmer } from "@/components/ui/app-shimmer";
 import { useDateToMonthDay, useMonthDaysMap } from "@/hooks/use-month-days";
 import { useGetAppointmentSlotsV2 } from "@/services/get-appointment-slots";
 import { useBranchStore } from "@/stores/branch-store";
@@ -15,7 +19,6 @@ import { useEffect, useMemo, useState } from "react";
 import { MdEventAvailable } from "react-icons/md";
 import AppointmentConfirmation from "./appointment-confirmation";
 import AppointmentForm from "./forms/appointment-form";
-import SlotsGridSkeleton from "./skeletons/slots-grid-skeleton";
 import AppointmentSlot from "./slot";
 import {
   Dialog,
@@ -28,6 +31,112 @@ import {
 
 interface AppointmentSlotsProps {
   monthDay?: MonthDay;
+}
+
+function AppointmentSlotsCard({
+  formattedDate,
+  currentMonthDayId,
+  slots,
+  onSlotSelect,
+  onAppointmentCreated,
+}: {
+  formattedDate: string;
+  currentMonthDayId: string;
+  slots: Slot[];
+  onSlotSelect: (slot: Slot) => void;
+  onAppointmentCreated: (appointment: Appointment) => void;
+}) {
+  return (
+    <div className="bg-background/15 space-y-4 rounded-3xl p-4">
+      <AppointmentSlotsHeader
+        formattedDate={formattedDate}
+        currentMonthDayId={currentMonthDayId}
+      />
+      <AppointmentSlotsGrid
+        currentMonthDayId={currentMonthDayId}
+        formattedDate={formattedDate}
+        slots={slots}
+        onSlotSelect={onSlotSelect}
+        onAppointmentCreated={onAppointmentCreated}
+      />
+    </div>
+  );
+}
+
+function AppointmentSlotsHeader({
+  formattedDate,
+  currentMonthDayId,
+}: {
+  formattedDate: string;
+  currentMonthDayId: string;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <MdEventAvailable size={20} />
+      <p className="text-md dark:text-primary-foreground">
+        Available Slots for{" "}
+        <span
+          key={currentMonthDayId}
+          className="animate-fadeBasic font-semibold"
+        >
+          {formattedDate}
+        </span>
+      </p>
+    </div>
+  );
+}
+
+function AppointmentSlotsGrid({
+  currentMonthDayId,
+  formattedDate,
+  slots,
+  onSlotSelect,
+  onAppointmentCreated,
+}: {
+  currentMonthDayId: string;
+  formattedDate: string;
+  slots: Slot[];
+  onSlotSelect: (slot: Slot) => void;
+  onAppointmentCreated: (appointment: Appointment) => void;
+}) {
+  return (
+    <div
+      key={`slots-${currentMonthDayId}`}
+      className="page-fade grid grid-cols-2 gap-3 sm:grid-cols-3"
+    >
+      {slots.map((slot) => (
+        <Dialog key={slot.id}>
+          <DialogTrigger>
+            <AppointmentSlot slot={slot} onSelect={() => onSlotSelect(slot)} />
+          </DialogTrigger>
+          <DialogContent className="bg-background rounded-3xl">
+            <DialogHeader>
+              <DialogTitle className="text-2xl text-blue-500">
+                Create Appointment
+              </DialogTitle>
+              <DialogDescription asChild>
+                <div>
+                  <p className="my-2 flex flex-row items-center gap-1">
+                    <Calendar1 size={16} />
+                    {formattedDate}
+                  </p>
+                  <p className="my-2 flex flex-row items-center gap-1">
+                    <ClockIcon size={16} />
+                    {formatSlotTime(slot.startTime)} -{" "}
+                    {formatSlotTime(slot.endTime)}
+                  </p>
+                </div>
+              </DialogDescription>
+            </DialogHeader>
+            <AppointmentForm
+              selectedSlot={slot}
+              onAppointmentCreated={onAppointmentCreated}
+            />
+          </DialogContent>
+        </Dialog>
+      ))}
+    </div>
+  );
 }
 
 export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
@@ -87,14 +196,37 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
     );
   }, [currentMonthDay]);
 
-  if (!currentMonthDay || monthDaysLoading || slotsLoading || !selectedBranch) {
-    const placeholderCount = 8; // 2 rows × 4 columns
+  const onAppointmentCreated = (appointment: Appointment) => {
+    queryClient.invalidateQueries({ queryKey: ["appointment-slots", dayId] });
+    setCreatedAppointment(appointment);
+    setShowConfirmation(true);
+  };
 
+  if (!currentMonthDay || monthDaysLoading || slotsLoading || !selectedBranch) {
     return (
-      <div className="bg-background/20 min-w-full space-y-4 rounded-3xl p-4">
-        {/* Header skeleton */}
-        <Skeleton className="bg-background/20 h-6 w-1/3 rounded-md" />
-        <SlotsGridSkeleton placeholderCount={placeholderCount} />
+      <div className="bg-background/15 space-y-4 rounded-3xl p-4">
+        <AppointmentSlotsHeader
+          formattedDate="Loading date..."
+          currentMonthDayId={shimmerSlotTemplateMonthDay.id}
+        />
+        <AppShimmer
+          loading={true}
+          templateProps={{
+            currentMonthDayId: shimmerSlotTemplateMonthDay.id,
+            formattedDate: "March 24, 2026",
+            slots: shimmerSlotTemplates,
+            onSlotSelect: () => undefined,
+            onAppointmentCreated: () => undefined,
+          }}
+        >
+          <AppointmentSlotsGrid
+            currentMonthDayId={currentMonthDay?.id || ""}
+            formattedDate=""
+            slots={[]}
+            onSlotSelect={() => undefined}
+            onAppointmentCreated={() => undefined}
+          />
+        </AppShimmer>
       </div>
     );
   }
@@ -125,12 +257,6 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
     );
   }
 
-  const onAppointmentCreated = (appointment: Appointment) => {
-    queryClient.invalidateQueries({ queryKey: ["appointment-slots", dayId] });
-    setCreatedAppointment(appointment);
-    setShowConfirmation(true);
-  };
-
   if (createdAppointment && selectedSlot && showConfirmation) {
     return (
       <AppointmentConfirmation
@@ -142,58 +268,12 @@ export default function AppointmentSlots({ monthDay }: AppointmentSlotsProps) {
   }
 
   return (
-    <div className="bg-background/15 space-y-4 rounded-3xl p-4">
-      <div className="flex items-center gap-3">
-        <MdEventAvailable size={20} />
-        <p className="text-md dark:text-primary-foreground">
-          Available Slots for{" "}
-          <span
-            key={`${currentMonthDay?.year}-${currentMonthDay?.month}-${currentMonthDay?.day}`}
-            className="animate-fadeBasic font-semibold"
-          >
-            {formattedDate}
-          </span>
-        </p>
-      </div>
-      <div
-        key={`slots-${currentMonthDay?.id}`}
-        className="page-fade grid grid-cols-2 gap-3 sm:grid-cols-3"
-      >
-        {data?.slots.map((slot) => (
-          <Dialog key={slot.id}>
-            <DialogTrigger>
-              <AppointmentSlot
-                slot={slot}
-                onSelect={() => setSelectedSlot(slot)}
-              />
-            </DialogTrigger>
-            <DialogContent className="bg-background rounded-3xl">
-              <DialogHeader>
-                <DialogTitle className="text-2xl text-blue-500">
-                  Create Appointment
-                </DialogTitle>
-                <DialogDescription asChild>
-                  <div>
-                    <p className="my-2 flex flex-row items-center gap-1">
-                      <Calendar1 size={16} />
-                      {formattedDate}
-                    </p>
-                    <p className="my-2 flex flex-row items-center gap-1">
-                      <ClockIcon size={16} />
-                      {formatSlotTime(slot.startTime)} -{" "}
-                      {formatSlotTime(slot.endTime)}
-                    </p>
-                  </div>
-                </DialogDescription>
-              </DialogHeader>
-              <AppointmentForm
-                selectedSlot={slot}
-                onAppointmentCreated={onAppointmentCreated}
-              />
-            </DialogContent>
-          </Dialog>
-        ))}
-      </div>
-    </div>
+    <AppointmentSlotsCard
+      formattedDate={formattedDate}
+      currentMonthDayId={currentMonthDay.id}
+      slots={data?.slots ?? []}
+      onSlotSelect={setSelectedSlot}
+      onAppointmentCreated={onAppointmentCreated}
+    />
   );
 }

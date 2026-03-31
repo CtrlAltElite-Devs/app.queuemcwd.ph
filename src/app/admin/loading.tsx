@@ -1,5 +1,9 @@
-import { AdminShellSkeleton } from "@/components/admin-page-skeleton";
+import LoadingUi from "@/components/ui/loading-ui";
 
 export default function AdminLoading() {
-  return <AdminShellSkeleton />;
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <LoadingUi className="min-h-0" />
+    </div>
+  );
 }

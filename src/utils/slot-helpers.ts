@@ -1,6 +1,4 @@
 import { TimeConfig } from "@/constants";
-import { formatTimeToHHmm } from ".";
-import { isTimeFormat, timeToMinutes } from "./slot-utils";
 
 export const SlotHelpers = {
   createSlotAfter(lastSlotEnd: Date | null): {

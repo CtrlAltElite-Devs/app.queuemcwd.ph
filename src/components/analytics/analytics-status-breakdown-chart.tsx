@@ -15,7 +15,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
+import { analyticsStatusBreakdownTemplate } from "@/components/analytics/analytics-shimmer-templates";
+import { AppShimmer } from "@/components/ui/app-shimmer";
 import { StatusBreakdownItem } from "@/types";
 import { PieChartIcon } from "lucide-react";
 
@@ -52,6 +53,21 @@ const statusDescriptions: Record<string, string> = {
 };
 
 export function AnalyticsStatusBreakdownChart({ data = [], isLoading }: Props) {
+  return (
+    <AppShimmer
+      loading={isLoading}
+      templateProps={{ data: analyticsStatusBreakdownTemplate }}
+    >
+      <AnalyticsStatusBreakdownChartContent data={data} />
+    </AppShimmer>
+  );
+}
+
+function AnalyticsStatusBreakdownChartContent({
+  data = [],
+}: {
+  data?: StatusBreakdownItem[];
+}) {
   const chartData = data.map((item) => ({
     status: item.status,
     count: item.count,
@@ -88,9 +104,7 @@ export function AnalyticsStatusBreakdownChart({ data = [], isLoading }: Props) {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1">
-        {isLoading ? (
-          <Skeleton className="mx-auto size-[250px] rounded-full" />
-        ) : data.length === 0 ? (
+        {data.length === 0 ? (
           <div className="flex h-[250px] items-center justify-center">
             <p className="text-muted-foreground text-sm">
               No breakdown data available for this date range.

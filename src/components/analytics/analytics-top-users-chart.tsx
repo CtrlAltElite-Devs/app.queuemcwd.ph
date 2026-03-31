@@ -14,7 +14,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
+import { analyticsTopUsersTemplate } from "@/components/analytics/analytics-shimmer-templates";
+import { AppShimmer } from "@/components/ui/app-shimmer";
 import { TopUserItem } from "@/types";
 import { Users } from "lucide-react";
 
@@ -32,6 +33,21 @@ const chartConfig = {
 
 export function AnalyticsTopUsersChart({ data = [], isLoading }: Props) {
   return (
+    <AppShimmer
+      loading={isLoading}
+      templateProps={{ data: analyticsTopUsersTemplate }}
+    >
+      <AnalyticsTopUsersChartContent data={data} />
+    </AppShimmer>
+  );
+}
+
+function AnalyticsTopUsersChartContent({
+  data = [],
+}: {
+  data?: TopUserItem[];
+}) {
+  return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
@@ -45,9 +61,7 @@ export function AnalyticsTopUsersChart({ data = [], isLoading }: Props) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <Skeleton className="h-[350px] w-full" />
-        ) : data.length === 0 ? (
+        {data.length === 0 ? (
           <div className="flex h-[350px] items-center justify-center">
             <p className="text-muted-foreground text-sm">
               No top users data available.
