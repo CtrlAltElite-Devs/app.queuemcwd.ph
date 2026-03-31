@@ -375,8 +375,7 @@ export default function ReportsPage() {
                     </SelectContent>
                   </Select>
                   <p className="text-muted-foreground text-sm">
-                    Page {meta.page} of {meta.totalPages} ({meta.total}{" "}
-                    records)
+                    Page {meta.page} of {meta.totalPages} ({meta.total} records)
                   </p>
                 </div>
                 <div className="flex items-center gap-2">

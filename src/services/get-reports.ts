@@ -1,10 +1,6 @@
 import { appointmentTypeToService } from "@/constants";
 import { api } from "@/lib/axios";
-import {
-  AppointmentResponse,
-  PaginatedResponse,
-  ReportRecord,
-} from "@/types";
+import { AppointmentResponse, PaginatedResponse, ReportRecord } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
 function mapToReportRecord(dto: AppointmentResponse): ReportRecord {

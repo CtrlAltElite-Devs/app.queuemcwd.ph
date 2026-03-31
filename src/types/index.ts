@@ -1,5 +1,18 @@
 import { IconType } from "react-icons/lib";
 
+export type {
+  AnalyticsOverview,
+  TimelineDataPoint,
+  StatusBreakdownItem,
+  AppointmentTypeItem,
+  PeakHourItem,
+  StatusTrendItem,
+  TopUserItem,
+  AvgLeadTimeResult,
+  MultiSeriesDataPoint,
+  StatusTrendWideRow,
+} from "./analytics";
+
 export type BaseEntity = {
   id: string;
   createdAt?: Date;
