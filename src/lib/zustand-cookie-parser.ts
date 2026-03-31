@@ -23,8 +23,7 @@ export class ZustandCookieParser {
   ): string | null {
     try {
       const tokenCookie = cookies.find(
-        (cookie) =>
-          decodeURIComponent(cookie.name) === this.TOKEN_COOKIE_NAME,
+        (cookie) => decodeURIComponent(cookie.name) === this.TOKEN_COOKIE_NAME,
       );
       if (tokenCookie?.value) {
         return decodeURIComponent(tokenCookie.value);

@@ -18,9 +18,7 @@ export function redirectToLogin(
     response.cookies.delete(
       encodeURIComponent("admin-auth-token|state|refreshToken"),
     );
-    response.cookies.delete(
-      encodeURIComponent("admin-auth-token|version"),
-    );
+    response.cookies.delete(encodeURIComponent("admin-auth-token|version"));
   }
 
   return response;

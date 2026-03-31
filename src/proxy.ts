@@ -110,17 +110,14 @@ export async function proxy(request: NextRequest) {
   if (pathname === "/login") {
     if (token) {
       try {
-        const res = await fetch(
-          `${process.env.API_BASE_URL}/api/v1/admin/me`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            cache: "no-store",
+        const res = await fetch(`${process.env.API_BASE_URL}/api/v1/admin/me`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
-        );
+          cache: "no-store",
+        });
 
         if (res.ok) {
           return NextResponse.redirect(new URL("/admin", request.url));
@@ -138,8 +135,12 @@ export async function proxy(request: NextRequest) {
       // Both tokens invalid — clear and show login
       const response = NextResponse.next();
       response.cookies.delete("admin-auth-token");
-      response.cookies.delete(encodeURIComponent("admin-auth-token|state|accessToken"));
-      response.cookies.delete(encodeURIComponent("admin-auth-token|state|refreshToken"));
+      response.cookies.delete(
+        encodeURIComponent("admin-auth-token|state|accessToken"),
+      );
+      response.cookies.delete(
+        encodeURIComponent("admin-auth-token|state|refreshToken"),
+      );
       response.cookies.delete(encodeURIComponent("admin-auth-token|version"));
       return response;
     }
