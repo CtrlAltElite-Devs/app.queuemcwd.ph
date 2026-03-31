@@ -16,7 +16,8 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
+import { analyticsMultiSeriesTemplate } from "@/components/analytics/analytics-shimmer-templates";
+import { AppShimmer } from "@/components/ui/app-shimmer";
 import { MultiSeriesDataPoint } from "@/types";
 import { format, parseISO } from "date-fns";
 import { TrendingUp } from "lucide-react";
@@ -47,6 +48,21 @@ const chartConfig = {
 
 export function AnalyticsMultiSeriesChart({ data = [], isLoading }: Props) {
   return (
+    <AppShimmer
+      loading={isLoading}
+      templateProps={{ data: analyticsMultiSeriesTemplate }}
+    >
+      <AnalyticsMultiSeriesChartContent data={data} />
+    </AppShimmer>
+  );
+}
+
+function AnalyticsMultiSeriesChartContent({
+  data = [],
+}: {
+  data?: MultiSeriesDataPoint[];
+}) {
+  return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
@@ -63,9 +79,7 @@ export function AnalyticsMultiSeriesChart({ data = [], isLoading }: Props) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <Skeleton className="h-[350px] w-full" />
-        ) : data.length === 0 ? (
+        {data.length === 0 ? (
           <div className="flex h-[350px] items-center justify-center">
             <p className="text-muted-foreground text-sm">
               No multi-series data available.

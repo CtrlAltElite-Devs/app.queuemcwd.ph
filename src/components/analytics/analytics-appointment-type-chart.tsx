@@ -15,7 +15,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
+import { analyticsAppointmentTypeTemplate } from "@/components/analytics/analytics-shimmer-templates";
+import { AppShimmer } from "@/components/ui/app-shimmer";
 import { AppointmentTypeBreakdownRow } from "@/services/analytics/get-analytics-appointment-type-breakdown";
 import { ClipboardList } from "lucide-react";
 
@@ -32,6 +33,21 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function AnalyticsAppointmentTypeChart({ data = [], isLoading }: Props) {
+  return (
+    <AppShimmer
+      loading={isLoading}
+      templateProps={{ data: analyticsAppointmentTypeTemplate }}
+    >
+      <AnalyticsAppointmentTypeChartContent data={data} />
+    </AppShimmer>
+  );
+}
+
+function AnalyticsAppointmentTypeChartContent({
+  data = [],
+}: {
+  data?: AppointmentTypeBreakdownRow[];
+}) {
   const topType = useMemo(() => {
     if (data.length === 0) return null;
     return data.reduce((max, d) => (d.count > max.count ? d : max), data[0]);
@@ -51,9 +67,7 @@ export function AnalyticsAppointmentTypeChart({ data = [], isLoading }: Props) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <Skeleton className="h-[300px] w-full" />
-        ) : data.length === 0 ? (
+        {data.length === 0 ? (
           <div className="flex h-[300px] items-center justify-center">
             <p className="text-muted-foreground text-sm">
               No appointment type data available for this date range.

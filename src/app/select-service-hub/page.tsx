@@ -3,14 +3,40 @@
 import BackgroundSlideShow from "@/components/background-slideshow";
 import HubCard from "@/components/hub-card";
 import MainLayout from "@/components/layouts/main-layout";
+import { shimmerBranchTemplates } from "@/components/shimmer-templates";
+import { AppShimmer } from "@/components/ui/app-shimmer";
 import { cn } from "@/lib/utils";
 import { useGetBranches } from "@/services/get-branches";
 import { useBranchStore } from "@/stores/branch-store";
 import { Branch } from "@/types";
-import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+type ServiceHubGridProps = {
+  branches: Branch[];
+  isNavigating: boolean;
+  onSelect: (branch: Branch) => void;
+};
+
+function ServiceHubGrid({
+  branches,
+  isNavigating,
+  onSelect,
+}: ServiceHubGridProps) {
+  return (
+    <div
+      className={cn(
+        "flex w-full flex-wrap justify-center gap-4 px-4 transition-opacity duration-300",
+        isNavigating && "pointer-events-none opacity-80",
+      )}
+    >
+      {branches.map((branch) => (
+        <HubCard key={branch.id} {...branch} onSelect={onSelect} />
+      ))}
+    </div>
+  );
+}
 
 export default function SelectServiceHubPage() {
   const router = useRouter();
@@ -52,26 +78,25 @@ export default function SelectServiceHubPage() {
             </p>
           </div>
 
-          {isLoading && (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 className="text-primary h-8 w-8 animate-spin" />
-            </div>
-          )}
-
           {isError && (
             <p className="text-sm text-red-500">Failed to load branches.</p>
           )}
-          {!isLoading && !isError && (
-            <div
-              className={cn(
-                "flex w-full flex-wrap justify-center gap-4 px-4 transition-opacity duration-300",
-                isNavigating && "pointer-events-none opacity-80",
-              )}
+
+          {!isError && (
+            <AppShimmer
+              loading={isLoading}
+              templateProps={{
+                branches: shimmerBranchTemplates,
+                isNavigating: false,
+                onSelect: () => undefined,
+              }}
             >
-              {branches.map((b: Branch) => (
-                <HubCard key={b.id} {...b} onSelect={handleSelect} />
-              ))}
-            </div>
+              <ServiceHubGrid
+                branches={branches}
+                isNavigating={isNavigating}
+                onSelect={handleSelect}
+              />
+            </AppShimmer>
           )}
         </MainLayout>
       </BackgroundSlideShow>

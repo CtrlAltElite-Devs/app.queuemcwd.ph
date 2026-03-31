@@ -15,7 +15,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
+import { analyticsPeakHoursTemplate } from "@/components/analytics/analytics-shimmer-templates";
+import { AppShimmer } from "@/components/ui/app-shimmer";
 import { FormattedPeakHourItem } from "@/services/analytics/get-analytics-peak-hours";
 import { Clock } from "lucide-react";
 
@@ -32,6 +33,21 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function AnalyticsPeakHoursChart({ data = [], isLoading }: Props) {
+  return (
+    <AppShimmer
+      loading={isLoading}
+      templateProps={{ data: analyticsPeakHoursTemplate }}
+    >
+      <AnalyticsPeakHoursChartContent data={data} />
+    </AppShimmer>
+  );
+}
+
+function AnalyticsPeakHoursChartContent({
+  data = [],
+}: {
+  data?: FormattedPeakHourItem[];
+}) {
   const maxCount = useMemo(
     () => Math.max(...data.map((d) => d.count), 0),
     [data],
@@ -56,9 +72,7 @@ export function AnalyticsPeakHoursChart({ data = [], isLoading }: Props) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <Skeleton className="h-[300px] w-full" />
-        ) : data.length === 0 ? (
+        {data.length === 0 ? (
           <div className="flex h-[300px] items-center justify-center">
             <p className="text-muted-foreground text-sm">
               No peak hours data available.

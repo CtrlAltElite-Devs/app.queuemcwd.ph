@@ -1,4 +1,3 @@
-import { AdminSidebarSkeleton } from "@/components/admin-page-skeleton";
 import { navigations } from "@/constants/navigations";
 import { useGetBranches } from "@/services/get-branches";
 import { useBranchStore } from "@/stores/branch-store";
@@ -14,7 +13,7 @@ export default function WithAdminSidebar() {
   }, [branches, selectedBranch, setBranch]);
 
   if (isLoading || !branches) {
-    return <AdminSidebarSkeleton />;
+    return null;
   }
 
   return (

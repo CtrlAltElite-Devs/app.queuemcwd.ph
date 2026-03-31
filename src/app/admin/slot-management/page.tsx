@@ -1,8 +1,8 @@
 "use client";
 
-import { AdminPageSkeleton } from "@/components/admin-page-skeleton";
 import AppointmentCalendar from "@/components/appointment-calendar";
 import AppointmentSlotFields from "@/components/appointment-slot-fields";
+import { LoadingState } from "@/components/ui/loading-state";
 import {
   Card,
   CardContent,
@@ -30,7 +30,9 @@ export default function AppointmentSettings() {
   );
 
   if (!selectedBranch) {
-    return <AdminPageSkeleton />;
+    return (
+      <LoadingState label="Loading appointments..." className="min-h-[40vh]" />
+    );
   }
 
   return (

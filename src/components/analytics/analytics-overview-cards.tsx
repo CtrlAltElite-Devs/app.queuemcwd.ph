@@ -7,7 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { AppShimmer } from "@/components/ui/app-shimmer";
+import { analyticsOverviewTemplate } from "@/components/analytics/analytics-shimmer-templates";
 import {
   Tooltip,
   TooltipContent,
@@ -87,6 +88,17 @@ const rateCards = [
 
 export function AnalyticsOverviewCards({ data, isLoading }: Props) {
   return (
+    <AppShimmer
+      loading={isLoading}
+      templateProps={{ data: analyticsOverviewTemplate }}
+    >
+      <OverviewCardsContent data={data} />
+    </AppShimmer>
+  );
+}
+
+function OverviewCardsContent({ data }: { data?: AnalyticsOverview }) {
+  return (
     <TooltipProvider delayDuration={200}>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {countCards.map(({ key, label, icon: Icon, hint }) => (
@@ -106,18 +118,14 @@ export function AnalyticsOverviewCards({ data, isLoading }: Props) {
               <Icon className="text-muted-foreground size-4" />
             </CardHeader>
             <CardContent>
-              {isLoading ? (
-                <Skeleton className="h-8 w-20" />
-              ) : (
-                <>
-                  <p className="text-2xl font-bold tabular-nums">
-                    {data?.[key]?.toLocaleString() ?? 0}
-                  </p>
-                  <CardDescription className="mt-1 text-xs">
-                    appointments
-                  </CardDescription>
-                </>
-              )}
+              <>
+                <p className="text-2xl font-bold tabular-nums">
+                  {data?.[key]?.toLocaleString() ?? 0}
+                </p>
+                <CardDescription className="mt-1 text-xs">
+                  appointments
+                </CardDescription>
+              </>
             </CardContent>
           </Card>
         ))}
@@ -142,18 +150,14 @@ export function AnalyticsOverviewCards({ data, isLoading }: Props) {
               </div>
             </CardHeader>
             <CardContent>
-              {isLoading ? (
-                <Skeleton className="h-8 w-20" />
-              ) : (
-                <>
-                  <p className={`text-2xl font-bold tabular-nums ${color}`}>
-                    {data?.[key]?.toFixed(1) ?? 0}%
-                  </p>
-                  <CardDescription className="mt-1 text-xs">
-                    of total appointments
-                  </CardDescription>
-                </>
-              )}
+              <>
+                <p className={`text-2xl font-bold tabular-nums ${color}`}>
+                  {data?.[key]?.toFixed(1) ?? 0}%
+                </p>
+                <CardDescription className="mt-1 text-xs">
+                  of total appointments
+                </CardDescription>
+              </>
             </CardContent>
           </Card>
         ))}
