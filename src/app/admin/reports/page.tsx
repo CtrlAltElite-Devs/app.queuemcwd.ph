@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { LoadingState } from "@/components/ui/loading-state";
 import {
   Popover,
   PopoverContent,
@@ -27,23 +28,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { LoadingState } from "@/components/ui/loading-state";
 import { Service } from "@/constants";
+import { cn } from "@/lib/utils";
+import { useExportReportsPdf } from "@/services/export-reports-pdf";
 import { useGetReportSummary } from "@/services/get-report-summary";
 import { useGetReports } from "@/services/get-reports";
-import { ReportRecord } from "@/types";
 import { useBranchStore } from "@/stores/branch-store";
+import { ReportRecord } from "@/types";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import {
   CalendarIcon,
   ChevronLeft,
   ChevronRight,
+  Download,
   FileText,
   TableProperties,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { type DateRange } from "react-day-picker";
+import { toast } from "sonner";
 
 const serviceStyles: Record<string, string> = {
   [Service.BILLING_CONCERNS]:
@@ -178,6 +181,7 @@ export default function ReportsPage() {
   const [limit, setLimit] = useState(10);
   const { selectedBranch } = useBranchStore();
   const branchId = selectedBranch?.id || "";
+  const exportReportsPdf = useExportReportsPdf();
 
   const startDate = dateRange?.from
     ? format(dateRange.from, "yyyy-MM-dd")
@@ -227,6 +231,18 @@ export default function ReportsPage() {
     setPage(1);
   };
 
+  const handleExportPdf = async () => {
+    try {
+      await exportReportsPdf.mutateAsync({
+        branchId,
+        from: startDate,
+        to: endDate,
+      });
+    } catch {
+      toast.error("Failed to export reports PDF");
+    }
+  };
+
   if (!selectedBranch) {
     return <LoadingState label="Loading reports..." className="min-h-[40vh]" />;
   }
@@ -261,7 +277,7 @@ export default function ReportsPage() {
             Filter the report summary and details by the selected date range.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex items-center gap-4">
+        <CardContent className="flex flex-wrap items-center gap-4">
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -298,6 +314,13 @@ export default function ReportsPage() {
           </Popover>
           <Button variant="outline" onClick={handleResetDateRange}>
             Reset
+          </Button>
+          <Button
+            onClick={handleExportPdf}
+            disabled={!branchId || exportReportsPdf.isPending}
+          >
+            <Download className="size-4" />
+            {exportReportsPdf.isPending ? "Exporting..." : "Export"}
           </Button>
         </CardContent>
       </Card>
